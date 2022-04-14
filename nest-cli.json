@@ -1,0 +1,30 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/baas-platform/src",
+  "monorepo": true,
+  "root": "apps/baas-platform",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/baas-platform/tsconfig.app.json"
+  },
+  "projects": {
+    "baas-platform": {
+      "type": "application",
+      "root": "apps/baas-platform",
+      "entryFile": "main",
+      "sourceRoot": "apps/baas-platform/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/baas-platform/tsconfig.app.json"
+      }
+    },
+    "baas-account-service": {
+      "type": "application",
+      "root": "apps/baas-account-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/baas-account-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/baas-account-service/tsconfig.app.json"
+      }
+    }
+  }
+}

@@ -6,12 +6,17 @@ import { Injectable }         from '@nestjs/common'
 import { CreateAccountDto }   from './dto/create-account.dto'
 import { UpdateAccountDto }   from './dto/update-account.dto'
 
+import { WinstonLoggerService } from '@app/winston-logger'
+
 /**
  * @class AccountsService
  */
 @Injectable()
 export class AccountsService {
+  constructor(private readonly logger: WinstonLoggerService) {}
+
   create(createAccountDto: CreateAccountDto) {
+    this.logger.log(`Dude, create an account from %o`, createAccountDto)
     return 'This action adds a new account';
   }
 

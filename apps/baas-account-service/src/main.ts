@@ -8,21 +8,25 @@ import {
 }                                     from '@nestjs/common'
 
 import { BaasAccountServiceModule }   from './baas-account-service.module'
+import { WinstonLoggerService }       from '@app/winston-logger'
 
 /**
  * @function bootstrap
  */
 async function bootstrap() {
-  const app = await NestFactory.create(BaasAccountServiceModule)
+  const app = await NestFactory.create(BaasAccountServiceModule, {
+    bufferLogs: true
+  })
   
   app.enableVersioning({type: VersioningType.URI })
+  app.useLogger(app.get(WinstonLoggerService))
 
   // Load app configuration
   const configService = app.get(ConfigService)
-  console.log(`[debug] Environment= `, process.env.NODE_ENV)
+  const logger        = app.get(WinstonLoggerService)
 
   const port  = configService.get('port')
-  console.log(`[debug] Starting Baas Account Service on port=[${port}]`)
+  logger.log(`Starting [${configService.get('appName')}] on port=[${port}]`)
 
   await app.listen(port)
 }

@@ -10,21 +10,27 @@ import {
   Param,
   ParseUUIDPipe,
   Delete, 
-}                             from '@nestjs/common'
+}                                 from '@nestjs/common'
 
-import { AccountsService }    from './accounts.service'
-import { CreateAccountDto }   from './dto/create-account.dto'
-import { UpdateAccountDto }   from './dto/update-account.dto'
+import { AccountsService }        from './accounts.service'
+import { CreateAccountDto }       from './dto/create-account.dto'
+import { UpdateAccountDto }       from './dto/update-account.dto'
+
+import { WinstonLoggerService }   from '@app/winston-logger'
 
 /**
  * @class AccountsController
  */
 @Controller({path: 'accounts', version: '1'})
 export class AccountsController {
-  constructor(private readonly accountsService: AccountsService) {}
+  constructor(
+    private readonly accountsService: AccountsService,
+    private readonly logger:          WinstonLoggerService
+  ) {}
 
   @Post()
   createV1(@Body() createAccountDto: CreateAccountDto) {
+    this.logger.log(`POST /v1/accounts`)
     return this.accountsService.create(createAccountDto);
   }
 

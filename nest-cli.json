@@ -34,6 +34,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/winston-logger/tsconfig.lib.json"
       }
+    },
+    "baas-errors": {
+      "type": "library",
+      "root": "libs/baas-errors",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-errors/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-errors/tsconfig.lib.json"
+      }
     }
   }
 }

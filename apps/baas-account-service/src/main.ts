@@ -4,11 +4,13 @@
 import { NestFactory }                from '@nestjs/core'
 import { ConfigService }              from '@nestjs/config'
 import { 
+  ValidationPipe,
   VersioningType, 
 }                                     from '@nestjs/common'
 
 import { BaasAccountServiceModule }   from './baas-account-service.module'
 import { WinstonLoggerService }       from '@app/winston-logger'
+import { HttpExceptionFilter }        from '@app/baas-errors'
 
 /**
  * @function bootstrap
@@ -21,11 +23,19 @@ async function bootstrap() {
   app.enableVersioning({type: VersioningType.URI })
   app.useLogger(app.get(WinstonLoggerService))
 
-  // Load app configuration
-  const configService = app.get(ConfigService)
-  const logger        = app.get(WinstonLoggerService)
+  // Validation pipeline to validate requests
+  app.useGlobalPipes(new ValidationPipe({ 
+    transform:            true, 
+    whitelist:            true,  
+    forbidNonWhitelisted: true,
+  }))
 
-  const port  = configService.get('port')
+  // Load app configuration
+  const logger  = app.get(WinstonLoggerService)
+  app.useGlobalFilters(new HttpExceptionFilter(logger))
+
+  const configService = app.get(ConfigService)
+  const port    = configService.get('port')
   logger.log(`Starting [${configService.get('appName')}] on port=[${port}]`)
 
   await app.listen(port)

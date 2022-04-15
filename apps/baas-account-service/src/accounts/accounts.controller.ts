@@ -18,6 +18,8 @@ import { UpdateAccountDto }       from './dto/update-account.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
 
+import { BaaSErrors, NotFoundError }  from '@app/baas-errors'
+
 /**
  * @class AccountsController
  */
@@ -41,6 +43,8 @@ export class AccountsController {
 
   @Get(':accountId')
   findOneV1(@Param('accountId', ParseUUIDPipe) accountId: string) {
+    this.logger.log(`GET /v1/accounts/${accountId}`)
+    
     return this.accountsService.findOne(accountId);
   }
 

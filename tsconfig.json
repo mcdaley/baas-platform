@@ -29,6 +29,18 @@
       ],
       "@app/baas-errors/*": [
         "libs/baas-errors/src/*"
+      ],
+      "@app/core-simulator": [
+        "libs/core-simulator/src"
+      ],
+      "@app/core-simulator/*": [
+        "libs/core-simulator/src/*"
+      ],
+      "@app/baas-interfaces": [
+        "libs/baas-interfaces/src"
+      ],
+      "@app/baas-interfaces/*": [
+        "libs/baas-interfaces/src/*"
       ]
     }
   }

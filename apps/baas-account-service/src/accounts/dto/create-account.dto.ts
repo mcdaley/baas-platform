@@ -7,19 +7,22 @@ import {
   ValidateNested,
   IsArray,
   IsString,
+  IsOptional,
 }                               from 'class-validator'
 import { Type }                 from 'class-transformer'
 
+import { ICreateAccountDto }    from '@app/baas-interfaces'
 import { AccountType }          from '../../common/account.enum'
 
 /**
  * @class CreateAccountDto
  */
-export class CreateAccountDto {
+export class CreateAccountDto implements ICreateAccountDto {
   @IsNotEmpty()
   @IsEnum(AccountType)
   account_type: AccountType
 
+  @IsOptional()
   @IsString()
   name:         string
 } // end of class CreateAccountDto

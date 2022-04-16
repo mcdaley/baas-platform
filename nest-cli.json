@@ -43,6 +43,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/baas-errors/tsconfig.lib.json"
       }
+    },
+    "core-simulator": {
+      "type": "library",
+      "root": "libs/core-simulator",
+      "entryFile": "index",
+      "sourceRoot": "libs/core-simulator/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/core-simulator/tsconfig.lib.json"
+      }
+    },
+    "baas-interfaces": {
+      "type": "library",
+      "root": "libs/baas-interfaces",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-interfaces/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-interfaces/tsconfig.lib.json"
+      }
     }
   }
 }

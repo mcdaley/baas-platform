@@ -80,7 +80,9 @@
     ],
     "moduleNameMapper": {
       "^@app/winston-logger(|/.*)$": "<rootDir>/libs/winston-logger/src/$1",
-      "^@app/baas-errors(|/.*)$": "<rootDir>/libs/baas-errors/src/$1"
+      "^@app/baas-errors(|/.*)$": "<rootDir>/libs/baas-errors/src/$1",
+      "^@app/core-simulator(|/.*)$": "<rootDir>/libs/core-simulator/src/$1",
+      "^@app/baas-interfaces(|/.*)$": "<rootDir>/libs/baas-interfaces/src/$1"
     }
   }
 }

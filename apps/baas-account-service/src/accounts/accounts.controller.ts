@@ -9,7 +9,8 @@ import {
   Patch, 
   Param,
   ParseUUIDPipe,
-  Delete, 
+  Delete,
+  HttpCode, 
 }                                 from '@nestjs/common'
 
 import { AccountsService }        from './accounts.service'
@@ -57,6 +58,7 @@ export class AccountsController {
   }
 
   @Delete(':accountId')
+  @HttpCode(204)
   removeV1(@Param('accountId', ParseUUIDPipe) accountId: string) {
     return this.accountsService.remove(accountId);
   }

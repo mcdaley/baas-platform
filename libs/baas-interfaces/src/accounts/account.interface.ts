@@ -4,7 +4,9 @@
 import { 
   AccountStatus,
   AccountType,
-  ParticipantRole, 
+  ParticipantRole,
+  AccountBlockType,
+  AccountBlockStatus,
 }                         from './account.enum'
 
 /**
@@ -40,6 +42,19 @@ export interface ICreateParticipantDto {
 export interface IParticipant extends ICreateParticipantDto {
 }
 
+export interface ICreateAccountBlockDto {
+  block_type:     AccountBlockType,
+  block_reason?:  string
+}
+
+/**
+ * @interface IAccountBlock
+ */
+ export interface IAccountBlock extends ICreateAccountBlockDto {
+  id:             string
+  block_status:   AccountBlockStatus
+}
+
 /**
  * @interface IAccount
  */
@@ -59,7 +74,7 @@ export interface IAccount extends ICreateAccountDto {
   usage?:                 string,
   multiple_participants:  boolean,
   participants:           IParticipant[],
-  //* blocks?:                AccountBlock[],
+  blocks?:                IAccountBlock[],
   created_at:             Date,
   updated_at:             Date,
 }

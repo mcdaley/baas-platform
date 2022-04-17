@@ -9,11 +9,15 @@ import { CoreBank }             from './core-bank'
 import { 
   AccountType,
   AccountStatus,
+  AccountBlockStatus,
+  AccountBlockType,
   ICreateAccountDto,
   IAccount,
   IUpdateAccountDto,
   ICreateParticipantDto,
   IParticipant,
+  ICreateAccountBlockDto,
+  IAccountBlock,
 }                               from '@app/baas-interfaces'
 import { 
   BaaSErrors, 
@@ -212,7 +216,7 @@ export class CoreSimulatorService {
         resolve(account.participants)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(BaaSExceptionFactory.create(error, `Account Participants`))
       }
     })
   }
@@ -238,7 +242,7 @@ export class CoreSimulatorService {
         resolve(participants)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(BaaSExceptionFactory.create(error, `Account Participants`))
       }
     })
   }
@@ -290,7 +294,113 @@ export class CoreSimulatorService {
         resolve(account.participants)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(BaaSExceptionFactory.create(error, `Account Participants`))
+      }
+    })
+  }
+
+  /**
+   * @method createAccountBlock
+   */
+  public createAccountBlock(
+    accountId:             string,
+    createAccountBlockDto: ICreateAccountBlockDto) : Promise<IAccountBlock[]> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        if(!this.coreBank.hasAccount(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreBank.getAccount(accountId)
+        let blocks  = account.hasOwnProperty('blocks') ? account.blocks : []
+        let block   = {
+          id:           uuidv4(),
+          block_status: AccountBlockStatus.Active,
+          ...createAccountBlockDto
+        }
+        blocks.unshift(block)
+
+        account.blocks          = blocks
+        account.account_status  = AccountStatus.Blocked
+        this.coreBank.setAccount(account.id, account)
+
+        resolve(account.blocks)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Account Blocks`))
+      }
+    })
+  }
+
+  /**
+   * @method findAll
+   */
+  public findAllAccountBlocks(accountId: string) : Promise<IAccountBlock[]> {
+    return new Promise( (resolve, reject) => {
+      try {
+        if(!this.coreBank.hasAccount(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreBank.getAccount(accountId)
+        let blocks  = account.hasOwnProperty('blocks') ? account.blocks : []
+
+        resolve(blocks)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Account Blocks`))
+      }
+    })
+  }
+
+  /**
+   * @method removeAccountBlock
+   */
+  public removeAccountBlock(
+    accountId:      string,
+    accountBlockId: string) : Promise<IAccountBlock[]>
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        if(!this.coreBank.hasAccount(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreBank.getAccount(accountId)
+        
+        // Return error if account is not blocked
+        if(!account.hasOwnProperty('blocks')) {
+          this.logger.error(`Account w/ id=${accountId} is not blocked`)
+          return reject(
+            new NotFoundError(
+              BaaSErrors.account.accountBlockNotFound, 
+              `Failed to cancel account block, account w/ id=${accountId} is not blocked`
+            )
+          )
+        }
+
+        let index = account.blocks.findIndex( block => block.id === accountBlockId)
+        if(index < 0) {
+          this.logger.error(
+            `Account Block w/ id=[${accountBlockId}] is Not Found for Account w/ id=${accountId}`
+          )
+          return reject(
+            new NotFoundError(
+              BaaSErrors.account.accountBlockNotFound, 
+              `Failed to cancel account block, account w/ id=${accountId} is not found`
+            )
+          )
+        }
+
+        // Unblock the account
+        account.blocks[index].block_status  = AccountBlockStatus.Canceled
+        account.account_status              = AccountStatus.Open
+
+        resolve(account.blocks)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Account Blocks`))
       }
     })
   }

@@ -10,6 +10,7 @@ import { BaasAccountServiceService }      from './baas-account-service.service'
 
 import { AccountsModule }                 from './accounts/accounts.module'
 import { ParticipantsModule }             from './participants/participants.module'
+import { AccountBlocksModule }            from './blocks/account-blocks.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
@@ -23,6 +24,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     }),
     AccountsModule,
     ParticipantsModule,
+    AccountBlocksModule,
     WinstonLoggerModule,
   ],
   controllers:  [BaasAccountServiceController],

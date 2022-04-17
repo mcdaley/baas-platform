@@ -1,8 +1,16 @@
-import { Injectable } from '@nestjs/common';
+//-----------------------------------------------------------------------------
+// apps/baas-account-service/src/baas-account-service.service.ts
+//-----------------------------------------------------------------------------
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class BaasAccountServiceService {
-  getHello(): string {
-    return 'Hello World!';
+  ping() {
+    return {
+      heartbeat: {
+        app: `baas-account-service`,
+        time: new Date(),
+      }
+    }
   }
 }

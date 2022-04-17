@@ -5,11 +5,12 @@ import {
   Controller, 
   Get, 
 }                                     from '@nestjs/common'
+
 import { BaasAccountServiceService }  from './baas-account-service.service'
 
 import { WinstonLoggerService }       from '@app/winston-logger'
 
-@Controller()
+@Controller({path: 'accounts/ping', version: '1'})
 export class BaasAccountServiceController {
   constructor(
     private readonly baasAccountServiceService: BaasAccountServiceService,
@@ -17,8 +18,8 @@ export class BaasAccountServiceController {
   ) {}
 
   @Get()
-  getHello(): string {
-    this.logger.log(`Dude, global logging works!`)
-    return this.baasAccountServiceService.getHello();
+  ping() {
+    this.logger.log(`GET /v1/accounts/ping`)
+    return this.baasAccountServiceService.ping()
   }
 }

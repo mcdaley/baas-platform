@@ -11,8 +11,13 @@ import {
 }                               from 'class-validator'
 import { Type }                 from 'class-transformer'
 
-import { ICreateAccountDto }    from '@app/baas-interfaces'
-import { AccountType }          from '../../common/account.enum'
+import { CreateParticipantDto } from '../../participants/dto/create-participant.dto'
+import { Participant }          from '../../participants/entities/participant.entity'
+
+import { 
+  AccountType,
+  ICreateAccountDto 
+}                               from '@app/baas-interfaces'
 
 /**
  * @class CreateAccountDto
@@ -25,4 +30,10 @@ export class CreateAccountDto implements ICreateAccountDto {
   @IsOptional()
   @IsString()
   name:         string
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested()
+  @Type(() => CreateParticipantDto)
+  participants: Participant[]
 } // end of class CreateAccountDto

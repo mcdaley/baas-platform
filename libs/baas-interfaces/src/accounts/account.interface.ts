@@ -3,7 +3,8 @@
 //-----------------------------------------------------------------------------
 import { 
   AccountStatus,
-  AccountType 
+  AccountType,
+  ParticipantRole, 
 }                         from './account.enum'
 
 /**
@@ -11,7 +12,8 @@ import {
  */
 export interface ICreateAccountDto {
   account_type:   AccountType,
-  name:           string,
+  name?:          string,
+  participants:   IParticipant[],
 }
 
 /**
@@ -21,6 +23,21 @@ export interface IUpdateAccountDto {
   account_status?:          AccountStatus,
   account_status_reason?:   string,
   nickname?:                string,
+  participants?:            IParticipant[],
+}
+
+/**
+ * @interface ICreateParticipantDto
+ */
+export interface ICreateParticipantDto {
+  participant_customer_id:  string
+  participant_role:         ParticipantRole
+}
+
+/**
+ * @interface IParticipant
+ */
+export interface IParticipant extends ICreateParticipantDto {
 }
 
 /**
@@ -41,7 +58,7 @@ export interface IAccount extends ICreateAccountDto {
   nickname?:              string,
   usage?:                 string,
   multiple_participants:  boolean,
-  //* participants:           Participant[],
+  participants:           IParticipant[],
   //* blocks?:                AccountBlock[],
   created_at:             Date,
   updated_at:             Date,

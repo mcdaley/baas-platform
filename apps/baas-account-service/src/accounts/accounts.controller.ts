@@ -19,8 +19,6 @@ import { UpdateAccountDto }       from './dto/update-account.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
 
-import { BaaSErrors, NotFoundError }  from '@app/baas-errors'
-
 /**
  * @class AccountsController
  */

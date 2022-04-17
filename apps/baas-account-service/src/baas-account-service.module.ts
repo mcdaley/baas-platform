@@ -9,6 +9,8 @@ import { BaasAccountServiceController }   from './baas-account-service.controlle
 import { BaasAccountServiceService }      from './baas-account-service.service'
 
 import { AccountsModule }                 from './accounts/accounts.module'
+import { ParticipantsModule }             from './participants/participants.module'
+
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
 @Module({
@@ -20,6 +22,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
       validate,
     }),
     AccountsModule,
+    ParticipantsModule,
     WinstonLoggerModule,
   ],
   controllers:  [BaasAccountServiceController],

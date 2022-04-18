@@ -9,13 +9,16 @@ import { CoreBank }             from '../core-bank'
 import { 
   CardStatus,
   ICreateDebitCardDto, 
-  IDebitCard, 
+  ICreateDebitCardsBlockDto, 
+  IDebitCard,
+  IDebitCardsBlock, 
 }                               from '@app/baas-interfaces'
 import { 
   NotFoundError,
   BaaSErrors, 
   BaaSExceptionFactory,
-  BaaSException, 
+  BaaSException,
+  BadRequestError, 
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -137,6 +140,138 @@ export class CoreDebitCardSimulator {
 
         this.logger.log(`Activated debit card id=[${debitCardId}], status=[${debitCard.status}]`)
         resolve(true)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`)) 
+      }
+    })
+  }
+
+  /**
+   * @method blockDebitCard
+   */
+  public createDebitCardBlocks(
+    debitCardId:              string,
+    createDebitCardsBlockDto: ICreateDebitCardsBlockDto) : Promise<IDebitCardsBlock[]> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard : IDebitCard       = this.coreBank.getDebitCard(debitCardId)
+        let block     : IDebitCardsBlock = {
+          id:           uuidv4(),
+          block_reason: createDebitCardsBlockDto.block_reason,
+          block_date:   new Date(),
+          is_active:    true,
+        }
+
+        // Add the block to the debit card.
+        if(!debitCard.hasOwnProperty('blocks')) {
+          // Create blocks array if account has never been blocked
+          debitCard = {
+            ...debitCard,
+            blocks: [block]
+          }
+        }
+        else {
+          // Insert block at the beginning of the array and deactivate old blocks.
+          debitCard.blocks.forEach( block => block.is_active = false)
+          debitCard.blocks.unshift(block)
+        }
+        debitCard.status = CardStatus.Blocked
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        this.logger.log(`Blocked debit card id=[${debitCardId}], block=[${block}]`)
+        resolve(debitCard.blocks)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`)) 
+      }
+    })  
+  }
+
+  /**
+   * @method findAllDebitCardBlocks
+   */
+  public findAllDebitCardBlocks(debitCardId: string) : Promise<IDebitCardsBlock[]> {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+        let blocks    = debitCard.hasOwnProperty('blocks') ? debitCard.blocks : []
+
+        this.logger.log(`Fetched blocks for debit card id=[${debitCardId}], blocks= o`, blocks)
+        resolve(blocks)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`)) 
+      }
+    })
+  }
+
+  /**
+   * @method removeDebitCardBlocks
+   */
+  public removeDebitCardBlocks(
+    debitCardId:      string, 
+    debitCardBlockId: string) : Promise<IDebitCardsBlock[]> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard  = this.coreBank.getDebitCard(debitCardId)
+        let blockFound = false
+
+        // Remove the debit card block
+        if(!debitCard.hasOwnProperty('blocks')) {
+          // Error, card is not blocked
+          this.logger.error(`Debit card id=[${debitCardId}] is not blocked`)
+          return reject(
+            new BadRequestError(
+              BaaSErrors.debitCard.debitCardNotBlocked,
+              `Debit card id=[${debitCardId}] is not blocked`
+            )
+          )
+        }
+        else {
+          // Find and deactivate the block
+          debitCard.blocks.forEach( (block) => {
+            if(block.id === debitCardBlockId) {
+              block.is_active = false
+              blockFound      = true
+            }
+          })
+        }
+
+        // Return 404 error if the block is not found
+        if(!blockFound) {
+          this.logger.error(`Block Id==${debitCardBlockId}] for debit card id=${debitCardId} Not Found`)
+          return reject(
+            new NotFoundError(
+              BaaSErrors.debitCard.blockNotFound, 
+              `Block id=${debitCardBlockId} Not Found`
+            )
+          )
+        }
+
+        // Update the card status and return response
+        debitCard.status = CardStatus.Active
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        this.logger.log(`Removed block=[${debitCardBlockId}] for debit card id=[${debitCardId}]`)
+        resolve(debitCard.blocks)
       }
       catch(error) {
         reject(BaaSExceptionFactory.create(error, `Debit Card`)) 

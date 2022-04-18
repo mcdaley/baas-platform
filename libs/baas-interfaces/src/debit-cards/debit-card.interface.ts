@@ -9,6 +9,7 @@ import {
   Packaging,
   ICreateAddressDto,
   IAddress,
+  BlockReason,
 }                           from '@app/baas-interfaces'
 
 /**
@@ -48,5 +49,21 @@ export interface IDebitCard {
   customer_id:                    string
   account_id:                     string
   //* branch_id:                      string 
-  //* blocks?:                        DebitCardsBlock[]
+  blocks?:                        IDebitCardsBlock[]
+}
+
+/**
+ * @interface ICreateDebitCardsBlockDto
+ */
+export interface ICreateDebitCardsBlockDto {
+  block_reason:   BlockReason
+}
+
+/**
+ * @interface IDebitCardsBlock
+ */
+export interface IDebitCardsBlock extends ICreateDebitCardsBlockDto {
+  id:             string
+  block_date:     Date
+  is_active:      boolean
 }

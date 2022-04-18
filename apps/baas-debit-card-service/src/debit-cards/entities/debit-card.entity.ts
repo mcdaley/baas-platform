@@ -1,6 +1,8 @@
 //-----------------------------------------------------------------------------
 // apps/baas-debit-card-service/src/debit-cards/entities/debit-card.entity.ts
 //-----------------------------------------------------------------------------
+import { DebitCardsBlock }  from '../../debit-cards-blocks/entities/debit-cards-block.entity'
+
 import { 
   BusinessNameOnCard, 
   CardStatus, 
@@ -31,5 +33,5 @@ export class DebitCard implements IDebitCard {
   customer_id:                    string
   account_id:                     string
   branch_id:                      string
-  //* blocks?:                         DebitCardsBlock[]
+  blocks?:                        DebitCardsBlock[]
 }

@@ -3,7 +3,8 @@
 //-----------------------------------------------------------------------------
 import { 
   IAccount, 
-  IUpdateAccountDto, 
+  IDebitCard, 
+  IUpdateAccountDto,
 }                       from '@app/baas-interfaces'
 
 /**
@@ -13,11 +14,13 @@ import {
  * @class CoreBank
  */
 export class CoreBank {
-  private static _default:  CoreBank
-  private        accounts:  Map<string, IAccount>
+  private static  _default:   CoreBank
+  private         accounts:   Map<string, IAccount>
+  private         debitCards: Map<string, IDebitCard>
 
   constructor() {
-    this.accounts = new Map<string, IAccount>()
+    this.accounts   = new Map<string, IAccount>()
+    this.debitCards = new Map<string, IDebitCard>()
   }
 
   static instance(): CoreBank {
@@ -27,6 +30,9 @@ export class CoreBank {
     return CoreBank._default
   }
 
+  //
+  // Account APIs
+  //
   public hasAccount(accountId: string): boolean {
     return this.accounts.has(accountId) ? true : false
   }
@@ -56,5 +62,28 @@ export class CoreBank {
 
   public removeAccount(accountId: string) {
     this.accounts.delete(accountId)
+  }
+
+  //
+  // Debit Card APIs
+  //
+  public hasDebitCard(debitCardId: string): boolean {
+    return this.debitCards.has(debitCardId) ? true : false
+  }
+
+  getDebitCards() : IDebitCard[] {
+    let debitCardList: IDebitCard[] = []
+    for(let debitCard of this.debitCards.values()) {
+      debitCardList.push(debitCard)
+    }
+    return debitCardList
+  }
+
+  public getDebitCard(debitCardId: string): IDebitCard | undefined { 
+    return this.debitCards.get(debitCardId)
+  }
+
+  public setDebitCard(debitCardId: string, debitCard: IDebitCard) {
+    this.debitCards.set(debitCard.id, debitCard)
   }
 }

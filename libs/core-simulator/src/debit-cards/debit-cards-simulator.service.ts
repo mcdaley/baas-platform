@@ -14,7 +14,8 @@ import {
 import { 
   NotFoundError,
   BaaSErrors, 
-  BaaSExceptionFactory, 
+  BaaSExceptionFactory,
+  BaaSException, 
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -100,15 +101,9 @@ export class CoreDebitCardSimulator {
    public findOne(debitCardId: string) : Promise<IDebitCard> {
     return new Promise( (resolve, reject) => {
       try {
-        // Build and throw resourceNotFound exception
+        // Debit Card is Not Found
         if(!this.coreBank.hasDebitCard(debitCardId)) {
-          this.logger.error(`DebitCard w/ id=${debitCardId} Not Found`)
-          return reject(
-            new NotFoundError(
-              BaaSErrors.debitCard.notFound, 
-              `DebitCard w/ id=${debitCardId} Not Found`
-            )
-          )
+          return reject(this.debitCardNotFound(debitCardId))
         }
 
         const debitCard = this.coreBank.getDebitCard(debitCardId)
@@ -120,5 +115,43 @@ export class CoreDebitCardSimulator {
         reject(BaaSExceptionFactory.create(error, `Debit Card`))
       }
     })
+  }
+
+  /**
+   * @method activateDebitCard
+   */
+  public activateDebitCard(debitCardId: string) : Promise<boolean> {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+        debitCard     = {
+          ...debitCard,
+          status:  CardStatus.Active,
+        }
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        this.logger.log(`Activated debit card id=[${debitCardId}], status=[${debitCard.status}]`)
+        resolve(true)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`)) 
+      }
+    })
+  }
+
+  /**
+   * @method accountNotFound
+   */
+  private debitCardNotFound(debitCardId: string): BaaSException {
+    this.logger.error(`Debit Card w/ id=${debitCardId} Not Found`)
+    return new NotFoundError(
+      BaaSErrors.debitCard.notFound, 
+      `Debit Card w/ id=${debitCardId} Not Found`
+    )
   }
 } // end of class CoreDebitCardsSimulator

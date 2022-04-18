@@ -12,7 +12,7 @@ import { DebitCardsModule }         from './debit-cards/debit-cards.module'
 //* import { DebitCardsLimitsModule }   from './debit-cards-limits/debit-cards-limits.module'
 //* import { DebitCardsReissueModule }  from './debit-cards-reissue/debit-cards-reissue.module'
 //* import { DebitCardsPinModule }      from './debit-cards-pin/debit-cards-pin.module'
-//* import { DebitCardsActivateModule } from './debit-cards-activate/debit-cards-activate.module'
+import { DebitCardsActivateModule } from './debit-cards-activate/debit-cards-activate.module'
 //* import { DebitCardsBlocksModule }   from './debit-cards-blocks/debit-cards-blocks.module'
 //* import { DebitCardsCancelModule }   from './debit-cards-cancel/debit-cards-cancel.module'
 
@@ -30,7 +30,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger';
     //* DebitCardsLimitsModule,
     //* DebitCardsReissueModule,
     //* DebitCardsPinModule,
-    //* DebitCardsActivateModule,
+    DebitCardsActivateModule,
     //* DebitCardsBlocksModule,
     //* DebitCardsCancelModule,
     WinstonLoggerModule,

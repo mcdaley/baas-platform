@@ -10,7 +10,7 @@ import { BaasDebitCardServiceService }    from './baas-debit-card-service.servic
 
 import { DebitCardsModule }         from './debit-cards/debit-cards.module'
 import { DebitCardsLimitsModule }   from './debit-cards-limits/debit-cards-limits.module'
-//* import { DebitCardsReissueModule }  from './debit-cards-reissue/debit-cards-reissue.module'
+import { DebitCardsReissueModule }  from './debit-cards-reissue/debit-cards-reissue.module'
 import { DebitCardsPinModule }      from './debit-cards-pin/debit-cards-pin.module'
 import { DebitCardsActivateModule } from './debit-cards-activate/debit-cards-activate.module'
 import { DebitCardsBlocksModule }   from './debit-cards-blocks/debit-cards-blocks.module'
@@ -28,7 +28,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger';
     }), 
     DebitCardsModule,
     DebitCardsLimitsModule,
-    //* DebitCardsReissueModule,
+    DebitCardsReissueModule,
     DebitCardsPinModule,
     DebitCardsActivateModule,
     DebitCardsBlocksModule,

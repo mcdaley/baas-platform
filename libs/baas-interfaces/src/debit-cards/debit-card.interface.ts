@@ -10,6 +10,8 @@ import {
   ICreateAddressDto,
   IAddress,
   BlockReason,
+  ReissueReason,
+  CreateAddressDto,
 }                           from '@app/baas-interfaces'
 
 /**
@@ -98,3 +100,17 @@ export interface IUpdateDebitCardsLimitDto {
  * @interface IDebitCardsLimit
  */
 export interface IDebitCardsLimit extends IUpdateDebitCardsLimitDto {}
+
+/**
+ * @interface ICreateDebitCardsReissueDto
+ */
+export interface ICreateDebitCardsReissueDto {
+  name_on_card:                   string      // Default is Customer's name
+  //* business_name_on_card:          BusinessNameOnCard
+  //* custom_business_name_on_card?:  string      // Define if business_name_on_card = 'custom'
+  reason:                         ReissueReason
+  delivery:                       Delivery
+  packaging:                      Packaging
+  phone_number:                   string
+  mailing_address:                CreateAddressDto
+}

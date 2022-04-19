@@ -11,6 +11,7 @@ import {
   ICreateDebitCardDto, 
   ICreateDebitCardsBlockDto, 
   ICreateDebitCardsPinDto, 
+  ICreateDebitCardsReissueDto, 
   IDebitCard,
   IDebitCardsBlock,
   IDebitCardsLimit,
@@ -397,6 +398,38 @@ export class CoreDebitCardSimulator {
  
          this.logger.log(`Canceled debit card id=[${debitCardId}], status=[${debitCard.status}]`)
          resolve(true)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`))
+      }
+    })
+  }
+
+  /**
+   * @method reissueDebitCard
+   */
+  public reissueDebitCard(
+    debitCardId:                string, 
+    createDebitCardsReissueDto: ICreateDebitCardsReissueDto) : Promise<IDebitCard> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+        debitCard     = {
+          ...debitCard,
+          name_on_card:     createDebitCardsReissueDto.name_on_card,
+          phone_number:     createDebitCardsReissueDto.phone_number,
+          mailing_address:  createDebitCardsReissueDto.mailing_address,
+        }
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        this.logger.log(`Reissue debit card= %o`, debitCard)
+        resolve(debitCard)
       }
       catch(error) {
         reject(BaaSExceptionFactory.create(error, `Debit Card`))

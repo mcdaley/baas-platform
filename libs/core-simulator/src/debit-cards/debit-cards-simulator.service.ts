@@ -280,6 +280,33 @@ export class CoreDebitCardSimulator {
   }
 
   /**
+   * @method cancelDebitCard
+   */
+  public cancelDebitCard(debitCardId: string) : Promise<boolean> {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+         debitCard     = {
+           ...debitCard,
+           status:  CardStatus.Canceled,
+         }
+         this.coreBank.setDebitCard(debitCard.id, debitCard)
+ 
+         this.logger.log(`Canceled debit card id=[${debitCardId}], status=[${debitCard.status}]`)
+         resolve(true)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`))
+      }
+    })
+  }
+
+  /**
    * @method accountNotFound
    */
   private debitCardNotFound(debitCardId: string): BaaSException {

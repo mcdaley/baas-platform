@@ -10,6 +10,7 @@ import {
   CardStatus,
   ICreateDebitCardDto, 
   ICreateDebitCardsBlockDto, 
+  ICreateDebitCardsPinDto, 
   IDebitCard,
   IDebitCardsBlock,
   IDebitCardsLimit,
@@ -339,6 +340,36 @@ export class CoreDebitCardSimulator {
         this.logger.log(`Updated debit card limits= %o`, limits)
 
         resolve(limits)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`))
+      }
+    })
+  }
+
+  /**
+   * @method createDebitCardsPin
+   */
+  public createDebitCardsPin(
+    debitCardId:      string, 
+    debitCardsPinDto: ICreateDebitCardsPinDto) : Promise<boolean> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+        debitCard     = {
+          ...debitCard,
+          pin:  debitCardsPinDto.pin,
+        }
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        this.logger.log(`Created pin for debit card id=[${debitCardId}], pin= %s`, debitCard.pin)
+        resolve(true)
       }
       catch(error) {
         reject(BaaSExceptionFactory.create(error, `Debit Card`))

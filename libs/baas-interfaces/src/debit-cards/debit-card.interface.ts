@@ -53,6 +53,23 @@ export interface IDebitCard {
 }
 
 /**
+ * @interface ICreateDebitCardsPinDto
+ */
+export interface ICreateDebitCardsPinDto {
+  pin:  string
+}
+
+/**
+ * @interface IUpdateDebitCardsPinDto
+ */
+export interface IUpdateDebitCardsPinDto extends ICreateDebitCardsPinDto {}
+
+/**
+ * @interface IDebitCardsPin
+ */
+export interface IDebitCardsPin extends ICreateDebitCardsPinDto {}
+
+/**
  * @interface ICreateDebitCardsBlockDto
  */
 export interface ICreateDebitCardsBlockDto {

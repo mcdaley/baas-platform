@@ -8,6 +8,7 @@ import { configuration, validate  }       from './config/configuration'
 
 import { BaasCustomerServiceController }  from './baas-customer-service.controller'
 import { BaasCustomerServiceService }     from './baas-customer-service.service'
+import { CustomersModule }                from './customers/customers.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
@@ -19,6 +20,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
       load:         [configuration],
       validate,
     }),
+    CustomersModule,
     WinstonLoggerModule,
   ],
   controllers:  [BaasCustomerServiceController],

@@ -70,6 +70,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/baas-debit-card-service/tsconfig.app.json"
       }
+    },
+    "baas-customer-service": {
+      "type": "application",
+      "root": "apps/baas-customer-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/baas-customer-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/baas-customer-service/tsconfig.app.json"
+      }
     }
   }
 }

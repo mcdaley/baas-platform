@@ -67,3 +67,17 @@ export interface IDebitCardsBlock extends ICreateDebitCardsBlockDto {
   block_date:     Date
   is_active:      boolean
 }
+
+/**
+ * @interface IUpdateDebitCardsLimitDto
+ */
+export interface IUpdateDebitCardsLimitDto {
+  atm_daily:          number
+  pos_daily:          number
+  daily_transactions: number
+}
+
+/**
+ * @interface IDebitCardsLimit
+ */
+export interface IDebitCardsLimit extends IUpdateDebitCardsLimitDto {}

@@ -11,7 +11,9 @@ import {
   ICreateDebitCardDto, 
   ICreateDebitCardsBlockDto, 
   IDebitCard,
-  IDebitCardsBlock, 
+  IDebitCardsBlock,
+  IDebitCardsLimit,
+  IUpdateDebitCardsLimitDto, 
 }                               from '@app/baas-interfaces'
 import { 
   NotFoundError,
@@ -275,6 +277,71 @@ export class CoreDebitCardSimulator {
       }
       catch(error) {
         reject(BaaSExceptionFactory.create(error, `Debit Card`)) 
+      }
+    })
+  }
+
+  /**
+   * @method findAllDebitCardsLimits
+   */
+  public findAllDebitCardsLimits(debitCardId: string) : Promise<IDebitCardsLimit> {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        const debitCard       = this.coreBank.getDebitCard(debitCardId)
+        const debitCardLimits = {
+          atm_daily:          debitCard.atm_daily,
+          pos_daily:          debitCard.pos_daily,
+          daily_transactions: debitCard.daily_transactions,
+        }
+        this.logger.log(`Fetched debit card limits= %o`, debitCardLimits)
+
+        resolve(debitCardLimits)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`))
+      }
+    })
+  }
+
+  /**
+   * @method updateDebitCardsLimits
+   */
+  public updateDebitCardsLimits(
+    debitCardId:              string, 
+    updateDebitCardsLimitDto: IUpdateDebitCardsLimitDto) : Promise<IDebitCardsLimit> 
+  {
+    return new Promise( (resolve, reject) => {
+      try {
+        // Debit Card is Not Found
+        if(!this.coreBank.hasDebitCard(debitCardId)) {
+          return reject(this.debitCardNotFound(debitCardId))
+        }
+
+        let debitCard = this.coreBank.getDebitCard(debitCardId)
+        debitCard     = {
+          ...debitCard,
+          ...updateDebitCardsLimitDto,
+        }
+        this.coreBank.setDebitCard(debitCard.id, debitCard)
+
+        // Fetch and return the updated limits
+        const updatedDebitCard = this.coreBank.getDebitCard(debitCardId)
+        const limits           = {
+          atm_daily:          updatedDebitCard.atm_daily,
+          pos_daily:          updatedDebitCard.pos_daily,
+          daily_transactions: updatedDebitCard.daily_transactions,
+        }
+        this.logger.log(`Updated debit card limits= %o`, limits)
+
+        resolve(limits)
+      }
+      catch(error) {
+        reject(BaaSExceptionFactory.create(error, `Debit Card`))
       }
     })
   }

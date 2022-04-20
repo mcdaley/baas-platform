@@ -79,6 +79,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/baas-customer-service/tsconfig.app.json"
       }
+    },
+    "core-bank-simulator": {
+      "type": "application",
+      "root": "apps/core-bank-simulator",
+      "entryFile": "main",
+      "sourceRoot": "apps/core-bank-simulator/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/core-bank-simulator/tsconfig.app.json"
+      }
     }
   }
 }

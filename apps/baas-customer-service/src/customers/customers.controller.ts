@@ -54,12 +54,12 @@ export class CustomersController {
     return this.customersService.findOne(customerId);
   }
 
-  @Put(':customerId')
+  @Patch(':customerId')
   updateV1(
     @Param('customerId', ParseUUIDPipe) customerId: string, @Body() 
     updateCustomerDto: UpdateCustomerDto) 
   {
-    this.logger.log(`PUT /v1/customers/${customerId}, updateCustomerDto= %o`, updateCustomerDto)
+    this.logger.log(`PATCH /v1/customers/${customerId}, updateCustomerDto= %o`, updateCustomerDto)
     return this.customersService.update(customerId, updateCustomerDto);
   }
 

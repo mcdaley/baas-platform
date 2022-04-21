@@ -9,7 +9,10 @@ import {
   BaaSException, 
   BaaSExceptionFactory, 
 }                               from '@app/baas-errors'
-import { ICustomer, IUpdateCustomerDto }            from '@app/baas-interfaces'
+import { 
+  ICustomer, 
+  IUpdateCustomerDto 
+}                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
 
 @Injectable()

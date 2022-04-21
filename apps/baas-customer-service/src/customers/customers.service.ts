@@ -4,26 +4,36 @@
 import { 
   Injectable
 }                               from '@nestjs/common'
+import axios                    from 'axios'
+import { ConfigService }        from '@nestjs/config'
 
 import { CreateCustomerDto }    from './dto/create-customer.dto'
 import { UpdateCustomerDto }    from './dto/update-customer.dto'
         
 import { WinstonLoggerService } from '@app/winston-logger'
+import { BaaSExceptionFactory } from '@app/baas-errors'
 
 @Injectable()
 export class CustomersService {
+  private coreCustomerUrl: string
+
   constructor(
-    private readonly logger       : WinstonLoggerService,
-  ) {}
+    private readonly configService: ConfigService,
+    private readonly logger:        WinstonLoggerService,
+  ) {
+    this.coreCustomerUrl = `${configService.get('bankSimulatorCustomersUrl')}`
+    this.logger.log(`Initialized the Customer Simulator URL= %s`, this.coreCustomerUrl)
+  }
 
   async create(createCustomerDto: CreateCustomerDto) {
     try {
-      //* const customer  = await this.bankCustomer.create(createCustomerDto)
-      const customer = { name: 'Fred' }
-      const result    = {
+      const response      = await axios.post(this.coreCustomerUrl, createCustomerDto)
+      const { customer }  = response.data
+      const result = {
         customer: customer,
       }
       this.logger.log(`Created customer, sending response= %o`, result)
+      
       return result
     }
     catch(error) {
@@ -33,12 +43,13 @@ export class CustomersService {
 
   async findAll() {
     try {
-      //* const customers = await this.bankCustomer.findAll()
-      const customers = [{name: 'Barney'}, {name: 'Fred'}, {name: 'The Great Kazoo'}]
+      const response      = await axios.get(this.coreCustomerUrl)
+      const { customers } = response.data
       const result  = {
         customers: customers,
       }
-      this.logger.log(`Fetched [%d] customers`, customers)
+      this.logger.log(`Fetched [%d] customers`, customers.length)
+
       return result
     }
     catch(error) {
@@ -68,76 +79,56 @@ export class CustomersService {
    */
   async findOne(customerId: string) {
     try {
-      //* const customer  = await this.bankCustomer.findOne(customerId)
-      const customer = [{name: 'Barney'}]
-      const result  = {
+      const url          = `${this.coreCustomerUrl}/${customerId}`
+      const response     = await axios.get(url)
+      const { customer } = response.data
+      const result = {
         customer: customer,
       }
       return result
     }
     catch(error) {
-      throw(error)
+      const wrong = BaaSExceptionFactory.create(error, 'Customer')
+      throw(wrong)
     }
   }
 
   /**
    * @method update
-   * 
-   * PUT method to update all of the fields of a customer except for the customer's 
-   * dob and ssn.
    */
   async update(customerId: string, updateCustomerDto: UpdateCustomerDto) {
     try {
-      //* const customer    = await this.bankCustomer.update(customerId, updateCustomerDto)
-      const customer = { name: 'Wilma' }
-      const result  = {
+      const url          = `${this.coreCustomerUrl}/${customerId}`
+      const response     = await axios.patch(url, updateCustomerDto)
+      const { customer } = response.data
+      
+      const result = {
         customer: customer
       }
       return result
     }
     catch(error) {
-      throw(error)
+      const wrong = BaaSExceptionFactory.create(error, 'Customer')
+      throw(wrong)
     }
   }
-
-  /**
-   * @method updateField
-   * 
-   * Use the Mambu patch operation to update a single customer field.
-   */
-  //* async updateField(customerId: string, patchCustomerDto: PatchOperation) {
-  //*   try {
-  //*     const customer  = await this.mambuCustomer.updateField(customerId, patchCustomerDto)
-  //*     const result  = {
-  //*       customer: customer
-  //*     }
-  //*     this.logger.log(`Patched customer, response= %o`, result)
-  //*     return result
-  //*   }
-  //*   catch(error) {
-  //*     throw(error)
-  //*   }
-  //* }
 
   /**
    * @method remove
    */
   async remove(customerId: string) {
     try {
-      /////////////////////////////////////////////////////////////////////////
-      // TODO: 03/11/2022
-      // Look into how the success message is being built and what the 
-      // expected success message should be according to Rest API guidelines.
-      /////////////////////////////////////////////////////////////////////////
-      //* const result    = await this.bankCustomer.remove(customerId)
-      const response  = {
-        statusCode: 204,
-        customerId: 'xyz',
+      const url = `${this.coreCustomerUrl}/${customerId}`
+      await axios.delete(url)
+      
+      const result = {
+        customer: customerId
       }
-      return response
+      return result
     }
     catch(error) {
-      throw(error)
+      const wrong = BaaSExceptionFactory.create(error, 'Customer')
+      throw(wrong)
     }
   }
 }

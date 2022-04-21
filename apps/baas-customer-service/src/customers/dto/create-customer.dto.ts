@@ -16,6 +16,7 @@ import { Type }               from 'class-transformer'
 
 import { 
   CreateAddressDto,
+  CustomerStatus,
   ICreateCustomerDto,
 }                             from '@app/baas-interfaces'
 

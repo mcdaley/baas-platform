@@ -40,7 +40,8 @@ import {
           case 403:
             baasErrorType = BaaSErrors[resource].forbidden
           case 404:
-            baasErrorType = BaaSErrors[resource].notFound
+            //* baasErrorType = BaaSErrors[resource].notFound
+            baasErrorType = BaaSErrors.customer.notFound
             break
           case 500:
             baasErrorType = BaaSErrors[resource].internalError

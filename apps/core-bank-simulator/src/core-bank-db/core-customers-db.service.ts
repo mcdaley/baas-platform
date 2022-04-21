@@ -41,10 +41,11 @@ export class CoreCustomersDBService {
    * @method add
    */
   public add(customer: ICustomer) : Promise<ICustomer> {
-    this.logger.log(`CustomersDB: add customer= %o`, customer)
     return new Promise( (resolve, reject) => {
       try {
         this.coreCustomers.set(customer.id, customer)
+        this.logger.log(`CustomersDB: added customer= %o`, customer)
+
         resolve(customer)
       }
       catch(error) {

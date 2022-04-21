@@ -10,19 +10,11 @@ import { UpdateCoreCustomerDto }  from './dto/update-core-customer.dto'
 import { CoreCustomer }           from './entities/core-customer.entity'
 
 import { 
-  NotFoundError,
-  BaaSErrors, 
-  BaaSExceptionFactory,
-  BaaSException,
-  BadRequestError, 
-}                                 from '@app/baas-errors'
-import { 
   CustomerStatus, 
   ICustomer, 
 }                                 from '@app/baas-interfaces'
 import { WinstonLoggerService }   from '@app/winston-logger'
 import { CoreCustomersDBService } from '../core-bank-db/core-customers-db.service'
-import { throwIfEmpty } from 'rxjs'
 
 @Injectable()
 export class CoreCustomersService {

@@ -8,7 +8,8 @@ import { configuration, validate }        from './config/core-bank-simulator.con
 import { CoreBankSimulatorController }    from './core-bank-simulator.controller'
 import { CoreBankSimulatorService }       from './core-bank-simulator.service'
 
-import { CoreCustomersModule }            from './core-customers/core-customers.module';
+import { CoreCustomersModule }            from './core-customers/core-customers.module'
+import { CoreAccountsModule }             from './core-accounts/core-accounts.module'
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
 @Module({
@@ -21,6 +22,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     }),
     WinstonLoggerModule,
     CoreCustomersModule,
+    CoreAccountsModule,
   ],
   controllers:  [CoreBankSimulatorController],
   providers:    [CoreBankSimulatorService],

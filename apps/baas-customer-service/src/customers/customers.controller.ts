@@ -63,15 +63,6 @@ export class CustomersController {
     return this.customersService.update(customerId, updateCustomerDto);
   }
 
-  //* @Patch(':customerId')
-  //* updateFieldV1(
-  //*   @Param('customerId', ParseUUIDPipe) customerId: string, @Body() 
-  //*   patchCustomerDto: PatchOperation) 
-  //* {
-  //*   this.logger.log(`PATCH /v1/customers/${customerId}, patchCustomerDto= %o`, patchCustomerDto)
-  //*   return this.customersService.updateField(customerId, patchCustomerDto)
-  //* }
-
   @Delete(':customerId')
   @HttpCode(204)
   removeV1(@Param('customerId', ParseUUIDPipe) customerId: string) {

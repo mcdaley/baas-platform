@@ -1,14 +1,41 @@
 //-----------------------------------------------------------------------------
 // libs/baas-errors/src/baas.errors.ts
 //-----------------------------------------------------------------------------
-import { HttpStatus } from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common'
+
+/**
+ * @interface IBaasErrorsList
+ */
+export interface IBaasErrorsList {
+  [key: string] : IBaaSErrorResource
+}
+
+/**
+ * @interface IBaaSErrorResource
+ */
+ export interface IBaaSErrorResource {
+  [key: string]: IBaaSError
+}
+
+/**
+ * @interface IBaaSError
+ */
+ export interface IBaaSError {
+  httpStatus: number,
+  id?:        string,
+  code:       number,
+  name:       string,
+  path?:      string,
+  cause?:     Error,
+}
+
 
 /**
  * Define all of the account-service errors that can occur in the microservice.
  * For each error define the httpStatus, integer code and name of the error.
  * The errors should be grouped by the resource or a common theme.
  */
-export const BaaSErrors = {
+export const BaaSErrors: IBaasErrorsList = {
   headers: {
     invalidIdempotencyKey: {
       httpStatus: HttpStatus.BAD_REQUEST,

@@ -3,9 +3,11 @@
 //-----------------------------------------------------------------------------
 import { HttpException }  from "@nestjs/common"
 
-import { BaaSErrors }     from "./baas.errors"
+import { 
+  IBaaSError, 
+  BaaSErrors 
+}                         from "./baas.errors"
 import {
-  IBaaSError,
   BaaSAxiosError,
   BaaSException,
   InternalError,

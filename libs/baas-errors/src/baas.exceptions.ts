@@ -6,17 +6,7 @@ import {
 }                       from '@nestjs/common'
 import { v4 as uuidv4 } from 'uuid'
 
-/**
- * @interface IBaaSError
- */
-export interface IBaaSError {
-  httpStatus: number,
-  id?:        string,
-  code:       number,
-  name:       string,
-  path?:      string,
-  cause?:     Error,
-}
+import { IBaaSError }   from './baas.errors'
 
 /**
  * @interface IBaaSErrorOptions

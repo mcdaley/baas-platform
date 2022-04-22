@@ -11,7 +11,7 @@ import { CreateCustomerDto }    from './dto/create-customer.dto'
 import { UpdateCustomerDto }    from './dto/update-customer.dto'
         
 import { WinstonLoggerService } from '@app/winston-logger'
-import { BaaSExceptionFactory } from '@app/baas-errors'
+import { createBaaSException }  from '@app/baas-errors'
 
 @Injectable()
 export class CustomersService {
@@ -37,7 +37,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Customer'))
     }
   }
 
@@ -53,7 +53,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Customer'))
     }
   }
 
@@ -88,9 +88,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      const wrong = BaaSExceptionFactory.create(error, 'Customer')
-      //* const wrong = createBaaSException(error, 'Customer')
-      throw(wrong)
+      throw(createBaaSException(error, 'Customer'))
     }
   }
 
@@ -109,8 +107,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      const wrong = BaaSExceptionFactory.create(error, 'Customer')
-      throw(wrong)
+      throw(createBaaSException(error, 'Customer'))
     }
   }
 
@@ -128,8 +125,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      const wrong = BaaSExceptionFactory.create(error, 'Customer')
-      throw(wrong)
+      throw(createBaaSException(error, 'Customer'))
     }
   }
 }

@@ -10,7 +10,7 @@ import { UpdateAccountDto }     from './dto/update-account.dto'
 
 import { WinstonLoggerService } from '@app/winston-logger'
 import { CoreSimulatorService } from '@app/core-simulator'
-import { BaaSExceptionFactory } from '@app/baas-errors'
+import { createBaaSException }  from '@app/baas-errors'
 
 /**
  * @class AccountsService
@@ -42,7 +42,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(BaaSExceptionFactory.create(error, 'Account'))
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -60,7 +60,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(BaaSExceptionFactory.create(error, 'Account'))
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -79,8 +79,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(BaaSExceptionFactory.create(error, 'Account'))
-      //* throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -91,16 +90,15 @@ export class AccountsService {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}`
       const response    = await axios.patch(url, updateAccountDto)
-      this.logger.log(`[DEBUG] response.data= %o`, response.data)
       const { account } = response.data
-      const result   = {
+      const result = {
         account: account
       }
 
       return result
     }
     catch(error) {
-      throw(BaaSExceptionFactory.create(error, 'Account'))
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -116,7 +114,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(BaaSExceptionFactory.create(error, 'Account'))
+      throw(createBaaSException(error, 'Account'))
     }
   }
 } // end of class AccountsService

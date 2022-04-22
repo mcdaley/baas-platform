@@ -7,7 +7,7 @@ import {
   BaaSErrors, 
   NotFoundError, 
   BaaSException, 
-  BaaSExceptionFactory, 
+  createBaaSException, 
 }                               from '@app/baas-errors'
 import { 
   IAccount, 
@@ -52,7 +52,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }
@@ -67,7 +67,7 @@ export class CoreAccountsDBService {
         resolve(result)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }
@@ -86,7 +86,7 @@ export class CoreAccountsDBService {
         resolve(accountList)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }
@@ -105,7 +105,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }
@@ -134,7 +134,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }
@@ -155,7 +155,7 @@ export class CoreAccountsDBService {
         resolve(true)
       }
       catch(error) {
-        reject(BaaSExceptionFactory.create(error, `Account`))
+        reject(createBaaSException(error, `Account`))
       }
     })
   }

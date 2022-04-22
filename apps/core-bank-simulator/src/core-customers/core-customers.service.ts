@@ -34,10 +34,12 @@ export class CoreCustomersService {
   async create(createCoreCustomerDto: CreateCoreCustomerDto) : Promise<any> {
     try {
       // Create the customer
-      let customer        = plainToClass(CoreCustomer, createCoreCustomerDto)
-      customer.id         = uuidv4()
-      customer.branch_id  = uuidv4()
-      customer.status     = CustomerStatus.Pending
+      let customer: CoreCustomer = {
+        id:         uuidv4(),
+        branch_id:  uuidv4(),
+        status:     CustomerStatus.Pending,
+        ...createCoreCustomerDto,
+      }
 
       // Add the customer to the DB
       const response = await this.customersDB.add(customer)

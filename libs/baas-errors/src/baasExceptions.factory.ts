@@ -5,7 +5,7 @@ import { HttpException }  from "@nestjs/common"
 
 import { 
   IBaaSError, 
-  BaaSErrors 
+  BaaSErrors, 
 }                         from "./baas.errors"
 import {
   BaaSAxiosError,
@@ -17,7 +17,7 @@ import {
  * @class BaasExceptionFactory
  */
  export class BaaSExceptionFactory {
-  static create(error: any, resource: string = `resource`): BaaSException {
+  public static create(error: any, resource: string = `resource`): BaaSException {
     if(error instanceof BaaSException) {
       return error
     }
@@ -42,8 +42,7 @@ import {
           case 403:
             baasErrorType = BaaSErrors[resource].forbidden
           case 404:
-            //* baasErrorType = BaaSErrors[resource].notFound
-            baasErrorType = BaaSErrors.customer.notFound
+            baasErrorType = BaaSErrors[resource].notFound
             break
           case 500:
             baasErrorType = BaaSErrors[resource].internalError

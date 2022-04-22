@@ -93,7 +93,7 @@ export class CoreAccountsService {
         account: account
       }
 
-      return account
+      return result
     }
     catch(error) {
       throw(error)
@@ -120,6 +120,7 @@ export class CoreAccountsService {
     /*
      * Build the account
      */
+    /********** 
     let account = plainToClass(CoreAccount, createCoreAccountDto)
 
     account.id                      = uuidv4()
@@ -136,6 +137,26 @@ export class CoreAccountsService {
     account.posted_balance          = 0
     account.created_at              = new Date()
     account.updated_at              = new Date()
+    **********/
+
+    let account : IAccount = {
+      id:                     uuidv4(),
+      branch_id:              uuidv4(),
+      account_number:         faker.finance.account(),
+      routing_number:         faker.finance.routingNumber(),
+      account_status:         AccountStatus.Open,
+      // currency:               Currency.USD,
+      name_on_account:        'Marv Levy',
+      name:                   `Marv Levy - ${createCoreAccountDto.account_type}`,
+      nickname:               '',
+      multiple_participants:  createCoreAccountDto.participants.length > 1 ? true : false,
+      available_balance:      0,
+      posted_balance:         0,
+      ...createCoreAccountDto,
+      created_at:             new Date(),
+      updated_at:             new Date(),
+
+    }
     
     this.logger.log(`Built account= %o`, account)
 

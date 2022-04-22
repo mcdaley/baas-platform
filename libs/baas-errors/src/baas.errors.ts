@@ -4,9 +4,9 @@
 import { HttpStatus } from '@nestjs/common'
 
 /**
- * @interface IBaasErrorsList
+ * @interface IBaaSErrorsList
  */
-export interface IBaasErrorsList {
+export interface IBaaSErrorsList {
   [key: string] : IBaaSErrorResource
 }
 
@@ -35,7 +35,7 @@ export interface IBaasErrorsList {
  * For each error define the httpStatus, integer code and name of the error.
  * The errors should be grouped by the resource or a common theme.
  */
-export const BaaSErrors: IBaasErrorsList = {
+export const BaaSErrors: IBaaSErrorsList = {
   headers: {
     invalidIdempotencyKey: {
       httpStatus: HttpStatus.BAD_REQUEST,

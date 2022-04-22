@@ -52,12 +52,14 @@ export class AccountsController {
     @Param('accountId', ParseUUIDPipe) accountId: string, 
     @Body() updateAccountDto: UpdateAccountDto) 
   {
+    this.logger.log(`PATCH /v1/accounts/${accountId}, body= %o`, updateAccountDto)
     return this.accountsService.update(accountId, updateAccountDto);
   }
 
   @Delete(':accountId')
   @HttpCode(204)
   removeV1(@Param('accountId', ParseUUIDPipe) accountId: string) {
-    return this.accountsService.remove(accountId);
+    this.logger.log(`DELETE /v1/accounts/${accountId}`)
+    return this.accountsService.remove(accountId)
   }
 }

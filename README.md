@@ -1,73 +1,51 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# BaaS Platform
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The baas-platform repo contains a set of services and libraries to implement a Banking as a Service (BaaS) platform. 
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Architecture
+The BaaS Platform consists of a set of microservices that communicate via http below is a high-level diagram of the application architecture. Currently, the microservices talk to a __core-bank-simulator__ that is used to simulate responses from the Core Banking Engine.
 
-## Description
+![BaaS Architecture Diagram](./doc/img/baas-architecture-v2.drawio.svg)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## BaaS Services
+The BaaS platform is built using microservices to handle all of the core functionality of the platform and provides a flexible architecture that is highly reliable, scaleable, and fast.
 
-## Installation
+### Customer Service
+The baas-customer-service manages a client's customers and provide clients the ability to provide clients access to checking and savings accounts, debit cards, and money movement. The customer service will communicate with a KYC vendor to verify the customer's identity and to meet AML and OFAC regulations.
 
-```bash
-$ npm install
-```
+### Account Service
+The baas-account-service defines all of the Rest APIS for creating and managing checking and savings accounts for a client's registered customers.
 
-## Running the app
+[BaaS Account Service](./apps/baas-account-service/README.md)
 
-```bash
-# development
-$ npm run start
+### Debit Card Service
+The baas-debit-card-service provides clients the ability to offer their customers debit cards with their checking and savings accounts. The baas-debit-card-service will integrate with an issuer processor such as Marqueta or Visa to issue and manage customers debit cards.
 
-# watch mode
-$ npm run start:dev
+### Core Simulator Service
+The core-simulator-service is a simple application that simulates the responses expected from the __Core Banking Engine__ so that I can defined and build out the expected workflows in the BaaS platform for customers, accounts, debit cards, etc.
 
-# production mode
-$ npm run start:prod
-```
+## Planned BaaS Services
+The following services are planned to be built as part of the mvp.
 
-## Test
+### Authentication Service
+### Business Service
+### Move Money Orchestration Service
+### ACH Service
+### Bill Payment Service
+### P2P Service
+### Credit Card Service
+### Loan Service
 
-```bash
-# unit tests
-$ npm run test
+## BaaS Libraries
+The BaaS Libraries implement functionality that is common across the BaaS microservices such as logging and error handling. 
 
-# e2e tests
-$ npm run test:e2e
+### Logging
+The baas-logger library provides a common logging framework for all of the microservices that can be quickly configured for each microservice.
 
-# test coverage
-$ npm run test:cov
-```
+### BaaS Errors
+The baas-errors library provides a common set of exceptions for all of the microservices and provides a way to quickly add and update the exception hierarchy.
 
-## Support
+### BaaS Interfaces
+The baas-interface defines all of the interfaces for the Rest APIs and the request and response objects. Having common interfaces makes it easy to define API requests and responses for inter-microservice API calls. For example, when the baas-account-service calls the baas-customer-service and knows the response will be in the format of the __Customer Interface__.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

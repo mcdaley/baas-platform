@@ -2,6 +2,11 @@
 // apps/core-bank-simulator/src/core-bank-db/core-accounts-db.service.ts
 //-----------------------------------------------------------------------------
 import { Injectable }           from '@nestjs/common'
+import { v4 as uuidv4 }         from 'uuid'
+
+import { 
+  CreateCoreAccountsBlockDto 
+}                               from '../core-accounts-blocks/dto/create-core-accounts-block.dto'
 
 import { 
   BaaSErrors, 
@@ -13,7 +18,10 @@ import {
   IAccount, 
   IUpdateAccountDto,
   ICreateParticipantDto,
-  IParticipant, 
+  IParticipant,
+  IAccountBlock,
+  AccountBlockStatus,
+  AccountStatus, 
 }                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -289,6 +297,113 @@ export class CoreAccountsDBService {
       }
       catch(error) {
         reject(createBaaSException(error, `Account Participant`))
+      }
+    })
+  }
+
+  /**
+   * @method createCoreAccountsBlock
+   */
+   createCoreAccountsBlock(
+    accountId:              string, 
+    createAccountBlockDto:  CreateCoreAccountsBlockDto) : Promise<IAccountBlock[]> 
+  {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreAccounts.get(accountId)
+        let blocks  = account.hasOwnProperty('blocks') ? account.blocks : []
+        let block   = {
+          id:           uuidv4(),
+          block_status: AccountBlockStatus.Active,
+          ...createAccountBlockDto
+        }
+        blocks.unshift(block)
+
+        account.blocks          = blocks
+        account.account_status  = AccountStatus.Blocked
+        this.coreAccounts.set(account.id, account)
+
+        resolve(account.blocks)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account Blocks`))
+      }
+    })
+  }
+
+  /**
+   * @method findAllCoreAccountsBlocks
+   */
+   findAllCoreAccountsBlocks(accountId: string): Promise<IAccountBlock[]> {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreAccounts.get(accountId)
+        let blocks  = account.hasOwnProperty('blocks') ? account.blocks : []
+
+        resolve(blocks)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account Blocks`))
+      }
+    })
+  }
+
+  /**
+   * @method removeCoreAccountsBlock
+   */
+   removeCoreAccountsBlock(
+    accountId:      string, 
+    accountBlockId: string): Promise<IAccountBlock[]> 
+  {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreAccounts.get(accountId)
+        
+        // Return error if account is not blocked
+        if(!account.hasOwnProperty('blocks')) {
+          this.logger.error(`Account w/ id=${accountId} is not blocked`)
+          return reject(
+            new NotFoundError(
+              BaaSErrors.account.accountBlockNotFound, 
+              `Failed to cancel account block, account w/ id=${accountId} is not blocked`
+            )
+          )
+        }
+
+        let index = account.blocks.findIndex( block => block.id === accountBlockId)
+        if(index < 0) {
+          this.logger.error(
+            `Account Block w/ id=[${accountBlockId}] is Not Found for Account w/ id=${accountId}`
+          )
+          return reject(
+            new NotFoundError(
+              BaaSErrors.account.accountBlockNotFound, 
+              `Failed to cancel account block, account w/ id=${accountId} is not found`
+            )
+          )
+        }
+
+        // Unblock the account
+        account.blocks[index].block_status  = AccountBlockStatus.Canceled
+        account.account_status              = AccountStatus.Open
+        this.coreAccounts.set(account.id, account)
+
+        resolve(account.blocks)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account Block`))
       }
     })
   }

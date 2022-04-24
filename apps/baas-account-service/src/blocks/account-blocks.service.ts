@@ -2,37 +2,48 @@
 // apps/baas-account-service/src/blocks/account-blocks.service.ts
 //-----------------------------------------------------------------------------
 import { Injectable }             from '@nestjs/common'
+import { ConfigService }          from '@nestjs/config'
+import axios                      from 'axios'
 
 import { CreateAccountBlockDto }  from './dto/create-account-block.dto'
 
-import { CoreSimulatorService }   from '@app/core-simulator'
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { createBaaSException }    from '@app/baas-errors'
 
 /**
  * @class AccountBlocksService
  */
 @Injectable()
 export class AccountBlocksService {
+  private coreAccountsUrl: string
+
+  /**
+   * @constructor
+   */
   constructor(
+    private readonly configService: ConfigService,
     private readonly logger:        WinstonLoggerService,
-    private readonly coreService:   CoreSimulatorService,
-  ) {}
+  ) {
+    this.coreAccountsUrl = configService.get('bankSimulatorAccountsUrl')
+  }
 
   /**
    * @method create
    */
   async create(accountId: string, createAccountBlockDto: CreateAccountBlockDto) {
-    this.logger.log(`Block account id=[${accountId}] with block= %o`, createAccountBlockDto)
     try {
-      const blocks = await this.coreService.createAccountBlock(accountId, createAccountBlockDto)
+      const url         = `${this.coreAccountsUrl}/${accountId}/core-blocks`
+      const response    = await axios.post(url, createAccountBlockDto)
+      const { blocks }  = response.data
       const result = {
         blocks: blocks,
       }
+      this.logger.log(`Blocked account id=[${accountId}] with block= %o`, createAccountBlockDto)
 
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -40,9 +51,10 @@ export class AccountBlocksService {
    * @method findAll
    */
   async findAll(accountId: string) {
-    this.logger.log(`Get account blocks for account id=[${accountId}]`)
     try {
-      const blocks = await this.coreService.findAllAccountBlocks(accountId)
+      const url         = `${this.coreAccountsUrl}/${accountId}/core-blocks`
+      const response    = await axios.get(url)
+      const { blocks }  = response.data
       const result = {
         blocks: blocks,
       }
@@ -50,7 +62,7 @@ export class AccountBlocksService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Account'))
     }
   }
 
@@ -58,17 +70,16 @@ export class AccountBlocksService {
    * @method remove
    */
   async remove(accountId: string, accountBlockId: string) {
-    this.logger.log(`Remove account block id=[${accountBlockId}] for account, id=[${accountId}]`)
     try {
-      const blocks = await this.coreService.removeAccountBlock(accountId, accountBlockId)
-      const result = {
-        blocks: blocks,
-      }
-
+      const url       = `${this.coreAccountsUrl}/${accountId}/core-blocks/${accountBlockId}`
+      const response  = await axios.delete(url)
+      const result    = response.data
+      this.logger.log(`Removed account block id=[${accountBlockId}] for account, id=[${accountId}]`)
+      
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Account'))
     }
   }
 } // end of class AccountBlocksService

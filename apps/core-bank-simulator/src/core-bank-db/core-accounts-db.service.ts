@@ -11,7 +11,9 @@ import {
 }                               from '@app/baas-errors'
 import { 
   IAccount, 
-  IUpdateAccountDto 
+  IUpdateAccountDto,
+  ICreateParticipantDto,
+  IParticipant, 
 }                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -159,6 +161,138 @@ export class CoreAccountsDBService {
       }
     })
   }
+
+  /**
+   * @method createCoreParticipant
+   */
+   public createCoreParticipant(
+    accountId:            string, 
+    createParticipantDto: ICreateParticipantDto) : Promise<IParticipant[]> 
+  {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+        this.logger.log(`Add participant for account id=[${accountId}]`)
+
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: 04/11/2022
+        // I'm NOT creating a participant Id and I'm just using the 
+        // participant_customer_id as the unique identifier.
+        ///////////////////////////////////////////////////////////////////////
+        let account     : IAccount     = this.coreAccounts.get(accountId)
+        let participant : IParticipant = {
+          //* id:           uuid(),
+          ...createParticipantDto
+        }
+
+        // Add the participant to the account
+        if(!account.hasOwnProperty('participants')) {
+          // Create participants array if account does not have any particpants
+          account = {
+            ...account,
+            multiple_participants:  false,
+            participants:           [participant]
+          }
+        }
+        else {
+          // Insert participant at the beginning of the array
+          account.participants.unshift(participant)
+          account.multiple_participants = true
+        }
+        this.coreAccounts.set(account.id, account)
+
+        this.logger.log(`Added participant for card id=[${accountId}], participant=[${participant}]`)
+        resolve(account.participants)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account Participants`))
+      }
+    })
+  }
+
+  /**
+   * @method findAllCoreParticipants
+   */
+   findAllCoreParticipants(accountId: string): Promise<IParticipant[]> {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: 04/13/2022
+        // The participants array should always have 1 value in it. Logic
+        // will depend on the core bank engine.
+        ///////////////////////////////////////////////////////////////////////
+
+        let account       = this.coreAccounts.get(accountId)
+        let participants  = account.hasOwnProperty('participants') ? account.participants : []
+        account.multiple_participants = participants.length <= 1 ? false : true
+        
+        this.logger.log(`Fetched participants for card id=[${accountId}], participants= %o`, participants)
+        resolve(participants)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account`))
+      }
+    })
+  }
+
+  /**
+   * @method removeCoreParticipants
+   */
+   removeCoreParticipants(
+    accountId:             string, 
+    participantConsumerId: string) : Promise<IParticipant[]> 
+  {
+    return new Promise( async (resolve, reject) => {
+      try {
+        if(!await this.has(accountId)) {
+          return reject(this.accountNotFound(accountId))
+        }
+
+        let account = this.coreAccounts.get(accountId)
+        let index   = account.participants.findIndex( (participant) => {
+          return participant.participant_customer_id === participantConsumerId
+        })
+
+        // Participant not found
+        if(index < 0) {
+          let message = 
+            `Failed to remove participants, participant consumer id=[${participantConsumerId}]` +
+            `Not Found for account w/ id=${accountId}`
+          this.logger.error(message)
+          
+          return reject(
+            new NotFoundError(BaaSErrors.account.participantNotFound, message)
+          )
+        }
+
+        ///////////////////////////////////////////////////////////////////////
+        // NOTE: 4/12/2022
+        // CAN I REMOVE A PARTIPANT FROM AN ACCOUNT IF THE ACCOUNT HAS ONLY
+        // ONE PARTICIPANT? THIS SEEMS LIKE IT SHOULD THROW AN EXCEPTION.
+        //
+        // ALSO IT SHOULD BE REQUIRED THAT AN ACCOUNT HAS ONE PARTICIPANT
+        // THAT IS THE ACCOUNT "HOLDER"
+        ///////////////////////////////////////////////////////////////////////
+
+        // Remove particpant
+        account.participants.splice(index, 1)
+        account.multiple_participants = account.participants.length <= 1 ? false : true
+        this.coreAccounts.set(account.id, account)
+
+        resolve(account.participants)
+      }
+      catch(error) {
+        reject(createBaaSException(error, `Account Participant`))
+      }
+    })
+  }
+
 
   /**
    * @method accountNotFound

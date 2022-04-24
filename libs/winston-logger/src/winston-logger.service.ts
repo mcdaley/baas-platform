@@ -25,11 +25,14 @@ export class WinstonLoggerService implements LoggerService {
   private options:  any
 
   constructor(private readonly configService: ConfigService) {
-    // Define logging options.
+    // Define log filename
+    const logFilename: string = `${configService.get('appRoot')}/logs/${configService.get('appName')}.${configService.get('NODE_ENV')}.log`
+    
+    // Set loggin options
     this.options = {
       file: {
         level:            configService.get('logLevel'),
-        filename:         `${configService.get('appRoot')}/logs/${configService.get('NODE_ENV')}.log`,
+        filename:         logFilename,
         handleExceptions: true,
         json:             true,
         maxsize:          5242880,      // 5MB

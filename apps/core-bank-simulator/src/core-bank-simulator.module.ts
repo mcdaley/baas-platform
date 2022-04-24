@@ -10,6 +10,7 @@ import { CoreBankSimulatorService }       from './core-bank-simulator.service'
 
 import { CoreCustomersModule }            from './core-customers/core-customers.module'
 import { CoreAccountsModule }             from './core-accounts/core-accounts.module'
+import { CoreParticipantsModule }         from './core-participants/core-participants.module'
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
 @Module({
@@ -23,6 +24,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     WinstonLoggerModule,
     CoreCustomersModule,
     CoreAccountsModule,
+    CoreParticipantsModule,
   ],
   controllers:  [CoreBankSimulatorController],
   providers:    [CoreBankSimulatorService],

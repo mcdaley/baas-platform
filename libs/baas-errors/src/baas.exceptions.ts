@@ -78,6 +78,12 @@ export class NotFoundError extends BaaSException {
   }
 }
 
+export class InactiveCustomerError extends BaaSException {
+  constructor(baasError: IBaaSError, message: string) {
+    super(baasError, message)
+  }
+}
+
 export class BaaSAxiosError extends BaaSException {
   constructor(baasError: IBaaSError, message: string) {
     super(baasError, message)

@@ -25,11 +25,19 @@ import {
 export class CreateCoreAccountDto implements ICreateAccountDto {
   @IsNotEmpty()
   @IsEnum(AccountType)
-  account_type: AccountType
+  account_type:     AccountType
+
+  @IsNotEmpty()
+  @IsString()
+  name_on_account:  string
+
+  @IsNotEmpty()
+  @IsString()
+  name:             string
 
   @IsOptional()
   @IsString()
-  name:         string
+  nickname?:        string
 
   @IsNotEmpty()
   @IsArray()

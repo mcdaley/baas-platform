@@ -83,6 +83,11 @@ export const BaaSErrors: IBaaSErrorsList = {
     },
   },
   account: {
+    badRequest: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       3001,
+      name:       `Bad Request`,
+    },
     unauthorized: {
       httpStatus: HttpStatus.UNAUTHORIZED,
       code:       3002,
@@ -108,9 +113,14 @@ export const BaaSErrors: IBaaSErrorsList = {
       code:       3006,
       name:       `Account Block Not Found`,
     },
+    inactiveCustomer: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       3007,
+      name:       `Customer is Not Active`,
+    },
     internalError: {
       httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
-      code:       3007,
+      code:       3010,
       name:       `Internal Account Error`,
     },
     unknownError: {

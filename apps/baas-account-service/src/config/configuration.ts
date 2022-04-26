@@ -56,6 +56,9 @@ class EnvironmentVariables {
 
   @IsString()
   BANK_SIMULATOR_ACCOUNTS_URL: string
+
+  @IsString()
+  CUSTOMER_URL: string
 }
 
 /**
@@ -102,5 +105,6 @@ export const configuration = () => ({
     secret:     process.env.ACCOUNT_JWT_SECRET,
     expiresIn:  process.env.ACCOUNT_JWT_EXPIRES_IN,
   },
-  bankSimulatorAccountsUrl: process.env.BANK_SIMULATOR_ACCOUNTS_URL
+  bankSimulatorAccountsUrl:   process.env.BANK_SIMULATOR_ACCOUNTS_URL,
+  customersUrl:               process.env.CUSTOMER_URL
 })

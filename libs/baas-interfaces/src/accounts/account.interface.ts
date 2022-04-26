@@ -13,9 +13,11 @@ import {
  * @interface ICreateAccountDto
  */
 export interface ICreateAccountDto {
-  account_type:   AccountType,
-  name?:          string,
-  participants:   IParticipant[],
+  account_type:             AccountType,
+  name_on_account?:         string,
+  name?:                    string,
+  nickname?:                string,
+  participants:             IParticipant[],
 }
 
 /**

@@ -1,8 +1,8 @@
 # BaaS Account Microservice
 
 ## Overiew
-The BaaS Account Microservice provides a set of Rest APIs to create,
-manage, and delete checking and savings accounts. 
+The BaaS Account Microservice provides a set of Rest APIs to create
+manage checking and savings accounts. 
 
 The Account Microservice does not connect to a core banking engine,
 but is designed to be a framework that can plug into a core banking
@@ -16,18 +16,17 @@ For more details on the Baas Account Microservice, see the
 [BaaS Account Service Developer Guide](./doc/baas-account-service-developer-guide.md)
 
 ## Running
-Before running the baas-account-simulator, the core-bank-simulator needs
-to be running to handle the requests from the baas-account-simulator. To
-start:
+Before running the baas-account-simulator, the __baas-customer-microservice__ and the __core-bank-simulator__ needs to be running to handle the requests from the __baas-account-simulator__. To start the services:
 
 ```bash
 $ cd baas-platform
 $ npm run start:dev core-bank-simulator
+$ npm run start:dev baas-customer-service
 $ npm run start:dev baas-account-simulator
 ```
 
 ## Rest APIs
-The account microservice implements the following CRUD API endpoints.
+The account microservice implements the following CRUD Rest API endpoints.
 
 ### POST /v1/accounts
 Creates a new Account with a status of __open__ for a customer with status

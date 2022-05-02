@@ -11,8 +11,8 @@ import {
 }                                   from 'class-validator'
 import { Type }                     from 'class-transformer'
 
-import { CreateCoreParticipantDto } from './create-core-participant.dto'
-import { CoreParticipant }          from '../entities/core-participant.entity'
+import { CreateCoreParticipantDto } from '../../participants/dto/create-core-participant.dto'
+import { CoreParticipant }          from '../../participants/entities/core-participant.entity'
 
 import { 
   AccountType,

@@ -1,6 +1,6 @@
-//-----------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-customers/entities/core-customer.entity.ts
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+// apps/core-bank-simulator/src/core-customers/customers/entities/core-customer.entity.ts
+//----------------------------------------------------------------------------------------
 import { 
   CustomerStatus,
   Address,

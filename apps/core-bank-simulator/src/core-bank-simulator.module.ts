@@ -8,10 +8,10 @@ import { configuration, validate }        from './config/core-bank-simulator.con
 import { CoreBankSimulatorController }    from './core-bank-simulator.controller'
 import { CoreBankSimulatorService }       from './core-bank-simulator.service'
 
-import { CoreCustomersModule }            from './core-customers/core-customers.module'
-import { CoreAccountsModule }             from './core-accounts/core-accounts.module'
-import { CoreParticipantsModule }         from './core-participants/core-participants.module'
-import { CoreAccountsBlocksModule }       from './core-accounts-blocks/core-accounts-blocks.module'
+import { CoreCustomersModule }            from './core-customers/customers/core-customers.module'
+import { CoreAccountsModule }             from './core-accounts/accounts/core-accounts.module'
+import { CoreParticipantsModule }         from './core-accounts/participants/core-participants.module'
+import { CoreAccountsBlocksModule }       from './core-accounts/blocks/core-accounts-blocks.module'
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
 @Module({

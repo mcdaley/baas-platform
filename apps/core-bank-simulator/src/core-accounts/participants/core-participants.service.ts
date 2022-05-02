@@ -1,10 +1,10 @@
-//-----------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-participants/core-participants.service.ts
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+// apps/core-bank-simulator/src/core-accounts/participants/core-participants.service.ts
+//----------------------------------------------------------------------------------------
 import { Injectable }                   from '@nestjs/common'
 
 import { CreateCoreParticipantDto }     from './dto/create-core-participant.dto'
-import { CoreAccountsDBService }        from '../core-bank-db/core-accounts-db.service'
+import { CoreAccountsDBService }        from '../../core-bank-db/core-accounts-db.service'
 
 import { WinstonLoggerService }         from '@app/winston-logger'
 

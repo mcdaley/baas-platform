@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-account-blocks/core-accounts-blocks.controller.ts
+// apps/core-bank-simulator/src/core-accounts/blocks/core-accounts-blocks.controller.ts
 //---------------------------------------------------------------------------------------
 import { 
   Body,
@@ -15,8 +15,8 @@ import {
 import { CoreAccountsBlocksService }    from './core-accounts-blocks.service'
 import { CreateCoreAccountsBlockDto }   from './dto/create-core-accounts-block.dto'
 
-import { IdempotencyKey }         from '@app/baas-errors'
-import { WinstonLoggerService }   from '@app/winston-logger'
+import { IdempotencyKey }               from '@app/baas-errors'
+import { WinstonLoggerService }         from '@app/winston-logger'
 
 /**
  * @class CoreAccountsBlocksController

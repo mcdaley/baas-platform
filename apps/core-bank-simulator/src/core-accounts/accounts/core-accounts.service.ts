@@ -1,21 +1,24 @@
 //-----------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-accounts/core-accounts.service.ts
+// apps/core-bank-simulator/src/core-accounts/accounts/core-accounts.service.ts
 //-----------------------------------------------------------------------------
 import { Injectable }             from '@nestjs/common'
-import { plainToClass }           from 'class-transformer'
 import { v4 as uuidv4 }           from 'uuid'
 import { faker }                  from '@faker-js/faker'
 
 import { CreateCoreAccountDto }   from './dto/create-core-account.dto'
-import { UpdateCoreAccountDto }   from './dto/update-core-account.dto'
-import { CoreAccount }            from './entities/core-account.entity'
 
-import { CoreAccountsDBService }  from '../core-bank-db/core-accounts-db.service'
+import { 
+  AccountStatus, 
+  IAccount, 
+  ICreateAccountDto, 
+  IUpdateAccountDto 
+}                                 from '@app/baas-interfaces'
+import { CoreAccountsDBService }  from '../../core-bank-db/core-accounts-db.service'
 import { WinstonLoggerService }   from '@app/winston-logger'
-import axios from 'axios'
-import { BaaSExceptionFactory } from '@app/baas-errors'
-import { AccountStatus, IAccount, ICreateAccountDto, IUpdateAccountDto } from '@app/baas-interfaces'
 
+/**
+ * @class CoreAccountsService
+ */
 @Injectable()
 export class CoreAccountsService {
   /**
@@ -120,26 +123,7 @@ export class CoreAccountsService {
     /*
      * Build the account
      */
-    /********** 
-    let account = plainToClass(CoreAccount, createCoreAccountDto)
-
-    account.id                      = uuidv4()
-    account.branch_id               = uuidv4()
-    account.account_number          = faker.finance.account()
-    account.routing_number          = faker.finance.routingNumber()
-    account.account_status          = AccountStatus.Open
-    //* account.currency                = Currency.USD
-    account.name_on_account         = 'Marv Levy'
-    account.name                    = `Marv Levy - ${createCoreAccountDto.account_type}`
-    account.nickname                = ''
-    account.multiple_participants   = createCoreAccountDto.participants.length > 1 ? true : false
-    account.available_balance       = 0
-    account.posted_balance          = 0
-    account.created_at              = new Date()
-    account.updated_at              = new Date()
-    **********/
-
-    let account : IAccount = {
+    let account = {
       id:                     uuidv4(),
       branch_id:              uuidv4(),
       account_number:         faker.finance.account(),
@@ -152,12 +136,11 @@ export class CoreAccountsService {
       posted_balance:         0,
       created_at:             new Date(),
       updated_at:             new Date(),
-
     }
     
     this.logger.log(`Built account= %o`, account)
 
-    return account
+    return <IAccount>account
   }
 
 } // end of class CoreAccountsService

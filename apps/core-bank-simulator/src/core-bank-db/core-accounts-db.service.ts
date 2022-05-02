@@ -6,7 +6,7 @@ import { v4 as uuidv4 }         from 'uuid'
 
 import { 
   CreateCoreAccountsBlockDto 
-}                               from '../core-accounts-blocks/dto/create-core-accounts-block.dto'
+}                               from '../core-accounts/blocks/dto/create-core-accounts-block.dto'
 
 import { 
   BaaSErrors, 

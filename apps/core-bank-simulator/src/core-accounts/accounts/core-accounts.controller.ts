@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// apps/baas-account-service/src/accounts/accounts.controller.ts
+// apps/baas-account-service/src/core-accounts/accounts/accounts.controller.ts
 //-----------------------------------------------------------------------------
 import { 
   Controller, 

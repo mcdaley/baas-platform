@@ -1,20 +1,20 @@
-//-----------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-customers/core-customer.service.ts
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
+// apps/core-bank-simulator/src/core-customers/customers/core-customer.service.ts
+//---------------------------------------------------------------------------------
 import { Injectable }             from '@nestjs/common'
 import { plainToClass }           from 'class-transformer'
 import { v4 as uuidv4 }           from 'uuid'
 
-import { CreateCoreCustomerDto }  from './dto/create-core-customer.dto'
-import { UpdateCoreCustomerDto }  from './dto/update-core-customer.dto'
-import { CoreCustomer }           from './entities/core-customer.entity'
+import { CreateCoreCustomerDto }      from './dto/create-core-customer.dto'
+import { UpdateCoreCustomerDto }      from './dto/update-core-customer.dto'
+import { CoreCustomer }               from './entities/core-customer.entity'
 
 import { 
   CustomerStatus, 
   ICustomer, 
 }                                 from '@app/baas-interfaces'
 import { WinstonLoggerService }   from '@app/winston-logger'
-import { CoreCustomersDBService } from '../core-bank-db/core-customers-db.service'
+import { CoreCustomersDBService } from '../../core-bank-db/core-customers-db.service'
 
 @Injectable()
 export class CoreCustomersService {

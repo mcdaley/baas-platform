@@ -1,10 +1,10 @@
-//-----------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-account-blocks/core-accounts-blocks.service.ts
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+// apps/core-bank-simulator/src/core-accounts/blocks/core-accounts-blocks.service.ts
+//---------------------------------------------------------------------------------------
 import { Injectable }                   from '@nestjs/common'
 
 import { CreateCoreAccountsBlockDto }   from './dto/create-core-accounts-block.dto'
-import { CoreAccountsDBService }        from '../core-bank-db/core-accounts-db.service'
+import { CoreAccountsDBService }        from '../../core-bank-db/core-accounts-db.service'
 
 import { CoreSimulatorService }         from '@app/core-simulator'
 import { WinstonLoggerService }         from '@app/winston-logger'

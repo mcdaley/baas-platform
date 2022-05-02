@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------
-// apps/core-bank-simulator/src/core-participants/core-participants.controller.ts
+// apps/core-bank-simulator/src/core-accounts/participants/core-participants.controller.ts
 //----------------------------------------------------------------------------------
 import { 
   Body,

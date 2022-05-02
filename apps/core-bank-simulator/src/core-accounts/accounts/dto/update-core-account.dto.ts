@@ -8,12 +8,12 @@ import {
   IsString, 
   MaxLength, 
   ValidateNested 
-}                               from 'class-validator'
-import { Type }                 from 'class-transformer'
-import { PartialType }          from '@nestjs/mapped-types'
+}                                   from 'class-validator'
+import { Type }                     from 'class-transformer'
+import { PartialType }              from '@nestjs/mapped-types'
 
-import { CreateCoreParticipantDto } from './create-core-participant.dto'
-import { CoreParticipant }          from '../entities/core-participant.entity'
+import { CreateCoreParticipantDto } from '../../participants/dto/create-core-participant.dto'
+import { CoreParticipant }          from '../../participants/entities/core-participant.entity'
 
 import { 
   AccountStatus, 

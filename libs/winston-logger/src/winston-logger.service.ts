@@ -71,11 +71,15 @@ export class WinstonLoggerService implements LoggerService {
    * @method initLogger
    */
   private initLogger() {
+    let outputs : any[] = [new transports.File(this.options.file)]
+    
+    // Log to console in development
+    if(this.configService.get('NODE_ENV') === 'development') { 
+      outputs.push(new transports.Console(this.options.console))
+    }
+
     return createLogger({
-      transports: [
-        new transports.File(this.options.file),
-        new transports.Console(this.options.console)
-      ],
+      transports: outputs
     })
   }
 

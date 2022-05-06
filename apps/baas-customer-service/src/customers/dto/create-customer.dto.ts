@@ -11,6 +11,7 @@ import {
   Matches,
   MaxLength,
   ValidateNested,
+  IsUUID,
 }                             from 'class-validator'
 import { Type }               from 'class-transformer'
 
@@ -32,7 +33,7 @@ export class CreateCustomerDto implements ICreateCustomerDto {
   @IsOptional()
   @IsString()
   @MaxLength(128, {message: 'Middle name is too long'})
-  middle_name:  string
+  middle_name?: string
 
   @IsNotEmpty()
   @IsString()
@@ -42,7 +43,7 @@ export class CreateCustomerDto implements ICreateCustomerDto {
   @IsOptional()
   @IsString()
   @MaxLength(24)
-  suffix:       string
+  suffix?:      string
 
   @IsNotEmpty()
   @IsEmail()
@@ -58,7 +59,7 @@ export class CreateCustomerDto implements ICreateCustomerDto {
 
   @IsOptional()
   @IsJSON()
-  metatdata:    string
+  metatdata?:   string
   
   @IsNotEmptyObject()
   @ValidateNested()
@@ -68,5 +69,9 @@ export class CreateCustomerDto implements ICreateCustomerDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => CreateAddressDto)
-  mailing_address:  CreateAddressDto
+  mailing_address?: CreateAddressDto
+
+  @IsNotEmpty()
+  @IsUUID()
+  branch_id:    string
 }

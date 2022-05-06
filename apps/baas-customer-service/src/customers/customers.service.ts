@@ -12,6 +12,7 @@ import { UpdateCustomerDto }    from './dto/update-customer.dto'
         
 import { WinstonLoggerService } from '@app/winston-logger'
 import { createBaaSException }  from '@app/baas-errors'
+import { ICustomerListResponse, ICustomerResponse } from '@app/baas-interfaces'
 
 @Injectable()
 export class CustomersService {
@@ -25,7 +26,7 @@ export class CustomersService {
     this.logger.log(`Initialized the Customer Simulator URL= %s`, this.coreCustomerUrl)
   }
 
-  async create(createCustomerDto: CreateCustomerDto) {
+  async create(createCustomerDto: CreateCustomerDto) : Promise<ICustomerResponse> {
     try {
       const response      = await axios.post(this.coreCustomerUrl, createCustomerDto)
       const { customer }  = response.data
@@ -37,11 +38,12 @@ export class CustomersService {
       return result
     }
     catch(error) {
+      this.logger.error(`Error= %o`, error)
       throw(createBaaSException(error, 'Customer'))
     }
   }
 
-  async findAll() {
+  async findAll() : Promise<ICustomerListResponse> {
     try {
       const response      = await axios.get(this.coreCustomerUrl)
       const { customers } = response.data
@@ -82,6 +84,7 @@ export class CustomersService {
       const url          = `${this.coreCustomerUrl}/${customerId}`
       const response     = await axios.get(url)
       const { customer } = response.data
+      this.logger.log(`[DEBUG] Fetched response= %o`, response.data)
       const result = {
         customer: customer,
       }

@@ -88,6 +88,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/core-bank-simulator/tsconfig.app.json"
       }
+    },
+    "baas-utils": {
+      "type": "library",
+      "root": "libs/baas-utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-utils/tsconfig.lib.json"
+      }
     }
   }
 }

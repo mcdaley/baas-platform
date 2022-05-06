@@ -77,6 +77,9 @@
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/.jest/set-env-vars.ts"
+    ],
     "roots": [
       "<rootDir>/apps/",
       "<rootDir>/libs/"
@@ -85,7 +88,8 @@
       "^@app/winston-logger(|/.*)$": "<rootDir>/libs/winston-logger/src/$1",
       "^@app/baas-errors(|/.*)$": "<rootDir>/libs/baas-errors/src/$1",
       "^@app/core-simulator(|/.*)$": "<rootDir>/libs/core-simulator/src/$1",
-      "^@app/baas-interfaces(|/.*)$": "<rootDir>/libs/baas-interfaces/src/$1"
+      "^@app/baas-interfaces(|/.*)$": "<rootDir>/libs/baas-interfaces/src/$1",
+      "^@app/baas-utils(|/.*)$": "<rootDir>/libs/baas-utils/src/$1"
     }
   }
 }

@@ -31,7 +31,7 @@ export class CreateAddressDto implements ICreateAddressDto {
   @IsOptional()
   @IsString()
   @MaxLength(128)
-  street_line_2:  string      // maxLength 128
+  street_line_2?: string      // maxLength 128
   
   @IsNotEmpty()
   @IsString()

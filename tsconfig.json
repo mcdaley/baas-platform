@@ -41,6 +41,12 @@
       ],
       "@app/baas-interfaces/*": [
         "libs/baas-interfaces/src/*"
+      ],
+      "@app/baas-utils": [
+        "libs/baas-utils/src"
+      ],
+      "@app/baas-utils/*": [
+        "libs/baas-utils/src/*"
       ]
     }
   }

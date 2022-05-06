@@ -9,7 +9,7 @@ import { States }         from './address.enum'
 export interface ICreateAddressDto {
   name:             string
   street_line_1:    string
-  street_line_2:    string
+  street_line_2?:   string
   city:             string
   state:            States
   postal_code:      string      

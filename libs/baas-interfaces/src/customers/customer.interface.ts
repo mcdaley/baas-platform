@@ -19,6 +19,7 @@ export interface ICreateCustomerDto {
   physical_address:   ICreateAddressDto
   mailing_address?:   ICreateAddressDto
   status?:            CustomerStatus
+  branch_id:          string
 }
 
 /**
@@ -45,4 +46,18 @@ export interface ICustomer extends ICreateCustomerDto {
   id:                 string
   physical_address:   IAddress
   mailing_address?:   IAddress
+}
+
+/**
+ * @interface ICustomerResponse
+ */
+export interface ICustomerResponse {
+  customer: ICustomer,
+}
+
+/**
+ * @interface ICustomerListResponse
+ */
+export interface ICustomerListResponse {
+  customers: ICustomer[],
 }

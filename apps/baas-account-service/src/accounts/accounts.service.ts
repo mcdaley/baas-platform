@@ -12,7 +12,7 @@ import { CustomersService }     from '../customers/customers.service'
 import { WinstonLoggerService } from '@app/winston-logger'
 import { CoreSimulatorService } from '@app/core-simulator'
 import { createBaaSException }  from '@app/baas-errors'
-import { ICustomer } from '@app/baas-interfaces'
+import { IAccountListResponse, IAccountResponse, ICustomer } from '@app/baas-interfaces'
 
 /**
  * @class AccountsService
@@ -34,14 +34,13 @@ export class AccountsService {
   /**
    * @method create
    */
-  async create(createAccountDto: CreateAccountDto) {
+  async create(createAccountDto: CreateAccountDto) : Promise<IAccountResponse> {
     try {
       // Validate the account participants and find account holder/owner
       const participantCustomers = await this.customersService.verifyCustomers(createAccountDto.participants)
       const accountHolder        = await this.customersService.findAccountHolder(
         createAccountDto, participantCustomers
       )
-      //* this.logger.log(`[DEBUG] The account holder= %o`, accountHolder)
 
       createAccountDto  = this.fillInCreateAccountDtoFields(createAccountDto, accountHolder)
       const response    = await axios.post(this.coreAccountsUrl, createAccountDto)
@@ -60,7 +59,7 @@ export class AccountsService {
   /**
    * @method findAll
    */
-  async findAll() {
+  async findAll() : Promise<IAccountListResponse> {
     try {
       const response      = await axios.get(this.coreAccountsUrl)
       const { accounts }  = response.data
@@ -78,7 +77,7 @@ export class AccountsService {
   /**
    * @method findOne
    */
-  async findOne(accountId: string) {
+  async findOne(accountId: string) : Promise<IAccountResponse> {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}`
       const response    = await axios.get(url)
@@ -116,7 +115,7 @@ export class AccountsService {
   /**
    * @method remove
    */
-  async remove(accountId: string) {
+  async remove(accountId: string) : Promise<boolean> {
     try {
       const  url      = `${this.coreAccountsUrl}/${accountId}`
       const  response = await axios.delete(url)

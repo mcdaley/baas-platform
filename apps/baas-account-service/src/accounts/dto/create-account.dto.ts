@@ -33,11 +33,11 @@ export class CreateAccountDto implements ICreateAccountDto {
 
   @IsOptional()
   @IsString()
-  name:             string
+  name?:             string
 
   @IsOptional()
   @IsString()
-  nick_name:        string
+  nick_name?:       string
 
   @IsNotEmpty()
   @IsArray()

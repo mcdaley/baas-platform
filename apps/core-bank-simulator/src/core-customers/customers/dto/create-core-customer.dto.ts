@@ -12,6 +12,7 @@ import {
   Matches,
   MaxLength,
   ValidateNested,
+  IsUUID,
 }                             from 'class-validator'
 import { Type }               from 'class-transformer'
 
@@ -77,5 +78,9 @@ export class CreateCoreCustomerDto implements ICreateCustomerDto {
   /////////////////////////////////////////////////////////////////////////////
   @IsOptional()
   @IsEnum(CustomerStatus)
-  status?:          CustomerStatus   
+  status?:          CustomerStatus
+
+  @IsNotEmpty()
+  @IsUUID()
+  branch_id:    string
 }

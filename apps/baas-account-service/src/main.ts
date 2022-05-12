@@ -3,14 +3,10 @@
 //-----------------------------------------------------------------------------
 import { NestFactory }                from '@nestjs/core'
 import { ConfigService }              from '@nestjs/config'
-import { 
-  ValidationPipe,
-  VersioningType, 
-}                                     from '@nestjs/common'
 
+import { mainConfig }                 from './main.config'
 import { BaasAccountServiceModule }   from './baas-account-service.module'
 import { WinstonLoggerService }       from '@app/winston-logger'
-import { HttpExceptionFilter }        from '@app/baas-errors'
 
 /**
  * @function bootstrap
@@ -20,22 +16,13 @@ async function bootstrap() {
     bufferLogs: true
   })
   
-  app.enableVersioning({type: VersioningType.URI })
-  app.useLogger(app.get(WinstonLoggerService))
-
-  // Validation pipeline to validate requests
-  app.useGlobalPipes(new ValidationPipe({ 
-    transform:            true, 
-    whitelist:            true,  
-    forbidNonWhitelisted: true,
-  }))
-
   // Load app configuration
-  const logger  = app.get(WinstonLoggerService)
-  app.useGlobalFilters(new HttpExceptionFilter(logger))
+  mainConfig(app)
 
+  // Start the server
+  const logger        = app.get(WinstonLoggerService)
   const configService = app.get(ConfigService)
-  const port    = configService.get('port')
+  const port          = configService.get('port')
   logger.log(`Starting [${configService.get('appName')}] on port=[${port}]`)
 
   await app.listen(port)

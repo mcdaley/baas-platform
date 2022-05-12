@@ -71,12 +71,24 @@ export interface IAccount extends ICreateAccountDto {
   posted_balance:         number,
   name_on_account:        string,
   account_status:         AccountStatus,
-  account_status_reason?: string,
   nickname?:              string,
-  usage?:                 string,
   multiple_participants:  boolean,
   participants:           IParticipant[],
   blocks?:                IAccountBlock[],
   created_at:             Date,
   updated_at:             Date,
+}
+
+/**
+ * @interface IAccountResponse
+ */
+ export interface IAccountResponse {
+  account: IAccount,
+}
+
+/**
+ * @interface IAccountListResponse
+ */
+export interface IAccountListResponse {
+  accounts: IAccount[],
 }

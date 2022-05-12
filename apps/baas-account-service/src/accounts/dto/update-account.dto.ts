@@ -23,13 +23,13 @@ import { CreateAccountDto }   from './create-account.dto'
 export class UpdateAccountDto {
   @IsOptional()
   @IsEnum(AccountStatus)
-  account_status:         AccountStatus
+  account_status?:        AccountStatus
 
   @IsOptional()
-  account_status_reason:  string
+  account_status_reason?: string
   
   @IsOptional()
   @IsString()
   @MaxLength(64)
-  nickname:               string
+  nickname?:              string
 }

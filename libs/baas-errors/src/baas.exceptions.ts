@@ -39,8 +39,7 @@ export class BaaSException extends HttpException {
     this.timestamp  = new Date().toISOString(),
     this.path       = 'path' in baasError ? baasError.path : undefined
     this.details    = []                          // Array of multiple errors
-    this.cause      = baasError.cause    // Stack trace if exists
-
+    this.cause      = baasError.cause             // Stack trace if exists
   }
 
   toString() {

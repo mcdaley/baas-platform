@@ -36,7 +36,6 @@ export class CoreCustomersService {
       // Create the customer
       let customer: CoreCustomer = {
         id:         uuidv4(),
-        branch_id:  uuidv4(),
         status:     CustomerStatus.Pending,
         ...createCoreCustomerDto,
       }

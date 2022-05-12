@@ -24,8 +24,6 @@ export class Account implements IAccount {
   posted_balance:         number
   //* currency:               Currency
   account_status:         AccountStatus
-  account_status_reason?: string
-  usage?:                 string
   nickname?:              string
   multiple_participants:  boolean
   participants:           Participant[]

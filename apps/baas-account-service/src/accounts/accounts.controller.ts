@@ -18,6 +18,7 @@ import { CreateAccountDto }       from './dto/create-account.dto'
 import { UpdateAccountDto }       from './dto/update-account.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { IdempotencyKey } from '@app/baas-errors'
 
 /**
  * @class AccountsController
@@ -30,7 +31,10 @@ export class AccountsController {
   ) {}
 
   @Post()
-  createV1(@Body() createAccountDto: CreateAccountDto) {
+  createV1(
+    @IdempotencyKey() idempotencyKey: string,
+    @Body() createAccountDto: CreateAccountDto) 
+  {
     this.logger.log(`POST /v1/accounts`)
     return this.accountsService.create(createAccountDto);
   }
@@ -49,7 +53,8 @@ export class AccountsController {
 
   @Patch(':accountId')
   updateV1(
-    @Param('accountId', ParseUUIDPipe) accountId: string, 
+    @IdempotencyKey() idempotencyKey: string,
+    @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() updateAccountDto: UpdateAccountDto) 
   {
     this.logger.log(`PATCH /v1/accounts/${accountId}, body= %o`, updateAccountDto)

@@ -16,6 +16,7 @@ import { DebitCardsBlocksService }  from './debit-cards-blocks.service'
 import { CreateDebitCardsBlockDto } from './dto/create-debit-cards-block.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { IdempotencyKey } from '@app/baas-errors'
 
 /**
  * @class DebitCardsBlocksController
@@ -29,6 +30,7 @@ export class DebitCardsBlocksController {
 
   @Post()
   createV1(
+    @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() createDebitCardsBlockDto: CreateDebitCardsBlockDto
   ) {
@@ -47,6 +49,7 @@ export class DebitCardsBlocksController {
 
   @Delete(':blockId')
   removeV1(
+    @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Param('blockId',     ParseUUIDPipe) blockId: string
   ) {

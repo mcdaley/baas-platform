@@ -50,14 +50,9 @@ export class CoreDebitCardSimulator {
       status:             CardStatus.Inactive,
       cvv:                '448',
       pin:                '',
-      credit_limit:       5000,
-      available_balance:  0,
-      posted_balance:     0,
       atm_daily:          500,
       pos_daily:          2000,
       daily_transactions: 10,
-      phone_number:       createDebitCardDto.phone_number,
-      mailing_address:    createDebitCardDto.mailing_address,
       customer_id:        createDebitCardDto.customer_id,
       account_id:         createDebitCardDto.account_id,
     }
@@ -423,8 +418,8 @@ export class CoreDebitCardSimulator {
         debitCard     = {
           ...debitCard,
           name_on_card:     createDebitCardsReissueDto.name_on_card,
-          phone_number:     createDebitCardsReissueDto.phone_number,
-          mailing_address:  createDebitCardsReissueDto.mailing_address,
+          //* phone_number:     createDebitCardsReissueDto.phone_number,
+          //* mailing_address:  createDebitCardsReissueDto.mailing_address,
         }
         this.coreBank.setDebitCard(debitCard.id, debitCard)
 

@@ -20,6 +20,7 @@ import {
   States, 
 }                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
+import { CoreDebitCardSimulator } from '@app/core-simulator'
 
 /**
  * Set mockConfigService using env variables in .jest/set-env-vars.ts
@@ -78,7 +79,7 @@ describe('CustomersController', () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
-        WinstonLoggerService
+        WinstonLoggerService,
       ],
     }).compile()
 

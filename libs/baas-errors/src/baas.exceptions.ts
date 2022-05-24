@@ -83,6 +83,12 @@ export class InactiveCustomerError extends BaaSException {
   }
 }
 
+export class InactiveAccountError extends BaaSException {
+  constructor(baasError: IBaaSError, message: string) {
+    super(baasError, message)
+  }
+}
+
 export class BaaSAxiosError extends BaaSException {
   constructor(baasError: IBaaSError, message: string) {
     super(baasError, message)

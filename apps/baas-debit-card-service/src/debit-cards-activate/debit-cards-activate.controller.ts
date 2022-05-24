@@ -6,12 +6,14 @@ import {
   HttpCode,
   Param,  
   ParseUUIDPipe,
+  Patch,
   Post,  
 }                                       from '@nestjs/common'
 
 import { DebitCardsActivateService }    from './debit-cards-activate.service'
 
 import { WinstonLoggerService }         from '@app/winston-logger'
+import { IdempotencyKey } from '@app/baas-errors'
 
 /**
  * @class DebitCardsActivateController
@@ -24,14 +26,15 @@ export class DebitCardsActivateController {
   ) {}
 
   /**
-   * @method  createV1
+   * @method  updateV1
    */
-  @Post()
+  @Patch()
   @HttpCode(204)
-  createV1(
+  updateV1(
+    @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string
   ) {
-    this.logger.log(`POST /v1/debit-cards/${debitCardId}/activate`)
-    return this.debitCardsActivateService.create(debitCardId)
+    this.logger.log(`PATCH /v1/debit-cards/${debitCardId}/activate`)
+    return this.debitCardsActivateService.update(debitCardId)
   }
 } // end of class DebitCardsActivateController

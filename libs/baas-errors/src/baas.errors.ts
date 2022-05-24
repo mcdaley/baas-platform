@@ -164,7 +164,17 @@ export const BaaSErrors: IBaaSErrorsList = {
       httpStatus: HttpStatus.BAD_REQUEST,
       code:       3007,
       name:       `Debit Card Not Blocked`,
-    }
+    },
+    inactiveAccount: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       3008,
+      name:       `Account is Not Active`,
+    },
+    inactiveCustomer: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       3009,
+      name:       `Customer is Not Active`,
+    },
   },
   resource: {
     unauthorized: {

@@ -47,6 +47,12 @@
       ],
       "@app/baas-utils/*": [
         "libs/baas-utils/src/*"
+      ],
+      "@test/baas-test-data": [
+        "libs/baas-test-data/src"
+      ],
+      "@test/baas-test-data/*": [
+        "libs/baas-test-data/src/*"
       ]
     }
   }

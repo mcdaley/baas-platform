@@ -3,11 +3,22 @@
 //-----------------------------------------------------------------------------
 import { Injectable }           from '@nestjs/common'
 import { ConfigService }        from '@nestjs/config'
+import axios                    from 'axios'
 
-import { CustomerStatus, ICreateAccountDto, ICustomer, IParticipant, ParticipantRole }            from '@app/baas-interfaces'
+import { 
+  CustomerStatus, 
+  ICreateAccountDto, 
+  ICustomer, 
+  IParticipant, 
+  ParticipantRole 
+}                               from '@app/baas-interfaces'
+import { 
+  BaaSErrors, 
+  BadRequestError, 
+  createBaaSException, 
+  InactiveCustomerError 
+}                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
-import { BaaSErrors, BadRequestError, createBaaSException, InactiveCustomerError } from '@app/baas-errors'
-import axios from 'axios'
 
 /**
  * @class CustomersService

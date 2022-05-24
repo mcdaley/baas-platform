@@ -50,20 +50,20 @@ export class DebitCardsController {
     return this.debitCardsService.findOne(debitCardId)
   }
 
-  @Patch(':debitCardId')
-  updateV1(
-    @Param('debitCardId', ParseUUIDPipe) debitCardId: string, 
-    @Body() updateDebitCardDto: UpdateDebitCardDto
-  ) {
-    this.logger.log(
-      `PATCH /v1/debit-cards/${debitCardId}, updateDebitCardDto= %o`, updateDebitCardDto
-    )
-    return this.debitCardsService.update(debitCardId, updateDebitCardDto);
-  }
+  //* @Patch(':debitCardId')
+  //* updateV1(
+  //*   @Param('debitCardId', ParseUUIDPipe) debitCardId: string, 
+  //*   @Body() updateDebitCardDto: UpdateDebitCardDto
+  //* ) {
+  //*   this.logger.log(
+  //*     `PATCH /v1/debit-cards/${debitCardId}, updateDebitCardDto= %o`, updateDebitCardDto
+  //*   )
+  //*   return this.debitCardsService.update(debitCardId, updateDebitCardDto);
+  //* }
 
-  @Delete(':debitCardId')
-  removeV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
-    this.logger.log(`DELETE /v1/debit-cards/${debitCardId}`)
-    return this.debitCardsService.remove(debitCardId)
-  }
+  //* @Delete(':debitCardId')
+  //* removeV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
+  //*   this.logger.log(`DELETE /v1/debit-cards/${debitCardId}`)
+  //*   return this.debitCardsService.remove(debitCardId)
+  //* }
 }

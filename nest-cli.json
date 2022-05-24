@@ -97,6 +97,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/baas-utils/tsconfig.lib.json"
       }
+    },
+    "baas-test-data": {
+      "type": "library",
+      "root": "libs/baas-test-data",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-test-data/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-test-data/tsconfig.lib.json"
+      }
     }
   }
 }

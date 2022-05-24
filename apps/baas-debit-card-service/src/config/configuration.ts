@@ -52,6 +52,12 @@ class EnvironmentVariables {
   DEBIT_CARD_JWT_EXPIRES_IN: string
 
   @IsString()
+  CUSTOMER_URL: string
+
+  @IsString()
+  ACCOUNT_URL: string
+
+  @IsString()
   BANK_SIMULATOR_URL: string
 
   @IsString()
@@ -93,11 +99,13 @@ export function validate(config: Record<string, unknown>) {
  * can be accessed in the app.
  */
 export const configuration = () => ({
-  NODE_ENV: process.env.NODE_ENV              || Environment.Development,
-  appName:  process.env.DEBIT_CARD_APP_NAME   || 'connext-bank',
-  LogLevel: process.env.DEBIT_CARD_LOG_LEVEL  || LogLevel.Debug,
-  appRoot:  process.cwd(),
-  port:     parseInt(process.env.DEBIT_CARD_PORT, 10) || 4001,
+  NODE_ENV:     process.env.NODE_ENV              || Environment.Development,
+  appName:      process.env.DEBIT_CARD_APP_NAME   || 'connext-bank',
+  LogLevel:     process.env.DEBIT_CARD_LOG_LEVEL  || LogLevel.Debug,
+  appRoot:      process.cwd(),
+  customersUrl: process.env.CUSTOMER_URL,
+  accountsUrl:  process.env.ACCOUNT_URL,
+  port:         parseInt(process.env.DEBIT_CARD_PORT, 10) || 4001,
   jwt: {
     secret:     process.env.DEBIT_CARD_JWT_SECRET,
     expiresIn:  process.env.DEBIT_CARD_JWT_EXPIRES_IN,

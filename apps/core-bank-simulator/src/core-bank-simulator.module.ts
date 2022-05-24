@@ -12,6 +12,7 @@ import { CoreCustomersModule }            from './core-customers/customers/core-
 import { CoreAccountsModule }             from './core-accounts/accounts/core-accounts.module'
 import { CoreParticipantsModule }         from './core-accounts/participants/core-participants.module'
 import { CoreAccountsBlocksModule }       from './core-accounts/blocks/core-accounts-blocks.module'
+import { DebitCardsModule }               from './debit-cards/debit-cards.module';
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
 @Module({
@@ -27,6 +28,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     CoreAccountsModule,
     CoreParticipantsModule,
     CoreAccountsBlocksModule,
+    DebitCardsModule,
   ],
   controllers:  [CoreBankSimulatorController],
   providers:    [CoreBankSimulatorService],

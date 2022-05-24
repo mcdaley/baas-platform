@@ -27,6 +27,25 @@ export interface ICreateDebitCardDto {
   //* branch_id:                      string
 }
 
+/**
+ * @interface IUpdateDebitCardDto
+ */
+export interface IUpdateDebitCardDto {
+  name_on_card?:                  string
+  card_number:                    string
+  expiration_date?:               string
+  cvv?:                           string
+  status?:                        CardStatus
+  pin?:                           string
+  atm_daily?:                     number
+  pos_daily?:                     number
+  daily_transactions?:            number
+  //* blocks?:                    IDebitCardsBlock[]
+}
+
+/**
+ * @interface IDebitCard
+ */
 export interface IDebitCard {
   id:                             string
   name_on_card:                   string

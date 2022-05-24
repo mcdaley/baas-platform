@@ -21,6 +21,7 @@ async function bootstrap() {
     bufferLogs: true
   })
   
+  app.setGlobalPrefix('/core/api')
   app.enableVersioning({type: VersioningType.URI })
   app.useLogger(app.get(WinstonLoggerService))
 

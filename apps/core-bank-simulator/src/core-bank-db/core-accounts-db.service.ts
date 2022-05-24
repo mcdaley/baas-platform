@@ -104,7 +104,7 @@ export class CoreAccountsDBService {
   /**
    * @method findOne
    */
-   public findOne(accountId: string) : Promise<IAccount> {
+  public findOne(accountId: string) : Promise<IAccount> {
     return new Promise( async (resolve, reject) => {
       try {
         if(!await this.has(accountId)) {
@@ -408,11 +408,10 @@ export class CoreAccountsDBService {
     })
   }
 
-
   /**
    * @method accountNotFound
    */
-   private accountNotFound(accountId: string): BaaSException {
+  private accountNotFound(accountId: string): BaaSException {
     this.logger.error(`Account w/ id=${accountId} Not Found`)
     return new NotFoundError(
       BaaSErrors.account.notFound, 

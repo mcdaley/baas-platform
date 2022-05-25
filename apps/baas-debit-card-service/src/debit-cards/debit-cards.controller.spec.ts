@@ -11,21 +11,14 @@ import { DebitCardsController }   from './debit-cards.controller'
 import { DebitCardsService }      from './debit-cards.service'
 
 import { 
-  AccountStatus, 
-  AccountType, 
-  CardStatus, 
-  CardType, 
-  CustomerStatus, 
-  Delivery, 
+  CardStatus,
   IAccount, 
   ICreateDebitCardDto, 
   ICustomer, 
-  IDebitCard, 
-  Packaging, 
-  ParticipantRole, 
-  States, 
+  IDebitCard,
+  IUpdateDebitCardsLimitDto,
+  IUpdateDebitCardsPinDto, 
 }                                 from '@app/baas-interfaces'
-import { uuid }                   from '@app/baas-utils'
 import { WinstonLoggerService }   from '@app/winston-logger'
 import { CoreDebitCardSimulator } from '@app/core-simulator'
 
@@ -64,7 +57,7 @@ describe(`DebitCardsController`, () => {
   let debitCardsService:     DebitCardsService
   let configService:         ConfigService
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers:  [DebitCardsController],
       providers:    [
@@ -81,7 +74,12 @@ describe(`DebitCardsController`, () => {
     debitCardsController = module.get<DebitCardsController>(DebitCardsController)
     debitCardsService    = module.get<DebitCardsService>(DebitCardsService)
     configService        = module.get<ConfigService>(ConfigService)
-  });
+  })
+
+  afterEach( () => {
+    jest.clearAllMocks()
+    jest.resetAllMocks()
+  })
 
   /**
    * createV1()
@@ -119,6 +117,9 @@ describe(`DebitCardsController`, () => {
     })
   })
 
+  /**
+   * findOneV1()
+   */
   describe(`findOneV1`, () => {
     it(`Returns a debit card`, async () => {
       const debitCardId = debitCardData.id
@@ -131,6 +132,116 @@ describe(`DebitCardsController`, () => {
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(debitCardId)
+      expect(result).toEqual(response)
+    })
+  })
+
+  /**
+   * activateDebitCardV1()
+   */
+  describe(`activateDebitCardV1`, () => {
+    it(`Activates a debit card`, async () => {
+      const idempotencyKey = `unique-idempotency-key`
+      const debitCardId    = debitCardData.id
+      const response       = {
+        debit_card: debitCardData
+      }
+      const updateDebitCardDto = {
+        status: CardStatus.Active
+      }
+
+      const spy    = jest.spyOn(debitCardsService, 'update').mockResolvedValueOnce(response)
+      const result = await debitCardsController.activateDebitCardV1(idempotencyKey, debitCardId)
+
+      expect(spy).toBeCalled()
+      expect(spy).toBeCalledWith(debitCardId, updateDebitCardDto)
+      expect(result.debit_card.status).toEqual(CardStatus.Active)
+      expect(result).toEqual(response)
+    })
+  })
+
+  /**
+   * cancelDebitCardV1()
+   */
+  describe(`cancelDebitCardV1`, () => {
+    it(`Cancels a debit card`, async () => {
+      const idempotencyKey     = `unique-idempotency-key`
+      const debitCardId        = debitCardData.id
+      const updateDebitCardDto = {
+        status: CardStatus.Canceled
+      }
+      const canceledDebitCard  = {
+        ...debitCardData,
+        ...updateDebitCardDto
+      }
+      const response = {
+        debit_card: canceledDebitCard
+      }
+
+      const spy    = jest.spyOn(debitCardsService, 'update').mockResolvedValueOnce(response)
+      const result = await debitCardsController.activateDebitCardV1(idempotencyKey, debitCardId)
+
+      expect(spy).toBeCalled()
+      //* expect(spy).toBeCalledWith(debitCardId, updateDebitCardDto)
+      expect(result.debit_card.status).toEqual(CardStatus.Canceled)
+      expect(result).toEqual(response)
+    })
+  })
+
+  /**
+   * updateDebitCardLimitsV1()
+   */
+  describe(`updateDebitCardLimitsV1`, () => {
+    it(`Updates a debit card spending limits`, async () => {
+      const updateDebitCardLimitsDto : IUpdateDebitCardsLimitDto = {
+        atm_daily:          99,
+        pos_daily:          77,
+        daily_transactions: 1000
+      }
+
+      const idempotencyKey   = `unique-idempotency-key`
+      const debitCardId      = debitCardData.id
+      const updatedDebitCard = {
+        ...debitCardData,
+        ...updateDebitCardLimitsDto
+      }
+      const response = {
+        debit_card: updatedDebitCard
+      }
+
+      const spy    = jest.spyOn(debitCardsService, 'update').mockResolvedValueOnce(response)
+      const result = await debitCardsController.activateDebitCardV1(idempotencyKey, debitCardId)
+
+      expect(spy).toBeCalled()
+      //* expect(spy).toBeCalledWith(debitCardId, updateDebitCardLimitsDto)
+      expect(result).toEqual(response)
+    })
+  })
+
+  /**
+   * updateDebitCardPinV1()
+   */
+  describe(`updateDebitCardPinV1`, () => {
+    it(`Updates the debit card pin`, async () => {
+      const updateDebitCardPinDto : IUpdateDebitCardsPinDto = {
+        pin: "7883"
+      }
+
+      const idempotencyKey   = `unique-idempotency-key`
+      const debitCardId      = debitCardData.id
+      const updatedDebitCard = {
+        ...debitCardData,
+        ...updateDebitCardPinDto
+      }
+      const response = {
+        debit_card: updatedDebitCard
+      }
+
+      const spy    = jest.spyOn(debitCardsService, 'update').mockResolvedValueOnce(response)
+      const result = await debitCardsController.activateDebitCardV1(idempotencyKey, debitCardId)
+
+      expect(spy).toBeCalled()
+      //* expect(spy).toBeCalledWith(debitCardId, updateDebitCardPinDto)
       expect(result).toEqual(response)
     })
   })

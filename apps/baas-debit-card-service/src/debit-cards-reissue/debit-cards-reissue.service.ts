@@ -6,7 +6,6 @@ import { Injectable }                 from '@nestjs/common'
 import { CreateDebitCardsReissueDto } from './dto/create-debit-cards-reissue.dto'
 
 import { WinstonLoggerService }       from '@app/winston-logger'
-import { CoreDebitCardSimulator }     from '@app/core-simulator'
 
 /**
  * @class DebitCardsReissueService
@@ -14,19 +13,20 @@ import { CoreDebitCardSimulator }     from '@app/core-simulator'
 @Injectable()
 export class DebitCardsReissueService {
   constructor(
-    private readonly coreService: CoreDebitCardSimulator,
     private readonly logger:      WinstonLoggerService,
   ) {}
   
   /**
    * @method create
    */
-  async create(
+  create(
     debitCardId:               string,
-    createDebitCardsReissueDto: CreateDebitCardsReissueDto
-  ) {
+    createDebitCardsReissueDto: CreateDebitCardsReissueDto) 
+  {
     try {
-      const debitCard = await this.coreService.reissueDebitCard(debitCardId, createDebitCardsReissueDto)
+      const debitCard = {
+        message: "Reissue card is not implemented yet"
+      }
       const result    = {
         debit_card: debitCard,
       }

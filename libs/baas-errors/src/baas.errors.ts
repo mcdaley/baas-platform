@@ -129,7 +129,7 @@ export const BaaSErrors: IBaaSErrorsList = {
       name:       `Unknown Account Error`,
     },
   },
-  debitCard: {
+  debitcard: {
     unauthorized: {
       httpStatus: HttpStatus.UNAUTHORIZED,
       code:       3002,

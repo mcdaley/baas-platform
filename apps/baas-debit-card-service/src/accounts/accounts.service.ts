@@ -52,7 +52,7 @@ export class AccountsService {
           this.logger.error(message)
           
           return reject(
-            new InactiveAccountError(BaaSErrors.debitCard.inactiveAccount, message)
+            new InactiveAccountError(BaaSErrors.debitcard.inactiveAccount, message)
           )
         }
 

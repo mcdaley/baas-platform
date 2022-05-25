@@ -239,7 +239,7 @@ export class CoreDebitCardSimulator {
           this.logger.error(`Debit card id=[${debitCardId}] is not blocked`)
           return reject(
             new BadRequestError(
-              BaaSErrors.debitCard.debitCardNotBlocked,
+              BaaSErrors.debitcard.debitCardNotBlocked,
               `Debit card id=[${debitCardId}] is not blocked`
             )
           )
@@ -259,7 +259,7 @@ export class CoreDebitCardSimulator {
           this.logger.error(`Block Id==${debitCardBlockId}] for debit card id=${debitCardId} Not Found`)
           return reject(
             new NotFoundError(
-              BaaSErrors.debitCard.blockNotFound, 
+              BaaSErrors.debitcard.blockNotFound, 
               `Block id=${debitCardBlockId} Not Found`
             )
           )
@@ -438,7 +438,7 @@ export class CoreDebitCardSimulator {
   private debitCardNotFound(debitCardId: string): BaaSException {
     this.logger.error(`Debit Card w/ id=${debitCardId} Not Found`)
     return new NotFoundError(
-      BaaSErrors.debitCard.notFound, 
+      BaaSErrors.debitcard.notFound, 
       `Debit Card w/ id=${debitCardId} Not Found`
     )
   }

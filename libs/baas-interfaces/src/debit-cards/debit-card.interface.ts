@@ -32,7 +32,7 @@ export interface ICreateDebitCardDto {
  */
 export interface IUpdateDebitCardDto {
   name_on_card?:                  string
-  card_number:                    string
+  card_number?:                   string
   expiration_date?:               string
   cvv?:                           string
   status?:                        CardStatus

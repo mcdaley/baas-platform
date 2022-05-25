@@ -11,6 +11,7 @@ import axios                    from 'axios'
 import { DebitCardsService }    from './debit-cards.service'
 
 import { 
+  CardStatus,
   IAccount, 
   ICreateDebitCardDto, 
   ICustomer, 
@@ -78,7 +79,9 @@ describe(DebitCardsService, () => {
     it(`Creates a new debit card`, async () => {
       const url           = configService.get('bankSimulatorDebitCardsUrl')
       const axiosResponse = {
-        data: debitCardData,
+        data: {
+          data: debitCardData
+        },
       }
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(axiosResponse)
@@ -97,7 +100,9 @@ describe(DebitCardsService, () => {
     it(`Returns a list of debit cards`, async () => {
       const url           = configService.get('bankSimulatorDebitCardsUrl')
       const axiosResponse = {
-        data: [debitCardData],
+        data: {
+          data: [debitCardData]
+        },
       }
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(axiosResponse)
@@ -117,7 +122,9 @@ describe(DebitCardsService, () => {
       const debitCardId   = debitCardData.id
       const url           = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
       const axiosResponse = {
-        data: debitCardData,
+        data: {
+          data: debitCardData
+        },
       }
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(axiosResponse)
@@ -126,6 +133,39 @@ describe(DebitCardsService, () => {
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url)
       expect(result).toEqual({debit_card: debitCardData})
+    })
+  })
+
+  describe(`update`, () => {
+    it(`Updates a debit card`, async () => {
+      const debitCardId = debitCardData.id
+      const url         = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
+
+      const updateDebitCardDto = {
+        pin:                '4545',
+        status:             CardStatus.Blocked,
+        atm_daily:          7777,
+        pos_daily:          9999,
+        daily_transactions: 2,
+      }
+
+      const debitCard = {
+        ...debitCardData,
+        ...updateDebitCardDto
+      }
+
+      const axiosResponse = {
+        data: {
+          data: debitCard
+        },
+      }
+
+      const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(axiosResponse)
+      const result = await debitCardsService.update(debitCardId, updateDebitCardDto)
+
+      expect(spy).toBeCalled()
+      expect(spy).toBeCalledWith(url, updateDebitCardDto)
+      expect(result).toEqual({debit_card: debitCard})
     })
   })
 })

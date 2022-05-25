@@ -8,8 +8,8 @@ import axios                            from 'axios'
 import { CreateDebitCardDto }           from './dto/create-debit-card.dto'
 import { UpdateDebitCardDto }           from './dto/update-debit-card.dto'
 
+import { createBaaSException }          from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
-import { CoreDebitCardSimulator }       from '@app/core-simulator'
 
 /**
  * @class DebitCardsService
@@ -23,9 +23,8 @@ export class DebitCardsService {
    */
   constructor(
     private readonly configService  : ConfigService,
-    private readonly logger         : WinstonLoggerService,
-    private readonly coreService    : CoreDebitCardSimulator
-  ) {
+    private readonly logger         : WinstonLoggerService) 
+  {
     this.simulatorUrl = configService.get(`bankSimulatorDebitCardsUrl`)
   }
 
@@ -35,7 +34,7 @@ export class DebitCardsService {
   async create(createDebitCardDto: CreateDebitCardDto) {
     try {
       const response  = await axios.post(this.simulatorUrl, createDebitCardDto)
-      const debitCard = response.data
+      const debitCard = response.data.data
       const result    = {
         debit_card: debitCard
       }
@@ -44,7 +43,7 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Debit Card'))
     }
   }
 
@@ -54,7 +53,7 @@ export class DebitCardsService {
   async findAll() {
     try {
       const response      = await axios.get(this.simulatorUrl)
-      const debitCardList = response.data
+      const debitCardList = response.data.data
       const result        = {
         debit_cards: debitCardList,
       }
@@ -63,7 +62,7 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, 'Debit Card'))
     }
   }
 
@@ -74,7 +73,7 @@ export class DebitCardsService {
     try {
       const url       = `${this.simulatorUrl}/${debitCardId}`
       const response  = await axios.get(url)
-      const debitCard = response.data
+      const debitCard = response.data.data
       const result    = {
         debit_card: debitCard,
       }
@@ -83,13 +82,30 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
-      throw(error)
+      this.logger.error(`Failed to find debit card, error= %o`, error)
+      throw(createBaaSException(error, 'Debit Card'))
     }
   }
 
-  //* update(debitCardId: string, updateDebitCardDto: UpdateDebitCardDto) {
-  //*   return `This action updates a #${debitCardId} debitCard`
-  //* }
+  /**
+   * @method update
+   */
+  async update(debitCardId: string, updateDebitCardDto: UpdateDebitCardDto) {
+    try {
+      const url       = `${this.simulatorUrl}/${debitCardId}`
+      const response  = await axios.patch(url, updateDebitCardDto)
+      const debitCard = response.data.data
+      const result    = {
+        debit_card: debitCard,
+      }
+
+      return result
+    }
+    catch(error) {
+      this.logger.error(`Failed to update debit card id=${debitCardId}, error= %o`, error)
+      throw(createBaaSException(error, 'Debit Card'))
+    }
+  }
 
   //* remove(debitCardId: string) {
   //*   return `This action removes a ${debitCardId} debitCard`

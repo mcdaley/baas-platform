@@ -167,7 +167,7 @@ export class CoreDebitCardsDBService {
   private debitCardNotFound(debitCardId: string): BaaSException {
     this.logger.error(`Debit card w/ id=${debitCardId} Not Found`)
     return new NotFoundError(
-      BaaSErrors.debitCard.notFound, 
+      BaaSErrors.debitcard.notFound, 
       `Debit Card w/ id=${debitCardId} Not Found`
     )
   }

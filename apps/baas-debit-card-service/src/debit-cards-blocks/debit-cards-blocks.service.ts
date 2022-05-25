@@ -7,9 +7,8 @@ import axios                        from 'axios'
 
 import { CreateDebitCardsBlockDto } from './dto/create-debit-cards-block.dto'
 
+import { IDebitCardsBlock }         from '@app/baas-interfaces'
 import { WinstonLoggerService }     from '@app/winston-logger'
-import { CoreDebitCardSimulator }   from '@app/core-simulator'
-import { IDebitCardsBlock } from '@app/baas-interfaces'
 
 /**
  * @class DebitCardsBlocksService
@@ -19,7 +18,6 @@ export class DebitCardsBlocksService {
   constructor(
     private readonly configService:       ConfigService,
     private readonly logger:              WinstonLoggerService,
-    private readonly debitCardSimulator:  CoreDebitCardSimulator,
   ) {}
 
   /**

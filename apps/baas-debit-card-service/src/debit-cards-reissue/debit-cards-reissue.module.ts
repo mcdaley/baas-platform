@@ -6,10 +6,8 @@ import { Module }                       from '@nestjs/common'
 import { DebitCardsReissueService }     from './debit-cards-reissue.service'
 import { DebitCardsReissueController }  from './debit-cards-reissue.controller'
 
-import { CoreDebitCardSimulator }       from '@app/core-simulator'
-
 @Module({
   controllers:  [DebitCardsReissueController],
-  providers:    [DebitCardsReissueService, CoreDebitCardSimulator]
+  providers:    [DebitCardsReissueService]
 })
 export class DebitCardsReissueModule {}

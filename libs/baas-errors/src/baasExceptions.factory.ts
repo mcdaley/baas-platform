@@ -47,7 +47,7 @@ export function createBaaSException(error: any, resource: string = `resource`) :
   else if(error.hasOwnProperty('isAxiosError') && error.isAxiosError) {
     // Received an Axios Error
     let baasErrorType : IBaaSError
-    let resourceName  : string = resource.toLowerCase()
+    let resourceName  : string = resource.toLowerCase().replace(/\s/g, '')
 
     if(error.response) {
       // Request was made and server responded with a Http Status code

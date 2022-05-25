@@ -1,6 +1,6 @@
-//---------------------------------------------------------------------------------------
-// apps/baas-debit-card-service/src/debit-cards-limits/update-debits-card-limit.dto.ts
-//---------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
+// app/baas-debit-card-service/src/debit-cards/dto/update-debit-card-limits.dto.ts
+//----------------------------------------------------------------------------------
 import {
   IsNumber, 
   IsOptional, 
@@ -11,7 +11,7 @@ import { IUpdateDebitCardsLimitDto }  from '@app/baas-interfaces'
 /**
  * UpdateDebitCardLimitDto
  */
-export class UpdateDebitCardsLimitDto implements IUpdateDebitCardsLimitDto {
+export class UpdateDebitCardLimitsDto implements IUpdateDebitCardsLimitDto {
   @IsOptional()
   @IsNumber() 
   atm_daily:          number

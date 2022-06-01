@@ -5,10 +5,6 @@ import { Injectable }           from '@nestjs/common'
 import { v4 as uuidv4 }         from 'uuid'
 
 import { 
-  CreateCoreAccountsBlockDto 
-}                               from '../core-accounts/blocks/dto/create-core-accounts-block.dto'
-
-import { 
   BaaSErrors, 
   NotFoundError, 
   BaaSException, 
@@ -24,6 +20,7 @@ import {
   AccountStatus, 
 }                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
+import { CreateAccountsBlockDto } from '../accounts/blocks/dto/create-accounts-block.dto'
 
 /**
  * @class CoreAccountsDBService
@@ -223,7 +220,7 @@ export class CoreAccountsDBService {
   /**
    * @method findAllCoreParticipants
    */
-   findAllCoreParticipants(accountId: string): Promise<IParticipant[]> {
+  findAllCoreParticipants(accountId: string): Promise<IParticipant[]> {
     return new Promise( async (resolve, reject) => {
       try {
         if(!await this.has(accountId)) {
@@ -306,7 +303,7 @@ export class CoreAccountsDBService {
    */
    createCoreAccountsBlock(
     accountId:              string, 
-    createAccountBlockDto:  CreateCoreAccountsBlockDto) : Promise<IAccountBlock[]> 
+    createAccountBlockDto:  CreateAccountsBlockDto) : Promise<IAccountBlock[]> 
   {
     return new Promise( async (resolve, reject) => {
       try {

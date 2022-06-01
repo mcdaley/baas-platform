@@ -8,10 +8,10 @@ import { configuration, validate }        from './config/core-bank-simulator.con
 import { CoreBankSimulatorController }    from './core-bank-simulator.controller'
 import { CoreBankSimulatorService }       from './core-bank-simulator.service'
 
-import { CoreCustomersModule }            from './core-customers/customers/core-customers.module'
-import { CoreAccountsModule }             from './core-accounts/accounts/core-accounts.module'
-import { CoreParticipantsModule }         from './core-accounts/participants/core-participants.module'
-import { CoreAccountsBlocksModule }       from './core-accounts/blocks/core-accounts-blocks.module'
+import { CustomersModule }                from './customers/customers.module'
+import { AccountsModule }                 from './accounts/accounts.module'
+import { ParticipantsModule }             from './accounts/participants/participants.module'
+import { AccountsBlocksModule }           from './accounts/blocks/accounts-blocks.module'
 import { DebitCardsModule }               from './debit-cards/debit-cards.module';
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
@@ -24,10 +24,10 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
       validate,
     }),
     WinstonLoggerModule,
-    CoreCustomersModule,
-    CoreAccountsModule,
-    CoreParticipantsModule,
-    CoreAccountsBlocksModule,
+    CustomersModule,
+    AccountsModule,
+    ParticipantsModule,
+    AccountsBlocksModule,
     DebitCardsModule,
   ],
   controllers:  [CoreBankSimulatorController],

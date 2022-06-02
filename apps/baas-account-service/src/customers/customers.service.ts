@@ -54,7 +54,8 @@ export class CustomersService {
           this.logger.log(`GET ${url}`)
 
           let response      = await axios.get(url)
-          let { customer }  = response.data
+          let customer      = response.data.data
+          
           if(customer.status !== CustomerStatus.Active) {
             this.logger.warn(`CustomerId=[${customerId}] is not active, status=[${customer.status}]`)
 

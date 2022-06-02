@@ -27,26 +27,18 @@ import {
   accountFactoryData,
   createDebitCardDtoFactoryData,
   debitCardFactoryData,
-}                                   from '../../../../test/baas.factory.data'
+  BaasApplication,
+  setMockConfigService,
+}                                   from '../../../../test/'
 
 /**
- * Set mockConfigService using env variables in .jest/set-env-vars.ts
+ * Setup test environment and data
  */
-let mockConfigService = new Map()
-mockConfigService.set('NODE_ENV',    process.env.NODE_ENV)
-mockConfigService.set('appRoot',     '.')
-mockConfigService.set('appName',     process.env.DEBIT_CARD_APP_NAME)
-mockConfigService.set('logLevel',    process.env.DEBIT_CARD_LOG_LEVEL)
-mockConfigService.set('accountsUrl', process.env.ACCOUNT_URL)
-mockConfigService.set('bankSimulatorDebitCardsUrl', process.env.BANK_SIMULATOR_DEBIT_CARDS_URL)
-
-/**
- * Test Data
- */
-const customerData       : ICustomer           = customerFactoryData.joe_ferguson
-const accountData        : IAccount            = accountFactoryData.checking_1 
-const createDebitCardDto : ICreateDebitCardDto = createDebitCardDtoFactoryData.checking_1
-const debitCardData      : IDebitCard          = debitCardFactoryData.checking_1
+const mockConfigService   = setMockConfigService(BaasApplication.DebitCardService)
+const customerData        = customerFactoryData.joe_ferguson
+const accountData         = accountFactoryData.checking_1 
+const createDebitCardDto  = createDebitCardDtoFactoryData.checking_1
+const debitCardData       = debitCardFactoryData.checking_1
 
 /**
  * DebitCardsService

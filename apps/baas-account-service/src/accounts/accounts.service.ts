@@ -44,8 +44,8 @@ export class AccountsService {
 
       createAccountDto  = this.fillInCreateAccountDtoFields(createAccountDto, accountHolder)
       const response    = await axios.post(this.coreAccountsUrl, createAccountDto)
-      const { account } = response.data
-      
+      const account     = response.data.data
+
       const result = {
         account: account
       }
@@ -61,9 +61,9 @@ export class AccountsService {
    */
   async findAll() : Promise<IAccountListResponse> {
     try {
-      const response      = await axios.get(this.coreAccountsUrl)
-      const { accounts }  = response.data
-      const result  = {
+      const response  = await axios.get(this.coreAccountsUrl)
+      const accounts  = response.data.data
+      const result    = {
         accounts: accounts
       }
 
@@ -79,10 +79,10 @@ export class AccountsService {
    */
   async findOne(accountId: string) : Promise<IAccountResponse> {
     try {
-      const url         = `${this.coreAccountsUrl}/${accountId}`
-      const response    = await axios.get(url)
-      const { account } = response.data
-      const result = {
+      const url       = `${this.coreAccountsUrl}/${accountId}`
+      const response  = await axios.get(url)
+      const account   = response.data.data
+      const result    = {
         account: account
       }
 
@@ -98,10 +98,10 @@ export class AccountsService {
    */
   async update(accountId: string, updateAccountDto: UpdateAccountDto) {
     try {
-      const url         = `${this.coreAccountsUrl}/${accountId}`
-      const response    = await axios.patch(url, updateAccountDto)
-      const { account } = response.data
-      const result = {
+      const url       = `${this.coreAccountsUrl}/${accountId}`
+      const response  = await axios.patch(url, updateAccountDto)
+      const account   = response.data.data
+      const result    = {
         account: account
       }
 

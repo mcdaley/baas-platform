@@ -4,63 +4,35 @@
 import { 
   Test, 
   TestingModule 
-}                               from '@nestjs/testing'
-import { ConfigService }        from '@nestjs/config'
+}                                 from '@nestjs/testing'
+import { ConfigService }          from '@nestjs/config'
 
-import { CustomersController }  from './customers.controller'
-import { CustomersService }     from './customers.service'
+import { CustomersController }    from './customers.controller'
+import { CustomersService }       from './customers.service'
 
 import { 
   CustomerStatus, 
-  ICreateCustomerDto, 
-  ICustomer, 
   ICustomerListResponse, 
   ICustomerResponse, 
-  IUpdateCustomerDto, 
-  States, 
-}                               from '@app/baas-interfaces'
-import { WinstonLoggerService } from '@app/winston-logger'
-import { CoreDebitCardSimulator } from '@app/core-simulator'
+}                                 from '@app/baas-interfaces'
+import { WinstonLoggerService }   from '@app/winston-logger'
 
 /**
- * Set mockConfigService using env variables in .jest/set-env-vars.ts
+ * Import test data
  */
-let mockConfigService = new Map()
-mockConfigService.set('NODE_ENV', process.env.NODE_ENV)
-mockConfigService.set('appRoot',  '.')
-mockConfigService.set('appName',  process.env.CUSTOMER_APP_NAME)
-mockConfigService.set('logLevel', process.env.CUSTOMER_LOG_LEVEL)
-mockConfigService.set('bankSimulatorCustomersUrl', process.env.BANK_SIMULATOR_CUSTOMERS_URL)
+import {
+  createCustomerDtoFactoryData,
+  customerFactoryData,
+  BaasApplication,
+  setMockConfigService,
+}                                 from '../../../../test/'
 
 /**
- * Customer Test Data
+ * Setup test environment and data
  */
-const createCustomerDto : ICreateCustomerDto = {
-  branch_id:          `unique-branch-id`,
-  first_name:         `Joe`,
-  last_name:          `Ferguson`,
-  status:             CustomerStatus.Active,
-  email:              `joe@bills.com`,
-  phone_number:       `716-649-1475`,
-  ssn:                `222-33-4444`,
-  physical_address: {
-    name:             `Joe Ferguson`,
-    street_line_1:    `One Bills Drive`,
-    city:             `Orchard Park`,
-    state:            States.NY,
-    postal_code:      `14075`,  
-  }
-}
-
-const updateCustomerDto : IUpdateCustomerDto = {
-  status: CustomerStatus.Blocked,
-}
-
-const customer : ICustomer = {
-  id:       `unique-id`,
-  status:   CustomerStatus.Active,
-  ...createCustomerDto,
-}
+const mockConfigService = setMockConfigService(BaasApplication.CustomerService)
+const createCustomerDto = createCustomerDtoFactoryData.joe_ferguson
+const customerData      = customerFactoryData.joe_ferguson
 
 /**
  * CustomersController
@@ -94,7 +66,7 @@ describe('CustomersController', () => {
     it(`Creates a new customer`, async () => {
       
       const response = {
-        customer: {...customer}
+        customer: {...customerData}
       }
 
       const spy    = jest.spyOn(customersService, 'create').mockResolvedValue(response)
@@ -114,7 +86,7 @@ describe('CustomersController', () => {
       const response : ICustomerListResponse = {
         customers: [
           {
-            ...customer
+            ...customerData
           },
         ]
       }
@@ -135,7 +107,7 @@ describe('CustomersController', () => {
     it(`Returns a customer`, async () => {
       const customerId : string             = `unique-id`
       const response   : ICustomerResponse  = {
-        customer: { ...customer }
+        customer: { ...customerData }
       }
 
       const spy    = jest.spyOn(customersService, 'findOne').mockResolvedValue(response)
@@ -152,11 +124,14 @@ describe('CustomersController', () => {
    */
   describe(`updateV1`, () => {
     it(`Returns the updated customer`, async () => {
-      const customerId     : string = `unique-customer-id`
-      const idempotencyKey : string = `another-unique-string`
-      const response       : ICustomerResponse = {
+      const customerId        = `unique-customer-id`
+      const idempotencyKey    = `another-unique-string`
+      const updateCustomerDto = {
+        status: CustomerStatus.Blocked,
+      }
+      const response : ICustomerResponse = {
         customer: {
-          ...customer,
+          ...customerData,
           ...updateCustomerDto
         }
       }

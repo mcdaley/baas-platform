@@ -119,19 +119,20 @@ describe('BaasAccountServiceController (e2e)', () => {
    * POST /v1/accounts
    */
   describe(`POST /v1/accounts`, () => {
-    const result : AxiosResponse = {
-      data:       {account: accountData},
+    const axiosResponse : AxiosResponse = {
+      data:       {data: accountData},
       status:     201,
       statusText: 'OK',
       headers:    {},
       config:     {} 
     }
 
-    mockedAxios.post.mockImplementationOnce(async (createAccountDto) => result)
-
-    it(`Returns a new account`, () => {
+    it(`Creates a new account`, () => {
       // Mock the call to GET /v1/customers/:customerId
-      mockedAxios.get.mockResolvedValueOnce({data: {customer: customerData}})
+      mockedAxios.get.mockResolvedValueOnce({data: {data: customerData}})
+
+      // Mock call to POST /core/api/v1/accounts
+      mockedAxios.post.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .post(`${baseUrl}`)
@@ -143,12 +144,12 @@ describe('BaasAccountServiceController (e2e)', () => {
 
           expect(account).toMatchObject({
             name_on_account:      accountData.name_on_account,
-              account_number:     accountData.account_number,
-              routing_number:     accountData.routing_number,
-              account_status:     accountData.account_status,
-              account_type:       accountData.account_type,
-              available_balance:  accountData.available_balance,
-              posted_balance:     accountData.posted_balance,
+            account_number:     accountData.account_number,
+            routing_number:     accountData.routing_number,
+            account_status:     accountData.account_status,
+            account_type:       accountData.account_type,
+            available_balance:  accountData.available_balance,
+            posted_balance:     accountData.posted_balance,
           })
         })
     })
@@ -209,14 +210,14 @@ describe('BaasAccountServiceController (e2e)', () => {
    */
   describe(`GET /v1/accounts`, () => {
     it(`Returns a list of accounts`, () => {
-      let result : AxiosResponse = {
-        data:       {accounts: [accountData]},
+      let axiosResponse : AxiosResponse = {
+        data:       {data: [accountData]},
         status:     200,
         statusText: 'OK',
         headers:    {},
         config:     {} 
       }
-      mockedAxios.get.mockResolvedValueOnce(result)
+      mockedAxios.get.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .get(baseUrl)
@@ -246,14 +247,14 @@ describe('BaasAccountServiceController (e2e)', () => {
       const accountId = accountData.id
       const url       = `${baseUrl}/${accountId}`
 
-      const result : AxiosResponse = {
-        data: {account: accountData},
+      const axiosResponse : AxiosResponse = {
+        data: {data: accountData},
         status:     200,
         statusText: 'OK',
         headers:    {},
         config:     {},
       }
-      mockedAxios.get.mockResolvedValueOnce(result)
+      mockedAxios.get.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .get(url)
@@ -338,14 +339,14 @@ describe('BaasAccountServiceController (e2e)', () => {
         ...updateAccountDto,
       }
 
-      const result : AxiosResponse = {
-        data:       {account: updatedAccount},
+      const axiosResponse : AxiosResponse = {
+        data:       {data: updatedAccount},
         status:     200,
         statusText: 'OK',
         headers:    {},
         config:     {},
       }
-      mockedAxios.patch.mockResolvedValueOnce(result)
+      mockedAxios.patch.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .patch(url)
@@ -415,14 +416,14 @@ describe('BaasAccountServiceController (e2e)', () => {
       const accountId = accountData.id
       const url       = `${baseUrl}/${accountId}`
 
-      const result : AxiosResponse = {
+      const axiosResponse : AxiosResponse = {
         data:       {},
         status:     204,
         statusText: 'OK',
         headers:    {},
         config:     {},
       }
-      mockedAxios.delete.mockResolvedValueOnce(result)
+      mockedAxios.delete.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .delete(url)

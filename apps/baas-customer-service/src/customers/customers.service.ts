@@ -28,9 +28,9 @@ export class CustomersService {
 
   async create(createCustomerDto: CreateCustomerDto) : Promise<ICustomerResponse> {
     try {
-      const response      = await axios.post(this.coreCustomerUrl, createCustomerDto)
-      const { customer }  = response.data
-      const result = {
+      const response  = await axios.post(this.coreCustomerUrl, createCustomerDto)
+      const customer  = response.data.data
+      const result    = {
         customer: customer,
       }
       this.logger.log(`Created customer, sending response= %o`, result)
@@ -45,9 +45,9 @@ export class CustomersService {
 
   async findAll() : Promise<ICustomerListResponse> {
     try {
-      const response      = await axios.get(this.coreCustomerUrl)
-      const { customers } = response.data
-      const result  = {
+      const response  = await axios.get(this.coreCustomerUrl)
+      const customers = response.data.data
+      const result    = {
         customers: customers,
       }
       this.logger.log(`Fetched [%d] customers`, customers.length)
@@ -81,10 +81,10 @@ export class CustomersService {
    */
   async findOne(customerId: string) {
     try {
-      const url          = `${this.coreCustomerUrl}/${customerId}`
-      const response     = await axios.get(url)
-      const { customer } = response.data
-      this.logger.log(`[DEBUG] Fetched response= %o`, response.data)
+      const url      = `${this.coreCustomerUrl}/${customerId}`
+      const response = await axios.get(url)
+      const customer = response.data.data
+      
       const result = {
         customer: customer,
       }
@@ -100,11 +100,11 @@ export class CustomersService {
    */
   async update(customerId: string, updateCustomerDto: UpdateCustomerDto) {
     try {
-      const url          = `${this.coreCustomerUrl}/${customerId}`
-      const response     = await axios.patch(url, updateCustomerDto)
-      const { customer } = response.data
+      const url      = `${this.coreCustomerUrl}/${customerId}`
+      const response = await axios.patch(url, updateCustomerDto)
+      const customer = response.data.data
       
-      const result = {
+      const result   = {
         customer: customer
       }
       return result

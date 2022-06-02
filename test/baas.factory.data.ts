@@ -33,7 +33,7 @@ export const createCustomerDtoFactoryData : ICreateCustomerDtoFactoryData = {
   joe_ferguson: {
     first_name:         `Joe`,
     last_name:          `Ferguson`,
-    status:             CustomerStatus.Active,
+    //* status:             CustomerStatus.Active,
     email:              `joe@bills.com`,
     phone_number:       `716-649-1475`,
     ssn:                `222-33-4444`,

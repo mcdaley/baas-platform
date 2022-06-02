@@ -12,16 +12,13 @@ import { BaasDebitCardServiceService }    from './baas-debit-card-service.servic
 
 import { IHeartbeat }                     from '@app/baas-interfaces'
 
-/**
- * Set mockConfigService using env variables in .jest/set-env-vars.ts
- */
- let mockConfigService = new Map()
- mockConfigService.set('NODE_ENV',    process.env.NODE_ENV)
- mockConfigService.set('appRoot',     '.')
- mockConfigService.set('appName',     process.env.DEBIT_CARD_APP_NAME)
- mockConfigService.set('logLevel',    process.env.DEBIT_CARD_LOG_LEVEL)
- mockConfigService.set('accountsUrl', process.env.ACCOUNT_URL)
- mockConfigService.set('bankSimulatorDebitCardsUrl', process.env.BANK_SIMULATOR_DEBIT_CARDS_URL)
+import {
+  BaasApplication,
+  setMockConfigService,
+}                                         from '../../../test/baas.factory.utils'
+
+// Setup test environment
+const mockConfigService = setMockConfigService(BaasApplication.DebitCardService)
 
 /**
  * BaasDebitCardServiceController
@@ -54,7 +51,7 @@ describe('BaasDebitCardServiceController', () => {
   describe('ping', () => {
     it('returns a heartbeat', () => {
       const heartbeat : IHeartbeat = {
-        app:      `baas-debit-card-service-test`,
+        app:      configService.get('appName'),
         message:  `Is alive`,
         timestamp: (new Date()).toISOString(),
       }

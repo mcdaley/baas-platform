@@ -7,10 +7,24 @@ import { Test, TestingModule }          from '@nestjs/testing'
 import { BaasAccountServiceController } from './baas-account-service.controller'
 import { BaasAccountServiceService }    from './baas-account-service.service'
 
+import { IHeartbeat }                   from '@app/baas-interfaces'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
+import { 
+  BaasApplication,
+  setMockConfigService,
+}                                       from '../../../test/baas.factory.utils'
+
+// Setup test eenvironment
+const mockConfigService = setMockConfigService(BaasApplication.AccountService)
+
+/**
+ * BaasAccountServiceController
+ */
 describe('BaasAccountServiceController', () => {
-  let baasAccountServiceController: BaasAccountServiceController;
+  let baasAccountServiceController: BaasAccountServiceController
+  let baasAccountServiceService:    BaasAccountServiceService
+  let configService:                ConfigService
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -18,19 +32,32 @@ describe('BaasAccountServiceController', () => {
       providers:    [
         BaasAccountServiceService, 
         WinstonLoggerService,
-        ConfigService,
+        {
+          provide:  ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
-    baasAccountServiceController = app.get<BaasAccountServiceController>(BaasAccountServiceController);
+    baasAccountServiceController = app.get<BaasAccountServiceController>(BaasAccountServiceController)
+    baasAccountServiceService    = app.get<BaasAccountServiceService>(BaasAccountServiceService)
+    configService                = app.get<ConfigService>(ConfigService)
   });
 
   describe('Ping', () => {
     it('Returns a heartbeat', () => {
-      const result        = baasAccountServiceController.ping()
-      const { heartbeat } = result
+      const heartbeat : IHeartbeat = {
+        app:      configService.get('appName'),
+        message:  `Is alive`,
+        timestamp: (new Date()).toISOString(),
+      }
 
-      expect(heartbeat.app).toBe(`baas-account-service`)
+      const spy    = jest.spyOn(baasAccountServiceService, 'ping').mockReturnValue(heartbeat)
+      const result = baasAccountServiceController.pingV1()
+      
+      expect(spy).toBeCalled()
+      expect(spy).toBeCalledWith()
+      expect(result).toEqual(heartbeat)
     });
   });
 });

@@ -9,6 +9,7 @@ export enum BaasApplication {
   CustomerService   = 'CUSTOMER',
   AccountService    = 'ACCOUNT',
   DebitCardService  = 'DEBIT_CARD',
+  MarqetaAdapter    = 'MARQETA_ADAPTER',
 }
 
 /**
@@ -28,6 +29,7 @@ export function setMockConfigService(app: BaasApplication) : Map<string, string>
   mockConfigService.set('appRoot',     '.')
   mockConfigService.set('appName',     process.env[`${app}_APP_NAME`])
   mockConfigService.set('logLevel',    process.env[`${app}_LOG_LEVEL`])
+  mockConfigService.set('port',        process.env[`${app}_PORT`])
 
   // Global urls
   mockConfigService.set('customersUrl', process.env.CUSTOMER_URL)

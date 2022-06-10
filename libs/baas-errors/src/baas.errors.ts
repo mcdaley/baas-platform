@@ -176,6 +176,38 @@ export const BaaSErrors: IBaaSErrorsList = {
       name:       `Customer is Not Active`,
     },
   },
+  marqeta: {
+    badRequest: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       3001,
+      name:       `Bad Request`,
+    },
+    unauthorized: {
+      httpStatus: HttpStatus.UNAUTHORIZED,
+      code:       3002,
+      name:       `Unauthorized`,
+    },
+    forbidden: {
+      httpStatus: HttpStatus.FORBIDDEN,
+      code:       3003,
+      name:       `Forbidden`,
+    },
+    notFound: {
+      httpStatus: HttpStatus.NOT_FOUND,
+      code:       3004,
+      name:       `Resource Not Found`,
+    },
+    internalError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3010,
+      name:       `Internal Resource Error`,
+    },
+    unknownError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3011,
+      name:       `Unknown Resource Error`,
+    },
+  },
   resource: {
     unauthorized: {
       httpStatus: HttpStatus.UNAUTHORIZED,

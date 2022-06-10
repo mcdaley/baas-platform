@@ -53,6 +53,12 @@
       ],
       "@test/baas-test-data/*": [
         "libs/baas-test-data/src/*"
+      ],
+      "@app/baas-marqeta": [
+        "libs/baas-marqeta/src"
+      ],
+      "@app/baas-marqeta/*": [
+        "libs/baas-marqeta/src/*"
       ]
     }
   }

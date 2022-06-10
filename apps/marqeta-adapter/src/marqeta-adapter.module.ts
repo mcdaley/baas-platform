@@ -7,6 +7,7 @@ import { ConfigModule }                   from '@nestjs/config'
 import { configuration, validate  }       from './config/marqeta-adapter.config'
 import { MarqetaAdapterController }       from './marqeta-adapter.controller'
 import { MarqetaAdapterService }          from './marqeta-adapter.service'
+import { CardProductsModule }             from './card-products/card-products.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
@@ -18,6 +19,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
       load:         [configuration],
       validate,
     }),
+    CardProductsModule,
     WinstonLoggerModule,
   ],
   controllers:  [MarqetaAdapterController],

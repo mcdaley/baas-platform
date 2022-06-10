@@ -1,7 +1,5 @@
 //-----------------------------------------------------------------------------
-// libs/baas-test-data/src/index.ts
+// libs/baas-marqeta/src/index.ts
 //-----------------------------------------------------------------------------
-export * from './baas.factory.data'
-export * from './baas.factory.utils'
-export * from './marqeta.factory.data'
-
+export * from './utils/baas-marqeta.utils'
+export * from './openapi/data-contracts'

@@ -40,5 +40,10 @@ export function setMockConfigService(app: BaasApplication) : Map<string, string>
   mockConfigService.set('bankSimulatorAccountsUrl',   process.env.BANK_SIMULATOR_ACCOUNTS_URL)
   mockConfigService.set('bankSimulatorDebitCardsUrl', process.env.BANK_SIMULATOR_DEBIT_CARDS_URL)
 
+  // Marqeta Urls
+  mockConfigService.set('marqetaUsername', process.env.MARQETA_USERNAME)
+  mockConfigService.set('marqetaPassword', process.env.MARQETA_PASSWORD )
+  mockConfigService.set('marqetaBaseUrl',  process.env.MARQETA_BASE_URL)
+
   return mockConfigService
 }

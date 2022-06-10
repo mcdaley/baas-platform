@@ -4,6 +4,7 @@
 import { plainToClass }   from 'class-transformer'
 import { 
   IsEnum, 
+  IsNotEmpty, 
   IsNumber, 
   IsOptional, 
   IsString, 
@@ -44,6 +45,18 @@ class EnvironmentVariables {
 
   @IsNumber()
   MARQETA_ADAPTER_PORT: number
+
+  @IsString()
+  @IsNotEmpty()
+  MARQETA_USERNAME: string
+  
+  @IsString()
+  @IsNotEmpty()
+  MARQETA_PASSWORD: string
+  
+  @IsString()
+  @IsNotEmpty()
+  MARQETA_BASE_URL: string
 }
 
 /**
@@ -81,11 +94,14 @@ export function validate(config: Record<string, unknown>) {
  * can be accessed in the app.
  */
 export const configuration = () => ({
-  NODE_ENV: process.env.NODE_ENV                  || Environment.Development,
-  appName:  process.env.MARQETA_ADAPTER_APP_NAME  || 'connext-bank',
-  LogLevel: process.env.MARQETA_ADAPTER_LOG_LEVEL || LogLevel.Debug,
-  appRoot:  process.cwd(),
-  port:     parseInt(process.env.MARQETA_ADAPTER_PORT, 10) || 6001,
+  NODE_ENV:        process.env.NODE_ENV                  || Environment.Development,
+  appName:         process.env.MARQETA_ADAPTER_APP_NAME  || 'marqeta-adapter',
+  logLevel:        process.env.MARQETA_ADAPTER_LOG_LEVEL || LogLevel.Debug,
+  marqetaUsername: process.env.MARQETA_USERNAME,
+  marqetaPassword: process.env.MARQETA_PASSWORD,
+  marqetaBaseUrl:  process.env.MARQETA_BASE_URL,
+  appRoot:         process.cwd(),
+  port:            parseInt(process.env.MARQETA_ADAPTER_PORT, 10) || 6001,
 })
 
 

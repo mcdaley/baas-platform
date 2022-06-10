@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // apps/marqeta-adapter/src/main.ts
 //-----------------------------------------------------------------------------
-import { NestFactory } from '@nestjs/core'
+import { NestFactory }                from '@nestjs/core'
 import { ConfigService }              from '@nestjs/config'
 
 import { mainConfig }                 from './main.config'

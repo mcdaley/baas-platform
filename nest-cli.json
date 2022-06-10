@@ -115,6 +115,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/marqeta-adapter/tsconfig.app.json"
       }
+    },
+    "baas-marqeta": {
+      "type": "library",
+      "root": "libs/baas-marqeta",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-marqeta/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-marqeta/tsconfig.lib.json"
+      }
     }
   }
 }

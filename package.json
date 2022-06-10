@@ -55,6 +55,7 @@
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
+    "swagger-typescript-api": "^9.3.1",
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
@@ -89,7 +90,8 @@
       "^@app/baas-errors(|/.*)$": "<rootDir>/libs/baas-errors/src/$1",
       "^@app/core-simulator(|/.*)$": "<rootDir>/libs/core-simulator/src/$1",
       "^@app/baas-interfaces(|/.*)$": "<rootDir>/libs/baas-interfaces/src/$1",
-      "^@app/baas-utils(|/.*)$": "<rootDir>/libs/baas-utils/src/$1"
+      "^@app/baas-utils(|/.*)$": "<rootDir>/libs/baas-utils/src/$1",
+      "^@app/baas-marqeta(|/.*)$": "<rootDir>/libs/baas-marqeta/src/$1"
     }
   }
 }

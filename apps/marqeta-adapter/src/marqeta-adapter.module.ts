@@ -8,6 +8,7 @@ import { configuration, validate  }       from './config/marqeta-adapter.config'
 import { MarqetaAdapterController }       from './marqeta-adapter.controller'
 import { MarqetaAdapterService }          from './marqeta-adapter.service'
 import { CardProductsModule }             from './card-products/card-products.module'
+import { ProgramFundingSourcesModule }    from './funding-sources/program/program-funding-sources.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
 
@@ -20,6 +21,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
       validate,
     }),
     CardProductsModule,
+    ProgramFundingSourcesModule,
     WinstonLoggerModule,
   ],
   controllers:  [MarqetaAdapterController],

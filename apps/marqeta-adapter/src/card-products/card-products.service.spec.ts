@@ -105,9 +105,6 @@ describe('CardProductsService', () => {
    * findAll()
    */
   describe(`findAll`, () => {
-    ///////////////////////////////////////////////////////////////////////////
-    // TODO: NEED TO CONVERT THE MARQETA RESPONSE TO MY FORMAT.
-    ///////////////////////////////////////////////////////////////////////////
     it(`Returns a list of card products`, async () => {
       let url             = marqetaUrl()
       let config          = { headers:  buildRequestHeader() }

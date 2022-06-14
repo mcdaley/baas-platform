@@ -12,4 +12,4 @@ Thoughts on how to handle multitenancy and multiple users.
 - Need to differentiate between Admin and User API calls.
 
 ### Logging Notes
-Each log message should include the tenant_id, trace_id, and customer_id if applicable.
+Each log message should include the tenant_id, trace_id, and customer_id if applicable. Also, I should look at creating another wrapper class that takes an object and writes the log message. Not exactly sure how it would look.

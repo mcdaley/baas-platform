@@ -10,6 +10,7 @@ import {
   Matches, 
   ValidateNested, 
 }                                       from "class-validator"
+import { Type }                         from 'class-transformer'
 
 import { CardProductConfigDto }         from "./card-product-config.dto"
 
@@ -36,7 +37,8 @@ export class CreateCardProductDto implements ICardProductRequest {
   // defined then it reports a validation error.
   /////////////////////////////////////////////////////////////////////////////
   @IsOptional()
-  //** @ValidateNested()
+  @ValidateNested()
+  @Type(() => CardProductConfigDto)
   config?: CardProductConfigDto
 
   /**

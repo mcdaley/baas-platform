@@ -7,11 +7,12 @@ import {
   IsOptional, 
   Length, 
   ValidateNested,
-}                               from 'class-validator'
+}                                           from 'class-validator'
+import { Type }                             from 'class-transformer'
 
-import { ExpirationOffsetDto }  from './expiration-offset.dto';
+import { ExpirationOffsetWithMinimumDto }   from './expiration-offset.dto'
 
-import { ICardLifeCycle, IExpirationOffsetWithMinimum }       from "@app/baas-marqeta"
+import { ICardLifeCycle }                   from "@app/baas-marqeta"
 
 /**
  * @class CardLifeCycleDto
@@ -28,8 +29,8 @@ export class CardLifeCycleDto implements ICardLifeCycle {
 
   @IsOptional()
   @ValidateNested()
-  expiration_offset?: ExpirationOffsetDto;
-  //* expiration_offset?: IExpirationOffsetWithMinimum;
+  @Type(() => ExpirationOffsetWithMinimumDto)
+  expiration_offset?: ExpirationOffsetWithMinimumDto
 
   @IsOptional()
   @IsBoolean()

@@ -7,6 +7,7 @@ import {
   IsString,
   ValidateNested, 
 }                                           from "class-validator"
+import { Type }                             from 'class-transformer'
 
 import { 
   IDigitalWalletTokenAddressVerification,
@@ -29,8 +30,11 @@ import {
 /**
  * @class WalletProviderCardOnFileDto
  */
- export class WalletProviderCardOnFileDto implements IWalletProviderCardOnFile {
-  address_verification?: IDigitalWalletTokenAddressVerification;
+export class WalletProviderCardOnFileDto implements IWalletProviderCardOnFile {
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DigitalWalletTokenAddressVerificationDto)
+  address_verification?: DigitalWalletTokenAddressVerificationDto
   
   @IsOptional()
   @IsBoolean()
@@ -40,8 +44,11 @@ import {
 /**
  * @class ManualEntryDto
  */
- export class ManualEntryDto implements IManualEntry {
-  address_verification?: IDigitalWalletTokenAddressVerification;
+export class ManualEntryDto implements IManualEntry {
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DigitalWalletTokenAddressVerificationDto)
+  address_verification?: DigitalWalletTokenAddressVerificationDto
   
   @IsOptional()
   @IsBoolean()
@@ -52,7 +59,10 @@ import {
  * @class InAppProvisioningControlsDto
  */
  export class InAppProvisioningControlsDto implements IInAppProvisioning {
-  address_verification?: IDigitalWalletTokenAddressVerification;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => DigitalWalletTokenAddressVerificationDto)
+  address_verification?: DigitalWalletTokenAddressVerificationDto
   
   @IsOptional()
   @IsBoolean()
@@ -65,15 +75,18 @@ import {
  export class ProvisioningControlsDto implements IProvisioningControls {
   @IsOptional()
   @ValidateNested()
-  in_app_provisioning?:           InAppProvisioningControlsDto
+  @Type(() => InAppProvisioningControlsDto)
+  in_app_provisioning?: InAppProvisioningControlsDto
   
   @IsOptional()
   @ValidateNested()
-  manual_entry?:                  ManualEntryDto
+  @Type(() => ManualEntryDto)
+  manual_entry?: ManualEntryDto
   
   @IsOptional()
   @ValidateNested()
-  wallet_provider_card_on_file?:  WalletProviderCardOnFileDto;
+  @Type(() => WalletProviderCardOnFileDto)
+  wallet_provider_card_on_file?: WalletProviderCardOnFileDto;
 }
 
 /**
@@ -86,6 +99,7 @@ export class DigitalWalletTokenizationDto implements IDigitalWalletTokenization 
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => ProvisioningControlsDto)
   provisioning_controls?: ProvisioningControlsDto
 }
 

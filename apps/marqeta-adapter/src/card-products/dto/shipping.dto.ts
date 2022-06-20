@@ -7,6 +7,7 @@ import {
   IsString, 
   ValidateNested,
 }                       from 'class-validator'
+import { Type }         from 'class-transformer'
 
 import { 
   IFulfillmentAddressRequest,
@@ -94,10 +95,12 @@ export class ShippingDto implements IShipping {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => FulfillmentAddressRequestDto)
   recipient_address?: FulfillmentAddressRequestDto
 
   @IsOptional()
   @ValidateNested()
-  return_address?:    FulfillmentAddressRequestDto
+  @Type(() => FulfillmentAddressRequestDto)
+  return_address?: FulfillmentAddressRequestDto
 }
 

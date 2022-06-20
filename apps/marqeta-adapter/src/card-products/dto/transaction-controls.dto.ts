@@ -8,6 +8,7 @@ import {
   IsString,
   ValidateNested,
 }                         from 'class-validator'
+import { Type }           from 'class-transformer'
 
 import { 
   IAvsControlOptions,
@@ -76,10 +77,12 @@ import {
  export class AvsControlsDto implements IAvsControls {
   @IsOptional()
   @ValidateNested()
+  @Type(() => AvsControlOptionsDto)
   auth_messages?: AvsControlOptionsDto
   
   @IsOptional()
   @ValidateNested()
+  @Type(() => AvsControlOptionsDto)
   av_messages?:   AvsControlOptionsDto
 }
 
@@ -93,7 +96,8 @@ export class TransactionControlsDto implements ITransactionControls {
 
   @IsOptional()
   @ValidateNested()
-  address_verification?: IAvsControls;
+  @Type(() => AvsControlsDto)
+  address_verification?: AvsControlsDto
 
   @IsOptional()
   @IsBoolean()
@@ -161,5 +165,6 @@ export class TransactionControlsDto implements ITransactionControls {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => StrongCustomerAuthenticationLimitsDto)
   strong_customer_authentication_limits?: StrongCustomerAuthenticationLimitsDto
 }

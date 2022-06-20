@@ -8,6 +8,7 @@ import {
   IsString,
   ValidateNested,
 }                             from 'class-validator'
+import { Type }               from 'class-transformer'
 
 import { 
   IJitFunding, 
@@ -100,15 +101,18 @@ export enum ProgramgatewayFundingSourceRefundsDestination {
 export class JitFundingDto implements IJitFunding {
   @IsOptional()
   @ValidateNested()
-  paymentcard_funding_source?:    JitFundingPaymentcardFundingSourceDto
+  @Type(() => JitFundingPaymentcardFundingSourceDto)
+  paymentcard_funding_source?: JitFundingPaymentcardFundingSourceDto
   
   @IsOptional()
   @ValidateNested()
-  program_funding_source?:        JitFundingProgramFundingSourceDto
+  @Type(() => JitFundingProgramFundingSourceDto)
+  program_funding_source?: JitFundingProgramFundingSourceDto
   
   @IsOptional()
   @ValidateNested()
-  programgateway_funding_source?: IJitFundingProgramgatewayFundingSource
+  @Type(() => JitFundingProgramgatewayFundingSourceDto)
+  programgateway_funding_source?: JitFundingProgramgatewayFundingSourceDto
 }
 
 

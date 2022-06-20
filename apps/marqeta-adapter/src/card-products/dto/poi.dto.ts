@@ -7,28 +7,12 @@ import {
   IsString,
   ValidateNested,
 }                   from 'class-validator'
+import { Type }     from 'class-transformer'
 
 import { 
   IOtherPoi,
   IPoi, 
 }                   from '@app/baas-marqeta'
-
-/**
- * @class PoiDto
- */
-export class PoiDto implements IPoi {
-  @IsOptional()
-  @IsBoolean()
-  atm?:       boolean
-  
-  @IsOptional()
-  @IsBoolean()
-  ecommerce?: boolean
-  
-  @IsOptional()
-  @ValidateNested()
-  other?:     IOtherPoi
-}
 
 /**
  * @class OtherPoiDto
@@ -53,4 +37,22 @@ export class OtherPoiDto implements IOtherPoi {
   @IsOptional()
   @IsString()
   track2_discretionary_data?: string
+}
+
+/**
+ * @class PoiDto
+ */
+ export class PoiDto implements IPoi {
+  @IsOptional()
+  @IsBoolean()
+  atm?: boolean
+  
+  @IsOptional()
+  @IsBoolean()
+  ecommerce?: boolean
+  
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OtherPoiDto)
+  other?: OtherPoiDto
 }

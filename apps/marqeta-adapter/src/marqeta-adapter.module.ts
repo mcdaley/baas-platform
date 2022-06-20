@@ -1,4 +1,5 @@
 //-----------------------------------------------------------------------------
+import { CardsModule } from './cards/cards.module';
 // apps/marqeta-adapter.module.ts
 //-----------------------------------------------------------------------------
 import { Module }                         from '@nestjs/common'
@@ -25,6 +26,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     ProgramFundingSourcesModule,
     UsersModule,
     WinstonLoggerModule,
+    CardsModule,
   ],
   controllers:  [MarqetaAdapterController],
   providers:    [MarqetaAdapterService],

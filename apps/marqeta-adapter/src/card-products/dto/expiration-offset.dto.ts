@@ -6,7 +6,8 @@ import {
   IsInt, 
   IsOptional, 
   ValidateNested,
-}                           from 'class-validator'
+}                               from 'class-validator'
+import { Type }                 from 'class-transformer'
 
 import { 
   IExpirationOffset, 
@@ -42,7 +43,7 @@ export enum Units {
 /**
  * @class ExpirationOffsetDto
  */
-export class ExpirationOffsetDto implements IExpirationOffsetWithMinimum {
+export class ExpirationOffsetDto implements IExpirationOffset {
   @IsOptional()
   @IsEnum(Units)
   unit?:  Units
@@ -50,8 +51,20 @@ export class ExpirationOffsetDto implements IExpirationOffsetWithMinimum {
   @IsOptional()
   @IsInt()
   value?: number
+}
 
-  @IsOptional()
-  @ValidateNested()
-  min_offset?: MinOffsetDto
+/**
+ * @class ExpirationOffsetWithMinimumDto
+ */
+export class ExpirationOffsetWithMinimumDto 
+  extends    ExpirationOffsetDto 
+  implements IExpirationOffsetWithMinimum {
+    constructor() {
+      super()
+    }
+
+    @IsOptional()
+    @ValidateNested()
+    @Type(() => MinOffsetDto)
+    min_offset?: MinOffsetDto
 }

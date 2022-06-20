@@ -10,6 +10,7 @@ import {
   IsString, 
   ValidateNested,
 }                               from 'class-validator'
+import { Type }                 from 'class-transformer'
 
 import { ShippingDto }          from './shipping.dto'
 
@@ -81,15 +82,18 @@ export enum PaymentInstrument {
  */
  export class TextDto implements IText {
   @IsNotEmpty()
-  @IsString()
+  @ValidateNested()
+  @Type(() => TextValueDto)
   name_line_1:  TextValueDto
   
   @IsOptional()
-  @IsString()
+  @ValidateNested()
+  @Type(() => TextValueDto)
   name_line_2?: TextValueDto
   
   @IsOptional()
-  @IsString()
+  @ValidateNested()
+  @Type(() => TextValueDto)
   name_line_3?: TextValueDto
 }
 
@@ -143,18 +147,22 @@ export enum PaymentInstrument {
  export class ImagesDto implements IImages {
   @IsOptional()
   @ValidateNested()
+  @Type(() => ImagesCardDto)
   card?:                  ImagesCardDto
   
   @IsOptional()
   @ValidateNested()
+  @Type(() => ImagesCardDto)
   carrier?:               ImagesCarrierDto
   
   @IsOptional()
   @ValidateNested()
+  @Type(() => ImagesCarrierReturnWindowDto)
   carrier_return_window?: ImagesCarrierReturnWindowDto
   
   @IsOptional()
   @ValidateNested()
+  @Type(() => ImagesSignatureDto)
   signature?:             ImagesSignatureDto
 }
 
@@ -189,19 +197,22 @@ export enum PaymentInstrument {
  export class CardPersonalizationDto implements ICardPersonalization {
   @IsOptional()
   @ValidateNested()
-  carrier?:       CarrierDto
+  @Type(() => CarrierDto)
+  carrier?: CarrierDto
 
   @IsOptional()
   @ValidateNested()
-  images?:        ImagesDto
+  @Type(() => ImagesDto)
+  images?: ImagesDto
 
   @IsOptional()
   @IsEnum(CardPersonalizationTextType)
-  perso_type?:    CardPersonalizationTextType
+  perso_type?: CardPersonalizationTextType
 
   @IsNotEmpty()
   @ValidateNested()
-  text:           TextDto;
+  @Type(() => TextDto)
+  text: TextDto
 }
 
 /**
@@ -226,6 +237,7 @@ export class CardProductFulfillmentDto implements ICardProductFulfillment {
   
   @IsNotEmpty()
   @ValidateNested()
+  @Type(() => CardPersonalizationDto)
   card_personalization:         CardPersonalizationDto
   
   @IsOptional()
@@ -250,6 +262,7 @@ export class CardProductFulfillmentDto implements ICardProductFulfillment {
 
   @IsOptional()
   @ValidateNested()
+  @Type(() => ShippingDto)
   shipping?:                    ShippingDto
 
   @IsOptional()

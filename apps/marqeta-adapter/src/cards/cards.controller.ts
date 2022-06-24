@@ -73,6 +73,7 @@ export class CardsController {
    */
   @Get(':cardToken')
   findOneV1(@Param('cardToken') cardToken: string) {
+    this.logger.log(`GET /v1/cards/${cardToken}`)
     return this.cardsService.findOne(cardToken);
   }
 

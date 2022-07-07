@@ -7,6 +7,7 @@ import { States }         from './address.enum'
  * @interface ICreateAddressDto
  */
 export interface ICreateAddressDto {
+  id?:              string
   name:             string
   street_line_1:    string
   street_line_2?:   string
@@ -18,4 +19,6 @@ export interface ICreateAddressDto {
 /**
  * @interface IAddress
  */
-export interface IAddress extends ICreateAddressDto {}
+export interface IAddress extends ICreateAddressDto {
+  //* id?:              string
+}

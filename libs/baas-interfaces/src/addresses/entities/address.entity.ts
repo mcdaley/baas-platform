@@ -5,6 +5,7 @@ import { States }   from '../address.enum'
 import { IAddress } from '../address.interface'
 
 export class Address implements IAddress{
+  id?:              string
   name:             string
   street_line_1:    string
   street_line_2?:   string

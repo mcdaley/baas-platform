@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString, 
+  IsUUID, 
   Length,
   Matches,
   MaxLength,
@@ -18,6 +19,10 @@ import { States }             from '../address.enum'
  * @class CreateAddressDto
  */
 export class CreateAddressDto implements ICreateAddressDto {
+  @IsOptional()
+  @IsUUID()
+  id?:            string
+
   @IsOptional()
   @IsString()
   @MaxLength(128)

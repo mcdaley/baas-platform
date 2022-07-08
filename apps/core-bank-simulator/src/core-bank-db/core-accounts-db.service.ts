@@ -20,7 +20,7 @@ import {
   AccountStatus, 
 }                               from '@app/baas-interfaces'
 import { WinstonLoggerService } from '@app/winston-logger'
-import { CreateAccountsBlockDto } from '../accounts/blocks/dto/create-accounts-block.dto'
+import { CreateAccountsBlockDto } from '../accounts/dto/create-accounts-block.dto'
 
 /**
  * @class CoreAccountsDBService

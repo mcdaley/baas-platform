@@ -10,10 +10,9 @@ import {
   ValidateNested 
 }                                   from 'class-validator'
 import { Type }                     from 'class-transformer'
-import { PartialType }              from '@nestjs/mapped-types'
 
-import { CreateParticipantDto }     from '../participants/dto/create-participant.dto'
-import { Participant }              from '../participants/entities/participant.entity'
+import { CreateParticipantDto }     from './create-participant.dto'
+import { Participant }              from '../entities/participant.entity'
 
 import { 
   AccountStatus, 
@@ -42,6 +41,11 @@ export class UpdateAccountDto implements IUpdateAccountDto {
   @MaxLength(128)
   nickname?:                string
   
+  /////////////////////////////////////////////////////////////////////////////
+  // TODO: 07/08/2022
+  // Remove the "participants" from the UpdateAccountDto as the update logic
+  // is implemented in the "Participants" controller and service.
+  /////////////////////////////////////////////////////////////////////////////
   @IsOptional()
   @IsArray()
   @ValidateNested()

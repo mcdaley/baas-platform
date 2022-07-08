@@ -2,34 +2,45 @@
 // apps/core-bank-simulator/src/accounts/participants/participants.service.ts
 //----------------------------------------------------------------------------------------
 import { Injectable }                   from '@nestjs/common'
+import { InjectRepository }             from '@nestjs/typeorm'
+import { Repository }                   from 'typeorm'
 
-import { CreateParticipantDto }         from './dto/create-participant.dto'
-import { CoreAccountsDBService }        from '../../core-bank-db/core-accounts-db.service'
+import { AccountToCustomer }            from '../entities/account-to-customer.entity'
+import { CreateParticipantDto }         from '../dto/create-participant.dto'
 
 import { WinstonLoggerService }         from '@app/winston-logger'
 
+
+/**
+ * @class ParticipantsService
+ */
 @Injectable()
 export class ParticipantsService {
   constructor(
-    private readonly logger:      WinstonLoggerService,
-    private readonly accountsDB:  CoreAccountsDBService,
-  ) {
-    this.accountsDB = CoreAccountsDBService.instance(logger)
-  }
+    @InjectRepository(AccountToCustomer) private participantRepository: Repository<AccountToCustomer>,
+    private readonly logger: WinstonLoggerService,
+  ) {}
 
   /**
+   * Add a customer/participant to an account by adding a row to to the
+   * accounts_to_customers DB table.
+   * 
    * @method create
    */
   async create(accountId: string, createParticipantDto: CreateParticipantDto) {
     try {
-      const participants = await this.accountsDB.createCoreParticipant(accountId, createParticipantDto)
-      const result       = {
-        data: participants,
+      const participant = {account_id: accountId, ...createParticipantDto}
+      const response    = await this.participantRepository.save(participant)
+        
+      const result      = {
+        data: response,
       }
 
+      this.logger.log(`Added account participant, result= %o`, result)
       return result
     }
     catch(error) {
+      this.logger.error(`Failed to create participant for account id=[${accountId}], error= %o`, error)
       throw(error)
     }
   }
@@ -39,14 +50,22 @@ export class ParticipantsService {
    */
   async findAll(accountId: string) {
     try {
-      const participants = await this.accountsDB.findAllCoreParticipants(accountId)
+      const participants = await this.participantRepository.find({
+        where: {account_id: accountId}
+      })
+
       const result       = {
         data: participants,
       }
 
+      this.logger.log(
+        `Fetched [${participants.length}] participants for account id=[${accountId}], result= %o`, 
+        result
+      )
       return result
     }
     catch(error) {
+      this.logger.error(`Failed to fetch participants for account id=[${accountId}], error= %o`, error)
       throw(error)
     }
   }
@@ -56,14 +75,21 @@ export class ParticipantsService {
    */
   async remove(accountId: string, participantCustomerId: string) {
     try {
-      const participants = await this.accountsDB.removeCoreParticipants(accountId, participantCustomerId)
+      const response = await this.participantRepository.delete({
+        account_id:              accountId, 
+        participant_customer_id: participantCustomerId
+      })
       const result       = {
-        data: participants,
+        data: response,
       }
 
       return result
     }
     catch(error) {
+      this.logger.error(
+        `Failed to delete participant id=[${participantCustomerId}], error= %o`, 
+        error
+      )
       throw(error)
     }
   }

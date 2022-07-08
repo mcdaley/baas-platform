@@ -77,7 +77,7 @@ export class CustomersService {
       // Reset pagination
       if(start_index + take > count) {
         is_more   = false
-        end_index = count -1
+        end_index = count - 1
       }
 
       // Compose and return the result object

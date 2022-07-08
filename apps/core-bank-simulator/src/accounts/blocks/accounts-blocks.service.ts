@@ -2,11 +2,17 @@
 // apps/core-bank-simulator/src/accounts/blocks/accounts-blocks.service.ts
 //---------------------------------------------------------------------------------------
 import { Injectable }                   from '@nestjs/common'
+import { InjectRepository }             from '@nestjs/typeorm'
+import { Repository }                   from 'typeorm'
 
-import { CreateAccountsBlockDto }       from './dto/create-accounts-block.dto'
-import { CoreAccountsDBService }        from '../../core-bank-db/core-accounts-db.service'
+import { AccountBlock }                 from '../entities/account-block.entity'
+import { Account }                      from '../entities/account.entity'
+import { CreateAccountsBlockDto }       from '../dto/create-accounts-block.dto'
 
-import { CoreSimulatorService }         from '@app/core-simulator'
+import { 
+  AccountBlockStatus, 
+  AccountStatus 
+}                                       from '@app/baas-interfaces'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
 /**
@@ -14,26 +20,36 @@ import { WinstonLoggerService }         from '@app/winston-logger'
  */
 @Injectable()
 export class AccountsBlocksService {
-  private accountsDB: CoreAccountsDBService
 
   constructor(
-    private readonly logger:        WinstonLoggerService,
-    private readonly coreService:   CoreSimulatorService,
-  ) {
-    this.accountsDB = CoreAccountsDBService.instance(logger)
-  }
+    @InjectRepository(AccountBlock) private accountBlockRepository: Repository<AccountBlock>,
+    @InjectRepository(Account) private accountRepository: Repository<Account>,
+    private readonly logger: WinstonLoggerService,
+  ) {}
 
   /**
+   * Add a block to an account and update the account status to blocked.
+   * 
    * @method create
    */
   async create(accountId: string, createAccountBlockDto: CreateAccountsBlockDto) {
     try {
-      const blocks = await this.accountsDB.createCoreAccountsBlock(accountId, createAccountBlockDto)
-      const result = {
-        data: blocks,
+      const block    = {
+        account_id:   accountId, 
+        block_status: AccountBlockStatus.Active,
+        ...createAccountBlockDto,
       }
-      this.logger.log(`Blocked account id=[${accountId}] with block= %o`, createAccountBlockDto)
+      const response      = await this.accountBlockRepository.save(block)
+      const accountStatus = await this.accountRepository.update(
+        { id:             accountId },
+        { account_status: AccountStatus.Blocked }
+      )
 
+      const result   = {
+        data: response,
+      }
+
+      this.logger.log(`Blocked account id=[${accountId}], result= %o`, result)
       return result
     }
     catch(error) {
@@ -47,11 +63,16 @@ export class AccountsBlocksService {
   async findAll(accountId: string) {
     this.logger.log(`Get account blocks for account id=[${accountId}]`)
     try {
-      const blocks = await this.accountsDB.findAllCoreAccountsBlocks(accountId)
+      const blocks = await this.accountBlockRepository.find({
+        where: { account_id: accountId },
+        order: { created_at: 'DESC'},
+      })
+
       const result = {
         data: blocks,
       }
 
+      this.logger.log(`Fetched blocks for account id=[${accountId}], result= %o`, result)
       return result
     }
     catch(error) {
@@ -60,16 +81,28 @@ export class AccountsBlocksService {
   }
 
   /**
+   * Remove block from an account and set the account status to open.
+   * 
    * @method remove
    */
   async remove(accountId: string, accountBlockId: string) {
     try {
-      const blocks = await this.accountsDB.removeCoreAccountsBlock(accountId, accountBlockId)
-      const result = {
-        data: blocks,
+      const block  = {
+        account_id:   accountId, 
+        id:           accountBlockId, 
+        block_status: AccountBlockStatus.Canceled
       }
-      this.logger.log(`Removed account block id=[${accountBlockId}] for account, id=[${accountId}]`)
+      const response      = await this.accountBlockRepository.save(block)
+      const accountStatus = await this.accountRepository.update(
+        { id:             accountId },
+        { account_status: AccountStatus.Open }
+      )
 
+      const result = {
+        data: response,
+      }
+
+      this.logger.log(`Removed account block id=[${accountBlockId}] for account, id=[${accountId}]`)
       return result
     }
     catch(error) {

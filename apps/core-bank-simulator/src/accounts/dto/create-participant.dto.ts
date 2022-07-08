@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------------------
-// apps/core-bank-simulator/src/accounts/participants/dto/create-participant.dto.ts
+// apps/core-bank-simulator/src/accounts/dto/create-participant.dto.ts
 //----------------------------------------------------------------------------------
 import { 
   IsEnum,

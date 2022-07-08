@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// apps/core-bank-simulator/src/accounts/blocks/dto/create-accounts-block.dto.ts
+// apps/core-bank-simulator/src/accounts/dto/create-accounts-block.dto.ts
 //---------------------------------------------------------------------------------------
 import { 
   IsEnum,

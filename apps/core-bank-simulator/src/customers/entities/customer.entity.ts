@@ -7,9 +7,11 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 }                             from 'typeorm'
 
 import { Address }            from './address.entity'
+import { AccountToCustomer }  from '../../accounts/entities/account-to-customer.entity'
 
 import { 
   CustomerStatus,
@@ -63,4 +65,9 @@ export class Customer {
   @OneToOne(() => Address, {cascade: true, nullable: true})
   @JoinColumn({name: 'mailing_address_id'})
   mailing_address?:   Address
+
+  // Customer can have many accounts
+  @OneToMany(() => AccountToCustomer, accountToCustomer => accountToCustomer.customer)
+  @JoinColumn({name: 'participant_customer_id'})
+  accounts?: AccountToCustomer[]
 }

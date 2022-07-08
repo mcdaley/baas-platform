@@ -13,7 +13,7 @@ import {
 }                                       from '@nestjs/common'
 
 import { AccountsBlocksService }        from './accounts-blocks.service'
-import { CreateAccountsBlockDto }       from './dto/create-accounts-block.dto'
+import { CreateAccountsBlockDto }       from '../dto/create-accounts-block.dto'
 
 import { IdempotencyKey }               from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'

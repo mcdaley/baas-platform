@@ -13,7 +13,7 @@ import {
 }                                     from '@nestjs/common'
 
 import { ParticipantsService }        from './participants.service'
-import { CreateParticipantDto }       from './dto/create-participant.dto'
+import { CreateParticipantDto }       from '../dto/create-participant.dto'
 
 import { IdempotencyKey }             from '@app/baas-errors'
 import { WinstonLoggerService }       from '@app/winston-logger'

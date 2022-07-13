@@ -128,7 +128,8 @@ export class AccountsService {
   }
 
   /**
-   * Updates an account using the repository "update" method.
+   * Updates an account using the repository "update" method and the fetches
+   * and returns the updated account.
    * 
    * @method update
    */

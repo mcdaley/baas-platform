@@ -20,6 +20,7 @@ import { Address }                        from './customers/entities/address.ent
 import { Account }                        from './accounts/entities/account.entity'
 import { AccountToCustomer }              from './accounts/entities/account-to-customer.entity'
 import { AccountBlock }                   from './accounts/entities/account-block.entity'
+import { DebitCard }                      from './debit-cards/entities/debit-card.entity'
 
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
@@ -35,7 +36,14 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     TypeOrmModule.forRoot({
       type:         'sqlite',
       database:     './db/core-bank-db.sqlite',
-      entities:     [Customer, Address, Account, AccountToCustomer, AccountBlock],
+      entities:     [
+        Customer, 
+        Address, 
+        Account, 
+        AccountToCustomer, 
+        AccountBlock, 
+        DebitCard,
+      ],
       synchronize:  true,
       logging:      true,
     }),

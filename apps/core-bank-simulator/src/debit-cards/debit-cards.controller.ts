@@ -9,7 +9,9 @@ import {
   Patch, 
   Param, 
   Delete, 
-  ParseUUIDPipe
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus
 }                                 from '@nestjs/common'
 
 import { DebitCardsService }      from './debit-cards.service'
@@ -75,6 +77,7 @@ export class DebitCardsController {
    * @method removeV1
    */
   @Delete(':debitCardId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   removeV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
     this.logger.log(`DELETE /core/api/v1/debit-cards/${debitCardId}`)

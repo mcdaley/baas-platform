@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // apps/baas-account-service/src/accounts/entities/account.entity.ts
 //-----------------------------------------------------------------------------
-import { Participant }  from '../../participants/entities/participant.entity'
+import { Participant }    from '../../participants/entities/participant.entity'
 
 import {
   AccountType,
@@ -14,7 +14,7 @@ import {
  */
 export class Account implements IAccount {
   id:                     string
-  branch_id:              string
+  tenant_id:              string
   account_type:           AccountType
   account_number:         string
   routing_number:         string

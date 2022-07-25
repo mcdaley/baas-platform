@@ -26,6 +26,7 @@ import {
   BaasApplication,
   setMockConfigService,
 }                                 from '../../../../test/'
+import { IdempotencyKey }         from '@app/baas-errors'
 
 /**
  * Setup test environment and data
@@ -33,6 +34,8 @@ import {
 const mockConfigService = setMockConfigService(BaasApplication.CustomerService)
 const createCustomerDto = createCustomerDtoFactoryData.joe_ferguson
 const customerData      = customerFactoryData.joe_ferguson
+const tenantId          = `buffalo_bills`
+const idempotencyKey    = `unique_idempotency_key`
 
 /**
  * CustomersController
@@ -70,11 +73,17 @@ describe('CustomersController', () => {
       }
 
       const spy    = jest.spyOn(customersService, 'create').mockResolvedValue(response)
-      const result = await customersController.createV1(`idempotency-key`, createCustomerDto)
+      const result = await customersController.createV1(
+        tenantId, idempotencyKey, createCustomerDto
+      )
+      const headers = {
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
       
       expect(result).toBe(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(createCustomerDto)
+      expect(spy).toBeCalledWith(createCustomerDto, headers)
     })
   })
 
@@ -90,13 +99,16 @@ describe('CustomersController', () => {
           },
         ]
       }
+      const headers = {
+        'Tenant-Id':       tenantId,
+      }
 
       const spy    = jest.spyOn(customersService, 'findAll').mockResolvedValue(response)
-      const result = await customersController.findAllV1()
+      const result = await customersController.findAllV1(tenantId)
       
       expect(result).toBe(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith()
+      expect(spy).toBeCalledWith(headers)
     })
   })
 
@@ -106,16 +118,17 @@ describe('CustomersController', () => {
   describe(`findOneV1`, () => {
     it(`Returns a customer`, async () => {
       const customerId : string             = `unique-id`
+      const headers                         = { 'Tenant-Id': tenantId }
       const response   : ICustomerResponse  = {
         customer: { ...customerData }
       }
 
       const spy    = jest.spyOn(customersService, 'findOne').mockResolvedValue(response)
-      const result = await customersController.findOneV1(customerId)
+      const result = await customersController.findOneV1(tenantId, customerId)
       
       expect(result).toBe(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(customerId)
+      expect(spy).toBeCalledWith(customerId, headers)
     })
   })
 
@@ -125,7 +138,10 @@ describe('CustomersController', () => {
   describe(`updateV1`, () => {
     it(`Returns the updated customer`, async () => {
       const customerId        = `unique-customer-id`
-      const idempotencyKey    = `another-unique-string`
+      const headers           = {
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
       const updateCustomerDto = {
         status: CustomerStatus.Blocked,
       }
@@ -137,11 +153,13 @@ describe('CustomersController', () => {
       }
 
       const spy    = jest.spyOn(customersService, 'update').mockResolvedValue(response)
-      const result = await customersController.updateV1(idempotencyKey, customerId, updateCustomerDto)
+      const result = await customersController.updateV1(
+        tenantId, idempotencyKey, customerId, updateCustomerDto
+      )
       
       expect(result).toEqual(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(customerId, updateCustomerDto)
+      expect(spy).toBeCalledWith(customerId, updateCustomerDto, headers)
     })
   })
 
@@ -151,16 +169,17 @@ describe('CustomersController', () => {
   describe(`deleteV1`, () => {
     it(`Deletes a customer`, async () => {
       const customerId = `unique-customer-id`
+      const headers    = { 'Tenant-Id':       tenantId }
       const response   = {
         customer: customerId
       }
       
       const spy    = jest.spyOn(customersService, 'remove').mockResolvedValue(response)
-      const result = await customersController.removeV1(customerId)
+      const result = await customersController.removeV1(tenantId, customerId)
       
       expect(result).toEqual(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(customerId)
+      expect(spy).toBeCalledWith(customerId, headers)
     })
   })
 })

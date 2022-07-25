@@ -10,5 +10,5 @@ import { IUpdateCustomerDto }     from '@app/baas-interfaces'
  * @class UpdateCustomerDto
  */
 export class UpdateCustomerDto 
-  extends    PartialType(CreateCustomerDto) 
+  extends    PartialType(CreateCustomerDto)
   implements IUpdateCustomerDto {}

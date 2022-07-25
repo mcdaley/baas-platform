@@ -40,7 +40,17 @@ export const BaaSErrors: IBaaSErrorsList = {
     invalidIdempotencyKey: {
       httpStatus: HttpStatus.BAD_REQUEST,
       code:       1001,
-      name:       `Invalid Idempotency-Key`
+      name:       `Invalid Idempotency-Key`,
+    },
+    invalidTenantId: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       1001,
+      name:       `Invalid Tenant-Id`,
+    },
+    invalidCustomerId: {
+      httpStatus: HttpStatus.BAD_REQUEST,
+      code:       1001,
+      name:       `Invalid Customer-Id`,
     },
   },
   request: {

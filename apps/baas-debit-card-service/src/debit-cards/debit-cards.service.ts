@@ -31,9 +31,22 @@ export class DebitCardsService {
   /**
    * @method create
    */
-  async create(createDebitCardDto: CreateDebitCardDto) {
+  async create(
+    createDebitCardDto: CreateDebitCardDto,
+    customerId:         string,
+    tenantId:           string,
+    idempotencyKey:     string) 
+  {
     try {
-      const response  = await axios.post(this.simulatorUrl, createDebitCardDto)
+      const url       = this.simulatorUrl
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':     customerId,
+          'Tenant-Id':       tenantId,
+          'Idempotency-Key': idempotencyKey,
+        }
+      }
+      const response  = await axios.post(url, createDebitCardDto, axiosConfig)
       const debitCard = response.data.data
       const result    = {
         debit_card: debitCard
@@ -50,9 +63,16 @@ export class DebitCardsService {
   /**
    * @method findAll
    */
-  async findAll() {
+  async findAll(customerId: string, tenantId: string) {
     try {
-      const response      = await axios.get(this.simulatorUrl)
+      const url           = this.simulatorUrl
+      const axiosConfig   = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response      = await axios.get(this.simulatorUrl, axiosConfig)
       const debitCardList = response.data.data
       const result        = {
         debit_cards: debitCardList,
@@ -62,6 +82,7 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
+      this.logger.error(`Failed to fetch debit cards, error= %o`, error)
       throw(createBaaSException(error, 'Debit Card'))
     }
   }
@@ -69,16 +90,22 @@ export class DebitCardsService {
   /**
    * @method findOne
    */
-  async findOne(debitCardId: string) {
+  async findOne(debitCardId: string, customerId: string, tenantId: string) {
     try {
-      const url       = `${this.simulatorUrl}/${debitCardId}`
-      const response  = await axios.get(url)
+      const url         = `${this.simulatorUrl}/${debitCardId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response  = await axios.get(url, axiosConfig)
       const debitCard = response.data.data
       const result    = {
         debit_card: debitCard,
       }
+
       this.logger.log(`Fetched debit card w/ id=[${debitCardId}], sending response= %o`, result)
-      
       return result
     }
     catch(error) {
@@ -90,10 +117,23 @@ export class DebitCardsService {
   /**
    * @method update
    */
-  async update(debitCardId: string, updateDebitCardDto: UpdateDebitCardDto) {
+  async update(
+    debitCardId:        string, 
+    updateDebitCardDto: UpdateDebitCardDto,
+    customerId:         string,
+    tenantId:           string,
+    idempotencyKey:     string) 
+  {
     try {
       const url       = `${this.simulatorUrl}/${debitCardId}`
-      const response  = await axios.patch(url, updateDebitCardDto)
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':     customerId,
+          'Tenant-Id':       tenantId,
+          'Idempotency-Key': idempotencyKey,
+        }
+      }
+      const response  = await axios.patch(url, updateDebitCardDto, axiosConfig)
       const debitCard = response.data.data
       const result    = {
         debit_card: debitCard,

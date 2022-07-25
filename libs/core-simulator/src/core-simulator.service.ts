@@ -47,7 +47,7 @@ export class CoreSimulatorService {
    private buildAccount(createAccountDto: ICreateAccountDto) : IAccount {
     let account: IAccount = {
       id:                     uuidv4(),
-      branch_id:              uuidv4(),
+      tenant_id:              uuidv4(),
       account_number:         '1111-2222-3333',
       routing_number:         '5555-6666',
       account_status:         AccountStatus.Open,
@@ -61,7 +61,13 @@ export class CoreSimulatorService {
       created_at:             new Date(),
       updated_at:             new Date(),
       account_type:           createAccountDto.account_type,
-      participants:           createAccountDto.participants,
+      participants:           createAccountDto.participants.map( (participant) => {
+        return {
+          created_at: new Date(),
+          updated_at: new Date(),
+          ...participant
+        }
+      })
 
     }
     this.logger.log(`Built account= %o`, account)
@@ -188,11 +194,12 @@ export class CoreSimulatorService {
         ///////////////////////////////////////////////////////////////////////
         // NOTE: 04/11/2022
         // I'm NOT creating a participant Id and I'm just using the 
-        // participant_customer_id as the unique identifier.
+        // customer_id as the unique identifier.
         ///////////////////////////////////////////////////////////////////////
         let account     : IAccount     = this.coreBank.getAccount(accountId)
         let participant : IParticipant = {
-          //* id:           uuid(),
+          created_at: new Date(),
+          updated_at: new Date(),
           ...createParticipantDto
         }
 
@@ -262,7 +269,7 @@ export class CoreSimulatorService {
 
         let account = this.coreBank.getAccount(accountId)
         let index   = account.participants.findIndex( (participant) => {
-          return participant.participant_customer_id === participantCustomerId
+          return participant.customer_id === participantCustomerId
         })
 
         // Participant not found
@@ -317,6 +324,8 @@ export class CoreSimulatorService {
         let block   = {
           id:           uuidv4(),
           block_status: AccountBlockStatus.Active,
+          created_at:   new Date(),
+          updated_at:   new Date(),
           ...createAccountBlockDto
         }
         blocks.unshift(block)

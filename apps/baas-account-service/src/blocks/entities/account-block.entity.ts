@@ -15,4 +15,6 @@ export class AccountBlock implements IAccountBlock {
   block_status:   AccountBlockStatus
   block_type:     AccountBlockType
   block_reason?:  string
+  created_at:     Date
+  updated_at:     Date
 }

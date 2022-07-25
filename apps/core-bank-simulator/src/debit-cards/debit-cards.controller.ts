@@ -19,6 +19,7 @@ import { CreateDebitCardDto }     from './dto/create-debit-card.dto'
 import { UpdateDebitCardDto }     from './dto/update-debit-card.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { CustomerId, IdempotencyKey, TenantId } from '@app/baas-errors'
 
 /**
  * @class DebitCardsController
@@ -34,28 +35,38 @@ export class DebitCardsController {
    * @method createV1
    */
   @Post()
-  createV1(@Body() createDebitCardDto: CreateDebitCardDto) {
+  createV1(
+    @TenantId()       tenantId:           string,
+    @IdempotencyKey() idempotencyKey:     string,
+    @Body()           createDebitCardDto: CreateDebitCardDto) 
+  {
     this.logger.log(`POST /core/api/v1/debit-cards, createDebitCardDto= %o`, createDebitCardDto)
-    return this.debitCardsService.create(createDebitCardDto);
+    return this.debitCardsService.create(createDebitCardDto, tenantId);
   }
 
   /**
    * @method findallV1
    */
   @Get()
-  findAllV1() {
+  findAllV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string) 
+  {
     this.logger.log(`GET /core/api/v1/debit-cards`)
-    return this.debitCardsService.findAll()
+    return this.debitCardsService.findAll(customerId, tenantId)
   }
 
   /**
    * @method findOneV1
    */
   @Get(':debitCardId')
-  findOneV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
+  findOneV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
+    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
     this.logger.log(`GET /core/api/v1/debit-cards/${debitCardId}`)
-    return this.debitCardsService.findOne(debitCardId)
+    return this.debitCardsService.findOne(debitCardId, customerId, tenantId)
   }
 
   /**
@@ -63,6 +74,8 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId')
   updateV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string, 
     @Body() updateDebitCardDto: UpdateDebitCardDto) 
   {
@@ -70,7 +83,7 @@ export class DebitCardsController {
       `PATCH /core/api/v1/debit-cards/${debitCardId}, updateDebitCardDto = %o`, 
       updateDebitCardDto
     )
-    return this.debitCardsService.update(debitCardId, updateDebitCardDto);
+    return this.debitCardsService.update(debitCardId, updateDebitCardDto, customerId, tenantId);
   }
 
   /**
@@ -78,9 +91,12 @@ export class DebitCardsController {
    */
   @Delete(':debitCardId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
+  removeV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
+    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
     this.logger.log(`DELETE /core/api/v1/debit-cards/${debitCardId}`)
-    return this.debitCardsService.remove(debitCardId);
+    return this.debitCardsService.remove(debitCardId, customerId, tenantId);
   }
 }

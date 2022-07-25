@@ -6,21 +6,29 @@ import {
   Controller, 
   Delete,
   Get, 
+  Header, 
   HttpCode,
   Param,
   ParseUUIDPipe,
   Patch,  
   Post, 
-  Put, 
+  Put,
+  UseInterceptors, 
 }                                 from '@nestjs/common'
 
 import { CustomersService }       from './customers.service'
 import { CreateCustomerDto }      from './dto/create-customer.dto'
 import { UpdateCustomerDto }      from './dto/update-customer.dto'
 
+import { 
+  IdempotencyKey, 
+  TenantId,
+}                                 from '@app/baas-errors'
+import { 
+  ICustomerListResponse, 
+  ICustomerResponse 
+}                                 from '@app/baas-interfaces'
 import { WinstonLoggerService }   from '@app/winston-logger'
-import { IdempotencyKey }         from '@app/baas-errors'
-import { ICustomerListResponse, ICustomerResponse } from '@app/baas-interfaces'
 
 /**
  * @class CustomersController
@@ -32,43 +40,84 @@ export class CustomersController {
     private readonly logger:            WinstonLoggerService,
   ) {}
 
+  /**
+   * @method create
+   */
   @Post()
   createV1(
-    @IdempotencyKey() idempotencyKey: string,
-    @Body() createCustomerDto: CreateCustomerDto ) : Promise<ICustomerResponse>
+    @TenantId()       tenantId:          string,
+    @IdempotencyKey() idempotencyKey:    string,
+    @Body()           createCustomerDto: CreateCustomerDto ) : Promise<ICustomerResponse>
   {
     this.logger.log(`POST /v1/customers, createCustomerDto= %o`, createCustomerDto)
-    this.logger.log(`IdempotencyKey= %s`, idempotencyKey)
+    const requestHeaders = {
+      'Tenant-Id':       tenantId,
+      'Idempotency-Key': idempotencyKey,
+    }
 
-    return this.customersService.create(createCustomerDto)
+    return this.customersService.create(createCustomerDto, requestHeaders)
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // TODO: 07/18/2022
+  // Remove the TenantId middleware and replace it with the TenantId
+  // decorator. I need the Tenant-Id sent to the Core server, but I cannot 
+  // add it to the body of GET and DELETE requests since they do not have
+  // a request body, thus it makes sense to pass it to the core as a 
+  // header.
+  //
+  // See if I can build the request header using values of decorators that 
+  // I expect, e.g., Tenant-Id, Customer-Id, and Idempotency-Key.
+  //
+  // Take a look at mambu apis to see how it expects to see the branch_id.
+  /////////////////////////////////////////////////////////////////////////////
+
   @Get()
-  findAllV1() : Promise<ICustomerListResponse> {
+  findAllV1(@TenantId() tenantId: string) : Promise<ICustomerListResponse> {
     this.logger.log(`GET /v1/customers`)
-    return this.customersService.findAll();
+    const requestHeaders = {
+      'Tenant-Id': tenantId,
+    }
+    return this.customersService.findAll(requestHeaders);
   }
 
   @Get(':customerId')
-  findOneV1(@Param('customerId', ParseUUIDPipe) customerId: string) : Promise<ICustomerResponse> {
+  findOneV1(
+    @TenantId() tenantId: string,
+    @Param('customerId', ParseUUIDPipe) customerId: string) : Promise<ICustomerResponse> 
+  {
     this.logger.log(`GET /v1/customers/${customerId}`)
-    return this.customersService.findOne(customerId);
+    const requestHeaders = {
+      'Tenant-Id': tenantId,
+    }
+    return this.customersService.findOne(customerId, requestHeaders);
   }
 
   @Patch(':customerId')
   updateV1(
+    @TenantId() tenantId: string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('customerId', ParseUUIDPipe) customerId: string, 
     @Body() updateCustomerDto: UpdateCustomerDto) : Promise<ICustomerResponse>
   {
     this.logger.log(`PATCH /v1/customers/${customerId}, updateCustomerDto= %o`, updateCustomerDto)
-    return this.customersService.update(customerId, updateCustomerDto);
+    const requestHeaders = {
+      'Tenant-Id':       tenantId,
+      'Idempotency-Key': idempotencyKey,
+    }
+    return this.customersService.update(customerId, updateCustomerDto, requestHeaders)
   }
 
   @Delete(':customerId')
   @HttpCode(204)
-  removeV1(@Param('customerId', ParseUUIDPipe) customerId: string) {
+  removeV1(
+    @TenantId() tenantId: string,
+    @Param('customerId', ParseUUIDPipe) customerId: string) 
+  {
     this.logger.log(`DELETE /v1/customers/${customerId}`)
-    return this.customersService.remove(customerId);
+    const requestHeaders = {
+      'Tenant-Id':       tenantId,
+    }
+    return this.customersService.remove(customerId, requestHeaders);
   }
 }

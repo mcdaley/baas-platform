@@ -1,7 +1,12 @@
 //-----------------------------------------------------------------------------
 // apps/baas-customer-service/src/baas-customer-service.module.ts
 //-----------------------------------------------------------------------------
-import { Module }                         from '@nestjs/common'
+import { 
+  Module, 
+  NestModule, 
+  MiddlewareConsumer,
+  RequestMethod, 
+}                                         from '@nestjs/common'
 import { ConfigModule }                   from '@nestjs/config'
 
 import { configuration, validate  }       from './config/configuration'
@@ -11,7 +16,11 @@ import { BaasCustomerServiceService }     from './baas-customer-service.service'
 import { CustomersModule }                from './customers/customers.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
+import { TenantIdMiddleware }             from '@app/baas-errors'
 
+/**
+ * @class BaasCustomerServiceModule
+ */
 @Module({
   imports:      [
     ConfigModule.forRoot({
@@ -27,3 +36,11 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
   providers:    [BaasCustomerServiceService],
 })
 export class BaasCustomerServiceModule {}
+//* Turn off TenantIdMiddleware
+//* export class BaasCustomerServiceModule implements NestModule {
+//*   configure(consumer: MiddlewareConsumer) {
+//*     consumer
+//*       .apply(TenantIdMiddleware)
+//*       .forRoutes({path: '/v*/customers', method: RequestMethod.ALL})
+//*   }
+//* }

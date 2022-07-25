@@ -44,8 +44,10 @@ mockConfigService.set('bankSimulatorCustomersUrl', process.env.BANK_SIMULATOR_CU
 /**
  * Test Data
  */
-const createCustomerDto  : ICreateCustomerDto  = createCustomerDtoFactoryData.joe_ferguson
-const customerData       : ICustomer           = customerFactoryData.joe_ferguson
+const createCustomerDto : ICreateCustomerDto  = createCustomerDtoFactoryData.joe_ferguson
+const customerData      : ICustomer           = customerFactoryData.joe_ferguson
+const tenantId          : string              = 'buffalo_bills'
+const idempotencyKey    : string              = 'unique_idempotency_key' 
 
 /**
  * CustomersService
@@ -61,7 +63,7 @@ describe('CustomersService', () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
-        WinstonLoggerService
+        WinstonLoggerService,
       ],
     }).compile();
 
@@ -73,7 +75,14 @@ describe('CustomersService', () => {
    */
   describe(`create()`, () => {
     it(`Creates a new customer`, async () => {
-      const url      = `http://localhost:5001/core/api/v1/customers`
+      const url         = `http://localhost:5001/core/api/v1/customers`
+      const headers     = {
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey
+      }
+      const axiosConfig = {
+        headers: headers
+      }
       const response = {
         data: {
           data: customerData
@@ -81,10 +90,10 @@ describe('CustomersService', () => {
       }
 
       const spy      = jest.spyOn(axios, 'post').mockResolvedValue(response)
-      const result   = await customersService.create(createCustomerDto)
+      const result   = await customersService.create(createCustomerDto, headers)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url, createCustomerDto)
+      expect(spy).toBeCalledWith(url, createCustomerDto, axiosConfig)
       expect(result).toEqual({customer: customerData})
     })
   })
@@ -94,15 +103,17 @@ describe('CustomersService', () => {
    */
   describe(`findAll()`, () => {
     it(`Returns a list of customers`, async () => {
-      let url       = `http://localhost:5001/core/api/v1/customers`
-      let customers = [customerData]
-      let response  = { data: {data: customers} }
+      let url         = `http://localhost:5001/core/api/v1/customers`
+      let headers     = { 'Tenant-Id': tenantId }
+      let axiosConfig = { headers: headers }
+      let customers   = [customerData]
+      let response    = { data: {data: customers} }
 
-      const spy     = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result  = await customersService.findAll()
+      const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
+      const result = await customersService.findAll(headers)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
       expect(result).toEqual({customers: customers})
     })
   })
@@ -112,16 +123,18 @@ describe('CustomersService', () => {
    */
   describe(`findOne()`, () => {
     it(`Returns a customer`, async () => {
-      let customerId = `unique-customer-id`
-      let url        = `http://localhost:5001/core/api/v1/customers/${customerId}`
-      let response   = { data: {data: customerData}}
+      let customerId  = `unique-customer-id`
+      let headers     = { 'Tenant-Id': tenantId }
+      let axiosConfig = { headers: headers }
+      let url         = `http://localhost:5001/core/api/v1/customers/${customerId}`
+      let response    = { data: {data: customerData}}
 
-      const spy      = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result   = await customersService.findOne(customerId)
+      const spy       = jest.spyOn(axios, 'get').mockResolvedValue(response)
+      const result    = await customersService.findOne(customerId, headers)
 
       expect(result).toEqual({customer: customerData})
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
     })
   })
 
@@ -130,8 +143,10 @@ describe('CustomersService', () => {
    */
   describe(`update()`, () => {
     it(`Returns an updated customer`, async () => {
-      const customerId  = `unique-customer-id`
-      let url           = `http://localhost:5001/core/api/v1/customers/${customerId}`
+      let customerId  = `unique-customer-id`
+      let headers     = { 'Tenant-Id': tenantId, 'Idempotency-Key': idempotencyKey }
+      let axiosConfig = { headers: headers }
+      let url         = `http://localhost:5001/core/api/v1/customers/${customerId}`
 
       const updateCustomerDto = {
         status: CustomerStatus.Blocked,
@@ -146,10 +161,10 @@ describe('CustomersService', () => {
       }
 
       const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(response)
-      const result = await customersService.update(customerId, updateCustomerDto)
+      const result = await customersService.update(customerId, updateCustomerDto, headers)
       
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url, updateCustomerDto)
+      expect(spy).toBeCalledWith(url, updateCustomerDto, axiosConfig)
       expect(result).toEqual({customer: customer})
     })
   })
@@ -160,17 +175,19 @@ describe('CustomersService', () => {
   describe(`remove()`, () => {
     it(`Deletes a customer`, async () => {
       let customerId = `unique-customer-id`
+      let headers     = { 'Tenant-Id': tenantId }
+      let axiosConfig = { headers: headers }
       let url        = `http://localhost:5001/core/api/v1/customers/${customerId}`
       let response   = {
         customer: customerId,
       }
 
       const spy    = jest.spyOn(axios, 'delete').mockResolvedValue({data: response})
-      const result = await customersService.remove(customerId)
+      const result = await customersService.remove(customerId, headers)
       
       expect(result).toEqual(response)
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
     })
   })
 });

@@ -5,6 +5,8 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 }                             from 'typeorm'
 
 import { IAddress, States }   from '@app/baas-interfaces'
@@ -30,11 +32,15 @@ export class Address {
   @Column()
   city:             string
   
-  //* @Column({type: 'enum', enum: States})
-  //* state:            States
-  @Column()
-  state:            string
+  @Column({type: 'varchar'})
+  state:            States
   
   @Column()
-  postal_code:      string 
+  postal_code:      string
+
+  @CreateDateColumn()
+  created_at:       Date
+
+  @UpdateDateColumn()
+  updated_at:       Date
 }

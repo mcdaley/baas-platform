@@ -55,6 +55,7 @@ export class CoreDebitCardSimulator {
       daily_transactions: 10,
       customer_id:        createDebitCardDto.customer_id,
       account_id:         createDebitCardDto.account_id,
+      tenant_id:          `buffalo_bills`,
     }
     
     this.logger.log(`Built debit card= %o`, debitCard)

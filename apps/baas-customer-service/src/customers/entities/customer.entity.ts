@@ -12,7 +12,7 @@ import {
  */
 export class Customer implements ICustomer {
   id:                 string            // Unique customer identifier
-  branch_id:          string            // Identifies customer's bank
+  tenant_id:          string            // Identifies customer's bank
   status:             CustomerStatus
   first_name:         string
   middle_name?:       string
@@ -21,8 +21,10 @@ export class Customer implements ICustomer {
   email:              string
   phone_number:       string
   ssn:                string
-  metatdata?:         string
+  metadata?:          string
   physical_address:   Address
   mailing_address?:   Address
+  created_at:         Date
+  updated_at:         Date
 }
 

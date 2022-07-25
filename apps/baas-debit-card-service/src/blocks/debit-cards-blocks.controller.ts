@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// apps/baas-debit-cards-service/src/debit-cards-blocks/debit-cards-blocks.controller.ts
+// apps/baas-debit-cards-service/src/blocks/debit-cards-blocks.controller.ts
 //---------------------------------------------------------------------------------------
 import { 
   Controller, 
@@ -15,21 +15,33 @@ import {
 import { DebitCardsBlocksService }  from './debit-cards-blocks.service'
 import { CreateDebitCardsBlockDto } from './dto/create-debit-cards-block.dto'
 
-import { WinstonLoggerService }   from '@app/winston-logger'
-import { IdempotencyKey } from '@app/baas-errors'
+import { 
+  CustomerId,
+  TenantId,
+  IdempotencyKey 
+}                                   from '@app/baas-errors'
+import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
  * @class DebitCardsBlocksController
  */
 @Controller({path: 'debit-cards/:debitCardId/blocks', version: '1'})
 export class DebitCardsBlocksController {
+  /**
+   * @constructor
+   */
   constructor(
     private readonly debitCardsBlocksService: DebitCardsBlocksService,
     private readonly logger:                  WinstonLoggerService
   ) {}
 
+  /**
+   * @method createV1
+   */
   @Post()
   createV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() createDebitCardsBlockDto: CreateDebitCardsBlockDto
@@ -38,22 +50,35 @@ export class DebitCardsBlocksController {
       `POST /v1/debit-cards/${debitCardId}/blocks, createDebitCardsBlockDto= %o`, 
       createDebitCardsBlockDto
     )
-    return this.debitCardsBlocksService.create(debitCardId, createDebitCardsBlockDto);
+    return this.debitCardsBlocksService.create(
+      debitCardId, createDebitCardsBlockDto, customerId, tenantId, idempotencyKey
+    )
   }
 
+  /**
+   * @method findAllV1
+   */
   @Get()
-  findAllV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
+  findAllV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
+    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
+  {
     this.logger.log(`GET /v1/debit-cards/${debitCardId}/blocks`)
-    return this.debitCardsBlocksService.findAll(debitCardId)
+    return this.debitCardsBlocksService.findAll(debitCardId, customerId, tenantId)
   }
 
+  /**
+   * @method removeV1
+   */
   @Delete(':blockId')
   removeV1(
-    @IdempotencyKey() idempotencyKey: string,
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Param('blockId',     ParseUUIDPipe) blockId: string
   ) {
     this.logger.log(`DELETE /v1/debit-cards/${debitCardId}/blocks/${blockId}`)
-    return this.debitCardsBlocksService.remove(debitCardId, blockId);
+    return this.debitCardsBlocksService.remove(debitCardId, blockId, customerId, tenantId);
   }
 }

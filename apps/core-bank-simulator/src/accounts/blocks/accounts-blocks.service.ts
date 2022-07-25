@@ -23,7 +23,7 @@ export class AccountsBlocksService {
 
   constructor(
     @InjectRepository(AccountBlock) private accountBlockRepository: Repository<AccountBlock>,
-    @InjectRepository(Account) private accountRepository: Repository<Account>,
+    @InjectRepository(Account)      private accountRepository: Repository<Account>,
     private readonly logger: WinstonLoggerService,
   ) {}
 

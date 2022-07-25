@@ -29,7 +29,7 @@ export class Account {
   id:                     string
 
   @Column()
-  branch_id:              string
+  tenant_id:              string
 
   @Column({type: 'varchar'})
   account_type:           AccountType

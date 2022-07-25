@@ -10,7 +10,6 @@ import { UpdateAccountDto }     from './dto/update-account.dto'
 import { CustomersService }     from '../customers/customers.service'
 
 import { WinstonLoggerService } from '@app/winston-logger'
-import { CoreSimulatorService } from '@app/core-simulator'
 import { createBaaSException }  from '@app/baas-errors'
 import { IAccountListResponse, IAccountResponse, ICustomer } from '@app/baas-interfaces'
 
@@ -25,7 +24,6 @@ export class AccountsService {
     private readonly configService:     ConfigService,
     private readonly logger:            WinstonLoggerService,
     private readonly customersService:  CustomersService,
-    private readonly coreService:       CoreSimulatorService,
   ) {
     this.coreAccountsUrl = configService.get('bankSimulatorAccountsUrl')
     this.logger.log(`Initialized the Account Simulator URL= %s`, this.coreAccountsUrl)
@@ -34,21 +32,40 @@ export class AccountsService {
   /**
    * @method create
    */
-  async create(createAccountDto: CreateAccountDto) : Promise<IAccountResponse> {
+  async create(
+    createAccountDto: CreateAccountDto,
+    customerId:       string,
+    tenantId:         string,
+    idempotencyKey:   string) : Promise<IAccountResponse> 
+  {
     try {
+      // Define axios request headers
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':      customerId,
+          'Tenant-Id':        tenantId,
+          'Idempotency-Key':  idempotencyKey,
+        }
+      }
+
       // Validate the account participants and find account holder/owner
-      const participantCustomers = await this.customersService.verifyCustomers(createAccountDto.participants)
-      const accountHolder        = await this.customersService.findAccountHolder(
+      const participantCustomers = await this.customersService.verifyCustomers(
+        createAccountDto.participants, axiosConfig
+      )
+      const accountHolder = await this.customersService.findAccountHolder(
         createAccountDto, participantCustomers
       )
 
       createAccountDto  = this.fillInCreateAccountDtoFields(createAccountDto, accountHolder)
-      const response    = await axios.post(this.coreAccountsUrl, createAccountDto)
+
+      const response    = await axios.post(this.coreAccountsUrl, createAccountDto, axiosConfig)
       const account     = response.data.data
 
       const result = {
         account: account
       }
+
+      this.logger.log(`Created account, result= %o`, result)
       return result
     }
     catch(error) {
@@ -59,11 +76,20 @@ export class AccountsService {
   /**
    * @method findAll
    */
-  async findAll() : Promise<IAccountListResponse> {
+  async findAll(
+    customerId: string, 
+    tenantId:   string ) : Promise<IAccountListResponse> 
+  {
     try {
-      const response  = await axios.get(this.coreAccountsUrl)
-      const accounts  = response.data.data
-      const result    = {
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response    = await axios.get(this.coreAccountsUrl, axiosConfig)
+      const accounts    = response.data.data
+      const result      = {
         accounts: accounts
       }
 
@@ -77,10 +103,20 @@ export class AccountsService {
   /**
    * @method findOne
    */
-  async findOne(accountId: string) : Promise<IAccountResponse> {
+  async findOne(
+    accountId:  string,
+    customerId: string,
+    tenantId:   string) : Promise<IAccountResponse> 
+  {
     try {
-      const url       = `${this.coreAccountsUrl}/${accountId}`
-      const response  = await axios.get(url)
+      const url         = `${this.coreAccountsUrl}/${accountId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response  = await axios.get(url, axiosConfig)
       const account   = response.data.data
       const result    = {
         account: account
@@ -96,12 +132,25 @@ export class AccountsService {
   /**
    * @method update
    */
-  async update(accountId: string, updateAccountDto: UpdateAccountDto) {
+  async update(
+    accountId:        string, 
+    updateAccountDto: UpdateAccountDto,
+    customerId:       string,
+    tenantId:         string,
+    idempotencyKey:   string) 
+  {
     try {
-      const url       = `${this.coreAccountsUrl}/${accountId}`
-      const response  = await axios.patch(url, updateAccountDto)
-      const account   = response.data.data
-      const result    = {
+      const url         = `${this.coreAccountsUrl}/${accountId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':     customerId,
+          'Tenant-Id':       tenantId,
+          'Idempotency-Key': idempotencyKey,
+        }
+      }
+      const response = await axios.patch(url, updateAccountDto, axiosConfig)
+      const account  = response.data.data
+      const result   = {
         account: account
       }
 
@@ -115,11 +164,21 @@ export class AccountsService {
   /**
    * @method remove
    */
-  async remove(accountId: string) : Promise<boolean> {
+  async remove(
+    accountId:  string,
+    customerId: string,
+    tenantId:   string) : Promise<boolean> 
+  {
     try {
-      const  url      = `${this.coreAccountsUrl}/${accountId}`
-      const  response = await axios.delete(url)
-      const  result   = response.data
+      const url         = `${this.coreAccountsUrl}/${accountId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response = await axios.delete(url, axiosConfig)
+      const result   = response.data
 
       return result
     }

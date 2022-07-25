@@ -19,7 +19,6 @@ import {
 }                               from '@app/baas-interfaces'
 import { uuid }                 from '@app/baas-utils'
 import { WinstonLoggerService } from '@app/winston-logger'
-import { CoreDebitCardSimulator } from '@app/core-simulator'  ///TODO
 
 // Import test data
 import { 
@@ -50,7 +49,6 @@ describe(`AccountsService`, () => {
           useValue: mockConfigService,
         }, 
         WinstonLoggerService,
-        CoreDebitCardSimulator,
       ],
     }).compile()
 

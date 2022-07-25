@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------
-// apps/baas-debit-card-service/src/debit-cards-blocks/debit-cards-blocks.controller.spec.ts
+// apps/baas-debit-card-service/src/blocks/debit-cards-blocks.controller.spec.ts
 //--------------------------------------------------------------------------------------------
 import { 
   Test, 
@@ -10,13 +10,13 @@ import { ConfigService }                from '@nestjs/config'
 import { DebitCardsBlocksController }   from './debit-cards-blocks.controller'
 import { DebitCardsBlocksService }      from './debit-cards-blocks.service'
 
+import { uuid }                         from '@app/baas-utils'
+import { BlockReason }                  from '@app/baas-interfaces'
 import { WinstonLoggerService }         from '@app/winston-logger'
 import { CoreDebitCardSimulator }       from '@app/core-simulator'  // TODO: Remove
 
 // Import test data 
 import { debitCardFactoryData }         from '../../../../test/baas.factory.data'
-import { uuid } from '@app/baas-utils'
-import { BlockReason } from '@app/baas-interfaces'
 
 /**
  * Set mockConfigService using env variables in .jest/set-env-vars.ts
@@ -32,7 +32,11 @@ mockConfigService.set('bankSimulatorDebitCardsUrl', process.env.BANK_SIMULATOR_D
 /**
  * Test data
  */
-const debitCardData = debitCardFactoryData.checking_1
+const debitCardData   = debitCardFactoryData.checking_1
+const debitCardId     = debitCardData.id
+const customerId      = debitCardData.customer_id
+const tenantId        = debitCardData.tenant_id
+const idempotencyKey  = uuid()
 
 /**
  * DebitCardsBlocksController
@@ -61,38 +65,37 @@ describe(`DebitCardsBlocksController`, () => {
     configService              = module.get<ConfigService>(ConfigService)
   })
 
+  /**
+   * createV1
+   */
   describe(`createV1`, () => {
     it(`Blocks a debit cards`, async () => {
-      const idempotencyKey           = `unique-idempotency-key`
-      const debitCardId              = debitCardData.id
       const createDebitCardsBlockDto = {
         block_reason: BlockReason.Lost
       }
 
-      const debitCardBlocks = [
-        {
-          id:           uuid(),
-          block_reason: BlockReason.Lost,
-          is_active:    true,
-          block_date:   new Date(),
-        }
-      ]
+      const debitCardBlock = {
+        id:           uuid(),
+        is_active:    true,
+        block_date:   new Date(),
+        ...createDebitCardsBlockDto
+      }
       const response = {
-        ...debitCardBlocks,
+        block: debitCardBlock,
       }
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'create').mockResolvedValue(response)
-      const result = await debitCardsBlocksController.createV1(idempotencyKey, debitCardId, createDebitCardsBlockDto)
+      const result = await debitCardsBlocksController.createV1(
+        customerId, tenantId, idempotencyKey, debitCardId, createDebitCardsBlockDto)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId, createDebitCardsBlockDto)
+      expect(spy).toBeCalledWith(debitCardId, createDebitCardsBlockDto, customerId, tenantId, idempotencyKey)
       expect(result).toEqual(response)
     })
   })
 
   describe(`findAllV1`, () => {
     it(`Returns a list of all blocks placed on a debit card`, async () => {
-      const debitCardId     = debitCardData.id
       const debitCardBlocks = [
         {
           id:           uuid(),
@@ -103,40 +106,37 @@ describe(`DebitCardsBlocksController`, () => {
       ]
 
       const response       = {
-        ...debitCardBlocks,
+        blocks: debitCardBlocks,
       }
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'findAll').mockResolvedValue(response)
-      const result = await debitCardsBlocksController.findAllV1(debitCardId)
+      const result = await debitCardsBlocksController.findAllV1(customerId, tenantId, debitCardId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId)
+      expect(spy).toBeCalledWith(debitCardId, customerId, tenantId)
       expect(result).toEqual(response)
     })
   })
 
   describe(`removeV1`, () => {
     it(`Cancels a block on a debit card`, async () => {
-      const idempotencyKey  = `unique-idempotency-key`
-      const debitCardId     = debitCardData.id
       const blockId         = uuid()
-      const debitCardBlocks = [
-        {
-          id:           blockId,
-          block_reason: BlockReason.Lost,
-          is_active:    false,
-          block_date:   new Date(),
-        }
-      ]
+      const block  = {
+        id:           blockId,
+        block_reason: BlockReason.Lost,
+        is_active:    false,
+        block_date:   new Date(),
+      }
       const response = {
-        ...debitCardBlocks,
+        block: block,
       }
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'remove').mockResolvedValue(response)
-      const result = await debitCardsBlocksController.removeV1(idempotencyKey, debitCardId, blockId)
+      const result = await debitCardsBlocksController.removeV1(
+        customerId, tenantId, debitCardId, blockId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId, blockId)
+      expect(spy).toBeCalledWith(debitCardId, blockId, customerId, tenantId)
       expect(result).toEqual(response)
     })
   })

@@ -10,6 +10,8 @@ import {
  * @class Participant
  */
 export class Participant implements IParticipant {
-  participant_customer_id:  string
+  customer_id:  string
   participant_role:         ParticipantRole
+  created_at:               Date
+  updated_at:               Date
 }

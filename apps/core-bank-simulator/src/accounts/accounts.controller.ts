@@ -18,6 +18,7 @@ import { CreateAccountDto }   from './dto/create-core-account.dto'
 import { UpdateAccountDto }   from './dto/update-core-account.dto'
 
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { TenantId } from '@app/baas-errors'
 
 /**
  * @class AccountsController
@@ -30,9 +31,12 @@ export class AccountsController {
   ) {}
 
   @Post()
-  createV1(@Body() createAccountDto: CreateAccountDto) {
+  createV1(
+    @TenantId() tenantId: string,
+    @Body() createAccountDto: CreateAccountDto) 
+  {
     this.logger.log(`POST /core/api/v1/accounts`)
-    return this.accountsService.create(createAccountDto);
+    return this.accountsService.create(createAccountDto, tenantId);
   }
 
   @Get()

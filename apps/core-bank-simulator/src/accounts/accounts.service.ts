@@ -37,10 +37,10 @@ export class AccountsService {
   /**
    * @method create
    */
-  async create(createAccountDto: CreateAccountDto) {
+  async create(createAccountDto: CreateAccountDto, tenantId: string) {
     try {
       // Build the account
-      const account = this.buildAccount(createAccountDto)
+      const account = this.buildAccount(createAccountDto, tenantId)
       
       // Save the account to the DB and return it to caller
       const response = await this.accountRepository.save(account)
@@ -183,13 +183,12 @@ export class AccountsService {
   /**
    * @method buildAccount
    */
-  private buildAccount(createAccountDto: ICreateAccountDto) : IAccount {
+  private buildAccount(createAccountDto: ICreateAccountDto, tenantId: string) : IAccount {
     /*
      * Build the account
      */
     let account = {
-      //* id:                     uuidv4(),
-      branch_id:              uuidv4(),
+      tenant_id:              tenantId,
       account_number:         faker.finance.account(),
       routing_number:         faker.finance.routingNumber(),
       account_status:         AccountStatus.Open,

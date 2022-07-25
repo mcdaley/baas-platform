@@ -53,6 +53,18 @@ export class InvalidIdempotencyKeyError extends BaaSException {
   }
 }
 
+export class InvalidTenantIdError extends BaaSException {
+  constructor(baasError: IBaaSError, message: string) {
+    super(baasError, message)
+  }
+}
+
+export class InvalidCustomerIdError extends BaaSException {
+  constructor(baasError: IBaaSError, message: string) {
+    super(baasError, message)
+  }
+}
+
 export class BadRequestError extends BaaSException {
   constructor(baasError: IBaaSError, message: string) {
     super(baasError, message)

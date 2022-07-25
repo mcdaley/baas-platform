@@ -16,9 +16,9 @@ export function uuid(): string {
 /**
  * Returns an ISO formatted string with the current date and time.
  * 
- * @function currentTime()
+ * @function currentTimeString()
  * @returns  {string} Current ISO formatted time.
  */
-export function currentTime() : string {
+export function currentTimeString() : string {
   return (new Date()).toISOString()
 }

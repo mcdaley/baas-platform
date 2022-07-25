@@ -8,6 +8,8 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 }                             from 'typeorm'
 
 import { Address }            from './address.entity'
@@ -24,15 +26,13 @@ import {
 @Entity({name: 'customers'})
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
-  id?:                string            // Unique customer identifier
+  id:                 string            // Unique customer identifier
   
   @Column()
-  branch_id:          string            // Identifies customer's bank
+  tenant_id:          string 
   
-  //* @Column({type: 'enum', enum: CustomerStatus})
-  //* status:             CustomerStatus
-  @Column()
-  status:             string
+  @Column({type: 'varchar'})
+  status:             CustomerStatus
 
   @Column()
   first_name:         string
@@ -56,7 +56,7 @@ export class Customer {
   ssn:                string
   
   @Column({nullable: true})
-  metatdata?:         string
+  metadata?:          string
 
   @OneToOne(() => Address, {cascade: true})
   @JoinColumn({name: 'physical_address_id'})
@@ -68,6 +68,12 @@ export class Customer {
 
   // Customer can have many accounts
   @OneToMany(() => AccountToCustomer, accountToCustomer => accountToCustomer.customer)
-  @JoinColumn({name: 'participant_customer_id'})
+  @JoinColumn({name: 'customer_id'})
   accounts?: AccountToCustomer[]
+
+  @CreateDateColumn()
+  created_at:         Date
+  
+  @UpdateDateColumn()
+  updated_at:         Date
 }

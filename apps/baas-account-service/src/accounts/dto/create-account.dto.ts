@@ -43,5 +43,5 @@ export class CreateAccountDto implements ICreateAccountDto {
   @IsArray()
   @ValidateNested()
   @Type(() => CreateParticipantDto)
-  participants: Participant[]
+  participants: CreateParticipantDto[]
 } // end of class CreateAccountDto

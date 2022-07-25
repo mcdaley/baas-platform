@@ -31,11 +31,16 @@ export class CustomersService {
   /**
    * @method create
    */
-  async create(createCustomerDto: CreateCustomerDto) : Promise<any> {
+  async create(
+    createCustomerDto: CreateCustomerDto,
+    tenantId:          string,
+    idempotencyKey:    string) : Promise<any> 
+  {
     try {
       // Create the customer
-      let customer: Customer = {
+      let customer = {
         status:     CustomerStatus.Pending,
+        tenant_id:  tenantId,
         ...createCustomerDto,
       }
 
@@ -57,16 +62,17 @@ export class CustomersService {
   /**
    * @method findAll
    */
-  async findAll() {
+  async findAll(tenantId: string) {
     try {
       // Set up default pagination
       let start_index = 0
-      let take        = 2
-      let end_index   = start_index + take
+      let take        = 4
+      let end_index   = start_index + take - 1
       let is_more     = true
 
       // Query the DB
       const response = await this.customerRepository.findAndCount({
+        where:      {tenant_id: tenantId},
         relations:  ['physical_address', 'mailing_address'],
         skip:       start_index,
         take:       take,
@@ -75,7 +81,7 @@ export class CustomersService {
       const count     = response[1]
 
       // Reset pagination
-      if(start_index + take > count) {
+      if(start_index + take >= count) {
         is_more   = false
         end_index = count - 1
       }
@@ -105,10 +111,10 @@ export class CustomersService {
   /**
    * @method findOne
    */
-  async findOne(customerId: string) {
+  async findOne(customerId: string, tenantId: string) {
     try {
       const customer = await this.customerRepository.findOne({
-        where:      {id: customerId},
+        where:      {id: customerId, tenant_id: tenantId},
         relations:  ['physical_address', 'mailing_address'],
       })
 
@@ -134,19 +140,34 @@ export class CustomersService {
    * 
    * @method update
    */
-  async update(customerId: string, updateCustomerDto: UpdateCustomerDto) {
+  async update(customerId: string, updateCustomerDto: UpdateCustomerDto, tenantId: string) {
     ///////////////////////////////////////////////////////////////////////////
     // BUG: 07/07/2022
     // The update method only returns the fields that were updated, even w/ 
     // the "reload" option set to true. 
+    //
+    // BUG: 07/20/2022
+    // Having troubles figuring out how to updated entities w/ relationships.
+    // If I use "save" then TypeORM will update the embedded entities, but it
+    // will also create new records if for example, I included the wrong
+    // tenandId.
+    //
+    // If I use "update" then TypeORM will not updated the entities w/
+    // relationships, e.g. mailing_addresses.
     ///////////////////////////////////////////////////////////////////////////
     try {
       const updateCustomer = await this.customerRepository.create({
-        id: customerId, ...updateCustomerDto
+        id:         customerId,
+        tenant_id:  tenantId,
+        ...updateCustomerDto
       })
       const response = await this.customerRepository.save(updateCustomer, {reload: true})
+      //* const response = await this.customerRepository.update(
+      //*   {id: customerId, tenant_id: tenantId},
+      //*   updateCustomerDto
+      //* )
       const customer = await this.customerRepository.findOne({
-        where:      {id: customerId},
+        where:      {id: customerId, tenant_id: tenantId},
         relations:  ['physical_address', 'mailing_address'],
       })
 
@@ -166,7 +187,7 @@ export class CustomersService {
   /**
    * @method remove
    */
-  async remove(customerId: string) {
+  async remove(customerId: string, tenantId: string) {
     ///////////////////////////////////////////////////////////////////////////
     // BUG: 7/7/22
     // I cannot get the delete to cascade and remove the corresponding
@@ -174,7 +195,10 @@ export class CustomersService {
     // should not delete customers.
     ///////////////////////////////////////////////////////////////////////////
     try {
-      const response = await this.customerRepository.delete(customerId)
+      const response = await this.customerRepository.delete({
+        id:         customerId,
+        tenant_id:  tenantId
+      })
       this.logger.log(`Deleted customer id=${customerId}, response= %o`, response)
       
       const result   = {

@@ -12,7 +12,6 @@ import { CustomersService }     from './customers.service'
 
 import { WinstonLoggerService } from '@app/winston-logger'
 import { CustomerStatus }       from '@app/baas-interfaces'
-import { CoreDebitCardSimulator } from '@app/core-simulator'  ///TODO - DEPRECATE
 
 // Import test data
 import { 
@@ -43,7 +42,6 @@ describe(`CustomersService`, () => {
           useValue: mockConfigService,
         }, 
         WinstonLoggerService,
-        CoreDebitCardSimulator,
       ],
     }).compile()
 

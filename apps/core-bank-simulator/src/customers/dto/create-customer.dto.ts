@@ -79,8 +79,4 @@ export class CreateCustomerDto implements ICreateCustomerDto {
   @IsOptional()
   @IsEnum(CustomerStatus)
   status?:          CustomerStatus
-
-  @IsNotEmpty()
-  @IsUUID()
-  branch_id:    string
 }

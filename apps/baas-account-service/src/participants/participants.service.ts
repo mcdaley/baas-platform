@@ -25,16 +25,29 @@ export class ParticipantsService {
   /**
    * @method create
    */
-  async create(accountId: string, createParticipantDto: CreateParticipantDto) {
+  async create(
+    accountId:            string, 
+    createParticipantDto: CreateParticipantDto,
+    customerId:           string,
+    tenantId:             string,
+    idempotencyKey:       string) 
+  {
     try {
-      const url               = `${this.coreAccountsUrl}/${accountId}/core-participants`
-      const response          = await axios.post(url, createParticipantDto)
-      const { participants }  = response.data
+      const url         = `${this.coreAccountsUrl}/${accountId}/participants`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':      customerId,
+          'Tenant-Id':        tenantId,
+          'Idempotency-Key':  idempotencyKey,
+        }
+      }
+      const response    = await axios.post(url, createParticipantDto, axiosConfig)
+      const participant = response.data.data
       
       const result = {
-        participants: participants,
+        participant: participant,
       }
-      this.logger.log(`Added customerId=${createParticipantDto.participant_customer_id} to accountId=[${accountId}]`)
+      this.logger.log(`Added customerId=${createParticipantDto.customer_id} to accountId=[${accountId}]`)
 
       return result
     }
@@ -46,11 +59,21 @@ export class ParticipantsService {
   /**
    * @method findAll
    */
-  async findAll(accountId: string) {
+  async findAll(
+    accountId:  string,
+    customerId: string,
+    tenantId:   string) 
+  {
     try {
-      const url               = `${this.coreAccountsUrl}/${accountId}/core-participants`
-      const response          = await axios.get(url)
-      const { participants }  = response.data
+      const url          = `${this.coreAccountsUrl}/${accountId}/participants`
+      const axiosConfig  = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response     = await axios.get(url, axiosConfig)
+      const participants = response.data.data
       
       const result = {
         participants: participants,
@@ -66,10 +89,21 @@ export class ParticipantsService {
   /**
    * @method remove
    */
-  async remove(accountId: string, participantCustomerId: string) {
+  async remove(
+    accountId:             string, 
+    participantCustomerId: string,
+    customerId:            string,
+    tenantId:              string) 
+  {
     try {
-      const url       = `${this.coreAccountsUrl}/${accountId}/core-participants/${participantCustomerId}`
-      const response  = await axios.delete(url)
+      const url         = `${this.coreAccountsUrl}/${accountId}/participants/${participantCustomerId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response  = await axios.delete(url, axiosConfig)
       const result    = response.data
       this.logger.log(`Deleted participantCustomerId=[${participantCustomerId}] from accountId=[${accountId}]`)
 

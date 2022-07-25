@@ -59,7 +59,7 @@ export class CreateCustomerDto implements ICreateCustomerDto {
 
   @IsOptional()
   @IsJSON()
-  metatdata?:   string
+  metadata?:    string
   
   @IsNotEmptyObject()
   @ValidateNested()
@@ -70,8 +70,4 @@ export class CreateCustomerDto implements ICreateCustomerDto {
   @ValidateNested()
   @Type(() => CreateAddressDto)
   mailing_address?: CreateAddressDto
-
-  @IsNotEmpty()
-  @IsUUID()
-  branch_id:    string
 }

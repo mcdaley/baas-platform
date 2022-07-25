@@ -23,7 +23,7 @@ import {
   ParticipantRole, 
   States, 
 }                                   from "@app/baas-interfaces";
-import { uuid }                     from "@app/baas-utils";
+import { uuid, currentTimeString}   from "@app/baas-utils";
 
 
 /**
@@ -44,7 +44,6 @@ export const createCustomerDtoFactoryData : ICreateCustomerDtoFactoryData = {
       state:            States.NY,
       postal_code:      `14075`,  
     },
-    branch_id:          uuid(),
   }
 }
 
@@ -53,7 +52,10 @@ export const createCustomerDtoFactoryData : ICreateCustomerDtoFactoryData = {
  */
 export const customerFactoryData : ICustomerFactoryData = {
   joe_ferguson: {
-    id: uuid(),
+    id:         uuid(),
+    tenant_id:  `buffalo_bills`,
+    created_at: currentTimeString(),
+    updated_at: currentTimeString(),
     ...createCustomerDtoFactoryData.joe_ferguson,
   },
 }
@@ -66,8 +68,8 @@ export const createAccountDtoFactoryData : ICreateAccountDtoFactoryData = {
     account_type: AccountType.Checking,
     participants: [
       {
-        participant_customer_id:  customerFactoryData.joe_ferguson.id,
-        participant_role:         ParticipantRole.Holder
+        customer_id:  customerFactoryData.joe_ferguson.id,
+        participant_role:         ParticipantRole.Holder,
       },
     ]
   }
@@ -88,14 +90,16 @@ export const accountFactoryData : IAccountFactoryData = {
     name_on_account:        `${customerFactoryData.joe_ferguson.first_name} ${customerFactoryData.joe_ferguson.last_name}`,
     multiple_participants:  false,
     participants:           [{
-      participant_customer_id:  customerFactoryData.joe_ferguson.id,
+      customer_id:              customerFactoryData.joe_ferguson.id,
       participant_role:         ParticipantRole.Holder,
+      created_at:               currentTimeString(),
+      updated_at:               currentTimeString(),
     }],
     available_balance:      0,
     posted_balance:         0,
     created_at:             new Date(),
     updated_at:             new Date(),
-    branch_id:              customerFactoryData.joe_ferguson.branch_id,
+    tenant_id:              customerFactoryData.joe_ferguson.tenant_id,
   },
 }
 
@@ -132,6 +136,7 @@ export const debitCardFactoryData : IDebitCardFactoryData = {
     daily_transactions:             10,
     customer_id:                    createDebitCardDtoFactoryData.checking_1.customer_id,
     account_id:                     createDebitCardDtoFactoryData.checking_1.account_id,
+    tenant_id:                      customerFactoryData.joe_ferguson.tenant_id,
   },
 }
 

@@ -18,6 +18,7 @@ import { CoreSimulatorService } from '@app/core-simulator'
 import { 
   AccountStatus, 
 }                               from '@app/baas-interfaces'
+import { uuid }                 from '@app/baas-utils'
 
 /**
  * Import test data
@@ -35,6 +36,9 @@ import {
 const mockConfigService = setMockConfigService(BaasApplication.AccountService)
 const createAccountDto  = createAccountDtoFactoryData.checking_1
 const accountData       = accountFactoryData.checking_1
+const customerId        = uuid()
+const tenantId          = `buffalo_bills`
+const idempotencyKey    = uuid()
  
 /**
  * AccountsController
@@ -72,10 +76,12 @@ describe('AccountsController', () => {
       }
 
       const spy     = jest.spyOn(accountsService,  'create').mockResolvedValue(response)
-      const result  = await accountsController.createV1(`idempotency-key`, createAccountDto)
+      const result  = await accountsController.createV1(
+        customerId, tenantId, idempotencyKey, createAccountDto
+      )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(createAccountDto)
+      expect(spy).toBeCalledWith(createAccountDto, customerId, tenantId, idempotencyKey)
       expect(result).toBe(response)
     })
   })
@@ -90,7 +96,7 @@ describe('AccountsController', () => {
       }
 
       const spy     = jest.spyOn(accountsService, 'findAll').mockResolvedValue(response)
-      const result  = await accountsController.findAllV1()
+      const result  = await accountsController.findAllV1(customerId, tenantId)
 
       expect(spy).toBeCalled()
       expect(result).toBe(response)
@@ -108,10 +114,10 @@ describe('AccountsController', () => {
       }
 
       const spy     = jest.spyOn(accountsService, 'findOne').mockResolvedValue(response)
-      const result  = await accountsController.findOneV1(accountId)
+      const result  = await accountsController.findOneV1(customerId, tenantId, accountId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId)
+      expect(spy).toBeCalledWith(accountId, customerId, tenantId)
       expect(result).toBe(response)
     })
   })
@@ -121,9 +127,8 @@ describe('AccountsController', () => {
    */
   describe(`updateV1`, () => {
     it(`Returns updated account`, async () => {
-      let idempotencyKey     = `unique- idempotency-key`
-      let accountId          = `unique-account-id`
-      const updateAccountDto = {
+      let accountId        = `unique-account-id`
+      let updateAccountDto = {
         account_status: AccountStatus.Blocked,
         nickname:       'Blocked Checking Account'
       }
@@ -131,13 +136,15 @@ describe('AccountsController', () => {
         ...accountData,
         ...updateAccountDto
       }
-      let response       = { account: updatedAccount }
-
+      
+      let response = { account: updatedAccount }
       const spy    = jest.spyOn(accountsService, 'update').mockResolvedValue(response)
-      const result = await accountsController.updateV1(idempotencyKey, accountId, <UpdateAccountDto>updateAccountDto)
+      const result = await accountsController.updateV1(
+        customerId, tenantId, idempotencyKey, accountId, <UpdateAccountDto>updateAccountDto
+      )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, updateAccountDto)
+      expect(spy).toBeCalledWith(accountId, updateAccountDto, customerId, tenantId, idempotencyKey)
       expect(result).toBe(response)
     })
   })
@@ -151,10 +158,10 @@ describe('AccountsController', () => {
       let response  = true
 
       const spy    = jest.spyOn(accountsService, 'remove').mockResolvedValue(response)
-      const result = await accountsController.removeV1(accountId)
+      const result = await accountsController.removeV1(customerId, tenantId, accountId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId)
+      expect(spy).toBeCalledWith(accountId, customerId, tenantId)
       expect(result).toBe(response)
     })
   })

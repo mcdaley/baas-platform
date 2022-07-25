@@ -73,21 +73,22 @@ export class ParticipantsService {
   /**
    * @method remove
    */
-  async remove(accountId: string, participantCustomerId: string) {
+  async remove(accountId: string, participantId: string) {
     try {
       const response = await this.participantRepository.delete({
-        account_id:              accountId, 
-        participant_customer_id: participantCustomerId
+        account_id: accountId, 
+        id:         participantId
       })
-      const result       = {
-        data: response,
+      const result = {
+        data: participantId,
       }
 
+      this.logger.log(`Removed participant, result= %o`, result)
       return result
     }
     catch(error) {
       this.logger.error(
-        `Failed to delete participant id=[${participantCustomerId}], error= %o`, 
+        `Failed to delete participant id=[${participantId}], error= %o`, 
         error
       )
       throw(error)

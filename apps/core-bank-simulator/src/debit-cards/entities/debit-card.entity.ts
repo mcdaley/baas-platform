@@ -13,13 +13,14 @@ import {
 }                             from 'typeorm'
 
 import { Account }            from '../../accounts/entities/account.entity'
+import { Customer }           from '../../customers/entities/customer.entity'
+import { DebitCardBlock }     from './debit-card-block.entity'
 
 import { 
   CardStatus, 
   IDebitCard, 
   IDebitCardsBlock,
 }                             from '@app/baas-interfaces'
-import { Customer } from '../../customers/entities/customer.entity'
 
 /**
  * @class DebitCard
@@ -57,6 +58,9 @@ export class DebitCard {
   daily_transactions:             number 
 
   @Column()
+  tenant_id:                      string
+
+  @Column()
   account_id:                     string
 
   @OneToOne(() => Account)
@@ -70,10 +74,8 @@ export class DebitCard {
   @JoinColumn({name: 'customer_id'})
   customer!:                      Customer
 
-  
-  //* @Column()
-  //* branch_id:                      string
-
-  //* blocks?:                        IDebitCardsBlock[]
+  @OneToMany(() => DebitCardBlock, (block) => block.debitCard)
+  @JoinColumn({name: 'debit_card_id'})
+  blocks?: DebitCardBlock[]
 }
 

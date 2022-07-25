@@ -10,7 +10,7 @@ import { BaasDebitCardServiceService }    from './baas-debit-card-service.servic
 
 import { DebitCardsModule }               from './debit-cards/debit-cards.module'
 import { DebitCardsReissueModule }        from './debit-cards-reissue/debit-cards-reissue.module'
-import { DebitCardsBlocksModule }         from './debit-cards-blocks/debit-cards-blocks.module'
+import { DebitCardsBlocksModule }         from './blocks/debit-cards-blocks.module'
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
 

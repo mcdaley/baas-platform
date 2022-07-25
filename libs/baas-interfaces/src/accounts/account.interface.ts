@@ -7,7 +7,8 @@ import {
   ParticipantRole,
   AccountBlockType,
   AccountBlockStatus,
-}                         from './account.enum'
+}                             from './account.enum'
+import { IResponseMetadata }  from '../common/common.interface'
 
 /**
  * @interface ICreateAccountDto
@@ -17,7 +18,7 @@ export interface ICreateAccountDto {
   name_on_account?:         string,
   name?:                    string,
   nickname?:                string,
-  participants:             IParticipant[],
+  participants:             ICreateParticipantDto[],
 }
 
 /**
@@ -34,7 +35,7 @@ export interface IUpdateAccountDto {
  * @interface ICreateParticipantDto
  */
 export interface ICreateParticipantDto {
-  participant_customer_id:  string
+  customer_id:  string
   participant_role:         ParticipantRole
 }
 
@@ -42,8 +43,13 @@ export interface ICreateParticipantDto {
  * @interface IParticipant
  */
 export interface IParticipant extends ICreateParticipantDto {
+  created_at: Date | string
+  updated_at: Date | string
 }
 
+/**
+ * @interface ICreateAccountBlockDto
+ */
 export interface ICreateAccountBlockDto {
   block_type:     AccountBlockType,
   block_reason?:  string
@@ -55,28 +61,30 @@ export interface ICreateAccountBlockDto {
  export interface IAccountBlock extends ICreateAccountBlockDto {
   id:             string
   block_status:   AccountBlockStatus
+  created_at:     Date | string
+  updated_at:     Date | string
 }
 
 /**
  * @interface IAccount
  */
 export interface IAccount extends ICreateAccountDto {
-  id:                     string,
-  branch_id:              string,
-  account_type:           AccountType,
-  account_number:         string,
-  routing_number:         string,
-  //* currency:               Currency,
-  available_balance:      number,
-  posted_balance:         number,
-  name_on_account:        string,
-  account_status:         AccountStatus,
-  nickname?:              string,
-  multiple_participants:  boolean,
-  participants:           IParticipant[],
-  blocks?:                IAccountBlock[],
-  created_at:             Date,
-  updated_at:             Date,
+  id:                     string
+  tenant_id:              string
+  account_type:           AccountType
+  account_number:         string
+  routing_number:         string
+  //* currency:               Currency
+  available_balance:      number
+  posted_balance:         number
+  name_on_account:        string
+  account_status:         AccountStatus
+  nickname?:              string
+  multiple_participants:  boolean
+  participants:           IParticipant[]
+  blocks?:                IAccountBlock[]
+  created_at:             Date | string
+  updated_at:             Date | string
 }
 
 /**
@@ -90,5 +98,6 @@ export interface IAccount extends ICreateAccountDto {
  * @interface IAccountListResponse
  */
 export interface IAccountListResponse {
-  accounts: IAccount[],
+  accounts:   IAccount[],
+  metadata?:  IResponseMetadata,
 }

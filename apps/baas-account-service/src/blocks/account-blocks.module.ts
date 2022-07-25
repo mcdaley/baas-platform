@@ -6,10 +6,11 @@ import { Module }                   from '@nestjs/common'
 import { AccountBlocksController }  from './account-blocks.controller'
 import { AccountBlocksService }     from './account-blocks.service'
 
-import { CoreSimulatorService }     from '@app/core-simulator'
-
+/**
+ * @class AccountBlocksModule
+ */
 @Module({
   controllers:  [AccountBlocksController],
-  providers:    [AccountBlocksService, CoreSimulatorService],
+  providers:    [AccountBlocksService],
 })
 export class AccountBlocksModule {}

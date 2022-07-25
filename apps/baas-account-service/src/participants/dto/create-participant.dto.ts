@@ -18,7 +18,7 @@ import {
 export class CreateParticipantDto implements ICreateParticipantDto {
   @IsNotEmpty()
   @IsUUID()
-  participant_customer_id:  string
+  customer_id:  string
   
   @IsNotEmpty()
   @IsEnum(ParticipantRole)

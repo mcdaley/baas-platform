@@ -12,7 +12,6 @@ import {
 import { Type }                     from 'class-transformer'
 
 import { CreateParticipantDto }     from './create-participant.dto'
-import { Participant }              from '../entities/participant.entity'
 
 import { 
   AccountType,
@@ -43,5 +42,5 @@ export class CreateAccountDto implements ICreateAccountDto {
   @IsArray()
   @ValidateNested()
   @Type(() => CreateParticipantDto)
-  participants: Participant[]
+  participants: CreateParticipantDto[]
 }

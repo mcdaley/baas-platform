@@ -30,7 +30,7 @@ export class AccountToCustomer {
   account_id!:        string
 
   @Column()
-  participant_customer_id!: string
+  customer_id!: string
 
   @Column({type: 'varchar'})
   participant_role!:  ParticipantRole
@@ -40,7 +40,7 @@ export class AccountToCustomer {
   account!: Account
 
   @ManyToOne(() => Customer, (customer) => customer.accounts)
-  @JoinColumn({name: 'participant_customer_id'})
+  @JoinColumn({name: 'customer_id'})
   customer!: Customer
 
   @CreateDateColumn()

@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// apps/baas-debit-card-service/src/debit-card-blocks/debit-cards-blocks.service.spec.ts
+// apps/baas-debit-card-service/src/blocks/debit-cards-blocks.service.spec.ts
 //---------------------------------------------------------------------------------------
 import { 
   Test, 
@@ -10,13 +10,13 @@ import axios                            from 'axios'
 
 import { DebitCardsBlocksService }      from './debit-cards-blocks.service'
 
+import { BlockReason }                  from '@app/baas-interfaces'
+import { uuid }                         from '@app/baas-utils'
+
 import { WinstonLoggerService }         from '@app/winston-logger'
-import { CoreDebitCardSimulator }       from '@app/core-simulator'  // TODO: Remove
 
 // Import the test data
 import { debitCardFactoryData }         from '../../../../test/baas.factory.data'
-import { BlockReason } from '@app/baas-interfaces'
-import { uuid } from '@app/baas-utils'
 
 /**
  * Set mockConfigService using env variables in .jest/set-env-vars.ts
@@ -32,7 +32,11 @@ mockConfigService.set('bankSimulatorDebitCardsUrl', process.env.BANK_SIMULATOR_D
 /**
  * Test data
  */
-const debitCardData = debitCardFactoryData.checking_1
+const debitCardData   = debitCardFactoryData.checking_1
+const debitCardId     = debitCardData.id
+const customerId      = debitCardData.customer_id
+const tenantId        = debitCardData.tenant_id
+const idempotencyKey  = uuid()
 
 /**
  * DebitCardsBlocksService
@@ -50,7 +54,6 @@ describe(`DebitCardsBlocksService`, () => {
           useValue: mockConfigService,
         }, 
         WinstonLoggerService,
-        CoreDebitCardSimulator,
       ],
     }).compile()
 
@@ -63,28 +66,38 @@ describe(`DebitCardsBlocksService`, () => {
    */
   describe(`create`, () => {
     it(`Blocks a debit card`, async () => {
-      const debitCardId              = debitCardData.id
-      const createDebitCardBlocksDto = { block_reason: BlockReason.Fraud }
-      const debitCardsBlock          = [
-        {
-          id:           uuid(),
-          block_reason: BlockReason.Fraud,
-          is_active:    true,
-          block_date:   new Date(),
-        }
-      ]
-
-      const url      = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
-      const response = {
-        data: debitCardsBlock
+      const createDebitCardBlocksDto = { 
+        block_reason: BlockReason.Fraud 
       }
 
-      const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(response)
-      const result = await debitCardsBlocksService.create(debitCardId, createDebitCardBlocksDto)
+      const block = {
+        id:           uuid(),
+        is_active:    true,
+        block_date:   new Date(),
+        ...createDebitCardBlocksDto
+      }
+
+      const url      = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':      customerId,
+          'Tenant-Id':        tenantId,
+          'Idempotency-Key':  idempotencyKey,
+        }
+      }
+      const response = {
+        data: {
+          data: block
+        }
+      }
+
+      const spy    = jest.spyOn(axios, 'post').mockResolvedValue(response)
+      const result = await debitCardsBlocksService.create(
+        debitCardId, createDebitCardBlocksDto, customerId, tenantId, idempotencyKey)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url, createDebitCardBlocksDto)
-      expect(result).toEqual(debitCardsBlock)
+      expect(spy).toBeCalledWith(url, createDebitCardBlocksDto, axiosConfig)
+      expect(result).toEqual({block: block})
     })
   })
 
@@ -93,8 +106,7 @@ describe(`DebitCardsBlocksService`, () => {
    */
   describe(`findAll`, () => {
     it(`Returns a list of all the account blocks`, async () => {
-      const debitCardId          = debitCardData.id
-      const debitCardsBlocksList = [
+      const blocks = [
         {
           id:           uuid(),
           block_reason: BlockReason.Fraud,
@@ -103,17 +115,25 @@ describe(`DebitCardsBlocksService`, () => {
         },
       ]
 
-      const url      = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
+      const url         = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
       const response = {
-        data: debitCardsBlocksList,
+        data: {
+          data: blocks
+        },
       }
 
       const spy   = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await debitCardsBlocksService.findAll(debitCardId)
+      const result = await debitCardsBlocksService.findAll(debitCardId, customerId, tenantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
-      expect(result).toEqual(debitCardsBlocksList)
+      expect(spy).toBeCalledWith(url, axiosConfig)
+      expect(result).toEqual({blocks: blocks})
     })
   })
 
@@ -122,29 +142,32 @@ describe(`DebitCardsBlocksService`, () => {
    */
   describe(`remove`, () => {
     it(`Cancels a debit card block`, async () => {
-      const debitCardId          = debitCardData.id
-      const blockId              = uuid()
-      const debitCardsBlocksList = [
-        {
-          id:           blockId,
-          block_reason: BlockReason.Stolen,
-          is_active:    false,
-          block_date:   new Date(),
-        },
-      ]
+      const blockId = uuid()
+      const block   = {
+        id:           blockId,
+        block_reason: BlockReason.Stolen,
+        is_active:    false,
+        block_date:   new Date(),
+      }
 
 
-      const url      = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks/${blockId}`
+      const url         = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks/${blockId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
       const response = {
-        data: debitCardsBlocksList,
+        data: { data: block },
       }
 
       const spy    = jest.spyOn(axios, 'delete').mockResolvedValue(response)
-      const result = await debitCardsBlocksService.remove(debitCardId, blockId)
+      const result = await debitCardsBlocksService.remove(debitCardId, blockId, customerId, tenantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
-      expect(result).toEqual(debitCardsBlocksList)
+      expect(spy).toBeCalledWith(url, axiosConfig)
+      expect(result).toEqual({block: block})
     })
   })
 })

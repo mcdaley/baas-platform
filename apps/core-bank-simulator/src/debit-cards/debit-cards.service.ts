@@ -15,6 +15,7 @@ import {
   IDebitCard, 
 }                                   from '@app/baas-interfaces'
 import { WinstonLoggerService }     from '@app/winston-logger'
+import { TenantId } from '@app/baas-errors'
 
 /**
  * @class DebitCardsService
@@ -32,10 +33,10 @@ export class DebitCardsService {
   /**
    * @method create
    */
-  async create(createDebitCardDto: CreateDebitCardDto) {
+  async create(createDebitCardDto: CreateDebitCardDto, tenantId: string) {
     try {
       // Create the debit card
-      const debitCard = this.buildDebitCard(createDebitCardDto)
+      const debitCard = this.buildDebitCard(createDebitCardDto, tenantId)
       this.logger.log(`Created debit card= %o`, debitCard)
       
       // Add the debit card to the DB and return it to caller
@@ -56,7 +57,7 @@ export class DebitCardsService {
   /**
    * @method findAll
    */
-  async findAll() {
+  async findAll(customerId: string, tenantId: string) {
     try {
       // Set up default pagination
       let start_index = 0
@@ -66,7 +67,8 @@ export class DebitCardsService {
 
       // Query the DB
       const response = await this.debitCardRepository.findAndCount({
-        relations:  ['account'],
+        where:      {customer_id: customerId, tenant_id: tenantId},
+        relations:  ['account', 'blocks'],
         skip:       start_index,
         take:       take,
       })
@@ -104,12 +106,13 @@ export class DebitCardsService {
   /**
    * @method findOne
    */
-  async findOne(debitCardId: string) {
+  async findOne(debitCardId: string, customerId: string, tenantId: string) {
     try {
       const debitCard = await this.debitCardRepository.findOne({
-        where:            {id: debitCardId},
+        where:            {id: debitCardId, customer_id: customerId, tenant_id: tenantId},
+        relations:        ['blocks'],
         //* loadRelationIds:  true,
-        //* relations:        ['account', 'customer']
+        //* relations:        ['account', 'customer', 'blocks']
       })
 
       const result   = {
@@ -130,9 +133,17 @@ export class DebitCardsService {
    * 
    * @method update
    */
-  async update(debitCardId: string, updateDebitCardDto: UpdateDebitCardDto) {
+  async update(
+    debitCardId:        string, 
+    updateDebitCardDto: UpdateDebitCardDto,
+    customerId:         string,
+    tenantId:           string) 
+  {
     try {
-      const response  = await this.debitCardRepository.update({id: debitCardId}, updateDebitCardDto)
+      const response  = await this.debitCardRepository.update(
+        {id: debitCardId, customer_id: customerId, tenant_id: tenantId}, 
+        updateDebitCardDto
+      )
       const debitCard = await this.debitCardRepository.findOne({
         where: {id: debitCardId},
       })
@@ -153,7 +164,11 @@ export class DebitCardsService {
   /**
    * @method remove
    */
-  async remove(debitCardId: string) {
+  async remove(
+    debitCardId: string,
+    customerId:  string,
+    tenantId:    string) 
+  {
     try {
       const response = await this.debitCardRepository.delete(debitCardId)
       const result   = {
@@ -175,7 +190,7 @@ export class DebitCardsService {
    * 
    * @function buildDebitCard
    */
-  private buildDebitCard(createDebitCardDto) : IDebitCard {
+  private buildDebitCard(createDebitCardDto, tenantId) {
     const debitCard = {
       name_on_card:         createDebitCardDto.name_on_card ? createDebitCardDto.name_on_card : 'Joe Ferguson',
       card_number:          faker.finance.creditCardNumber(),
@@ -186,6 +201,7 @@ export class DebitCardsService {
       atm_daily:            500,
       pos_daily:            800,
       daily_transactions:   10,
+      tenant_id:            tenantId,
       customer_id:          createDebitCardDto.customer_id,
       account_id:           createDebitCardDto.account_id,
     }

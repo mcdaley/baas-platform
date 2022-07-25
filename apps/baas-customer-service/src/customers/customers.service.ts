@@ -14,6 +14,9 @@ import { WinstonLoggerService } from '@app/winston-logger'
 import { createBaaSException }  from '@app/baas-errors'
 import { ICustomerListResponse, ICustomerResponse } from '@app/baas-interfaces'
 
+/**
+ * @class CustomersService
+ */
 @Injectable()
 export class CustomersService {
   private coreCustomerUrl: string
@@ -26,9 +29,18 @@ export class CustomersService {
     this.logger.log(`Initialized the Customer Simulator URL= %s`, this.coreCustomerUrl)
   }
 
-  async create(createCustomerDto: CreateCustomerDto) : Promise<ICustomerResponse> {
+  /**
+   * @method create
+   */
+  async create(
+    createCustomerDto: CreateCustomerDto,
+    requestHeaders:    any) : Promise<ICustomerResponse> 
+  {
     try {
-      const response  = await axios.post(this.coreCustomerUrl, createCustomerDto)
+      const axiosConfig = {
+        headers: requestHeaders,
+      }
+      const response  = await axios.post(this.coreCustomerUrl, createCustomerDto, axiosConfig)
       const customer  = response.data.data
       const result    = {
         customer: customer,
@@ -43,12 +55,18 @@ export class CustomersService {
     }
   }
 
-  async findAll() : Promise<ICustomerListResponse> {
+  /**
+   * @method findAll
+   */
+  async findAll(requestHeaders: any) : Promise<ICustomerListResponse> {
     try {
-      const response  = await axios.get(this.coreCustomerUrl)
-      const customers = response.data.data
-      const result    = {
+      const axiosConfig = { headers: requestHeaders }
+      const response    = await axios.get(this.coreCustomerUrl, axiosConfig)
+      const customers   = response.data.data
+      const metadata    = response.data.metadata
+      const result      = {
         customers: customers,
+        metadata:  metadata,
       }
       this.logger.log(`Fetched [%d] customers`, customers.length)
 
@@ -79,15 +97,18 @@ export class CustomersService {
    * Search for a customer by Id and return the customer. If the customer is not found
    * return a 404 Not Found response.
    */
-  async findOne(customerId: string) {
+  async findOne(customerId: string, requestHeaders: any) : Promise<ICustomerResponse> {
     try {
-      const url      = `${this.coreCustomerUrl}/${customerId}`
-      const response = await axios.get(url)
-      const customer = response.data.data
+      const url         = `${this.coreCustomerUrl}/${customerId}`
+      const axiosConfig = { headers: requestHeaders }
+      const response    = await axios.get(url, axiosConfig)
+      const customer    = response.data.data
       
       const result = {
         customer: customer,
       }
+
+      this.logger.log(`Fetched customer, result= %o`, result)
       return result
     }
     catch(error) {
@@ -98,13 +119,18 @@ export class CustomersService {
   /**
    * @method update
    */
-  async update(customerId: string, updateCustomerDto: UpdateCustomerDto) {
+  async update(
+    customerId:        string, 
+    updateCustomerDto: UpdateCustomerDto, 
+    requestHeaders:    any) : Promise<ICustomerResponse> 
+  {
     try {
-      const url      = `${this.coreCustomerUrl}/${customerId}`
-      const response = await axios.patch(url, updateCustomerDto)
-      const customer = response.data.data
+      const url         = `${this.coreCustomerUrl}/${customerId}`
+      const axiosConfig = { headers: requestHeaders }
+      const response    = await axios.patch(url, updateCustomerDto, axiosConfig)
+      const customer    = response.data.data
       
-      const result   = {
+      const result = {
         customer: customer
       }
       return result
@@ -117,10 +143,11 @@ export class CustomersService {
   /**
    * @method remove
    */
-  async remove(customerId: string) {
+  async remove(customerId: string, requestHeaders: any) {
     try {
-      const url = `${this.coreCustomerUrl}/${customerId}`
-      await axios.delete(url)
+      const url         = `${this.coreCustomerUrl}/${customerId}`
+      const axiosConfig = { headers: requestHeaders }
+      await axios.delete(url, axiosConfig)
       
       const result = {
         customer: customerId

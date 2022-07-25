@@ -9,7 +9,7 @@ import {
   CustomerStatus, 
   ICreateAccountDto, 
   ICustomer, 
-  IParticipant, 
+  ICreateParticipantDto, 
   ParticipantRole 
 }                               from '@app/baas-interfaces'
 import { 
@@ -43,39 +43,43 @@ export class CustomersService {
    * 
    * @method verifyCustomers
    */
-  public verifyCustomers(participants: IParticipant[]) : Promise<ICustomer[]> {
-    return new Promise( async (resolve, reject) => {
-      try {
-        let participantCustomers: ICustomer[] = []
+  public async verifyCustomers(
+    participants: ICreateParticipantDto[],
+    axiosConfig:  any) : Promise<ICustomer[]> 
+  {
+    let customerRequests = this.buildCustomerRequests(participants, axiosConfig)
+    try {
+      const response  = await Promise.all(customerRequests)
+      const customers = response.map( (res) => {
+        const  { customer } = res.data
+        return customer
+      })
+      this.logger.log(`Fetched [${customers.length}] account participants`)
 
-        for(let i = 0; i < participants.length; i++) {
-          let customerId    = participants[i].participant_customer_id
-          let url           = `${this.customersServiceUrl}/${customerId}`
-          this.logger.log(`GET ${url}`)
+      return customers
+    }
+    catch(error) {
+      this.logger.error(`Failed to fetch all of the customers, error= %o`, error)
+      throw(error)
+    }
+  }
 
-          let response      = await axios.get(url)
-          let customer      = response.data.data
-          
-          if(customer.status !== CustomerStatus.Active) {
-            this.logger.warn(`CustomerId=[${customerId}] is not active, status=[${customer.status}]`)
+  /**
+   * Build and array of axios requests to "GET /api/v1/customers/:customerId", so 
+   * that I can use to validate all of the account participants in the create
+   * account request. 
+   * 
+   * @method buildCustomerRequests
+   */
+  private buildCustomerRequests(participants, axiosConfig) {
+    let requests = participants.map( (p) => {
+      let url     = `${this.customersServiceUrl}/${p.customer_id}`
+      let request = axios.get(url, axiosConfig)
 
-            return reject(new InactiveCustomerError(
-              BaaSErrors.account.inactiveCustomer,
-              `Customer id=[${customerId}] is not active, customer status=[${customer.status}]`
-            ))
-          }
-          else {
-            participantCustomers.push(customer)
-          }
-        }
-        this.logger.log(`Account participants are all active`)
-
-        resolve(participantCustomers)
-      }
-      catch(error) {
-        reject(createBaaSException(error))
-      }
+      return request
     })
+
+    return requests
   }
 
   /**
@@ -104,7 +108,7 @@ export class CustomersService {
         }
 
         const holder = participantCustomers.find( customer => 
-          customer.id === holderParticipant.participant_customer_id
+          customer.id === holderParticipant.customer_id
         )
 
         if(holder === undefined) {

@@ -1,8 +1,9 @@
 //-----------------------------------------------------------------------------
 // libs/baas-interfaces/src/customer/customer.interface.ts
 //-----------------------------------------------------------------------------
-import { IAddress, ICreateAddressDto } from "../addresses/address.interface"
-import { CustomerStatus } from "./customer.enum"
+import { IAddress, ICreateAddressDto }  from '../addresses/address.interface'
+import { CustomerStatus }               from './customer.enum'
+import { IResponseMetadata }            from '../common/common.interface'
 
 /**
  * @interface ICreateCustomerDto
@@ -15,11 +16,10 @@ export interface ICreateCustomerDto {
   email:              string
   phone_number:       string
   ssn:                string
-  metatdata?:         string
+  metadata?:          string
   physical_address:   ICreateAddressDto
   mailing_address?:   ICreateAddressDto
   status?:            CustomerStatus
-  branch_id:          string
 }
 
 /**
@@ -44,8 +44,10 @@ export interface IUpdateCustomerDto {
  */
 export interface ICustomer extends ICreateCustomerDto {
   id:                 string
+  tenant_id:          string
   physical_address:   IAddress
-  mailing_address?:   IAddress
+  created_at:         Date | string
+  updated_at:         Date | string
 }
 
 /**
@@ -59,5 +61,6 @@ export interface ICustomerResponse {
  * @interface ICustomerListResponse
  */
 export interface ICustomerListResponse {
-  customers: ICustomer[],
+  customers:  ICustomer[],
+  metadata?:  IResponseMetadata,
 }

@@ -19,9 +19,9 @@ import { States }             from '../address.enum'
  * @class CreateAddressDto
  */
 export class CreateAddressDto implements ICreateAddressDto {
-  @IsOptional()
-  @IsUUID()
-  id?:            string
+  //* @IsOptional()
+  //* @IsUUID()
+  //* id?:            string
 
   @IsOptional()
   @IsString()

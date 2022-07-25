@@ -3,19 +3,12 @@
 //-----------------------------------------------------------------------------
 import { 
   IsEnum,
-  IsNotEmpty,
-  ValidateNested,
-  IsArray,
   IsOptional,
   IsString,
   MaxLength,
-}                               from 'class-validator'
-import { Type }                 from 'class-transformer'
-
-import { PartialType }        from '@nestjs/mapped-types'
+}                             from 'class-validator'
 
 import { AccountStatus }      from '@app/baas-interfaces'
-import { CreateAccountDto }   from './create-account.dto'
 
 /**
  * @class UpdateAccountDto

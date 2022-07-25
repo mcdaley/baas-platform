@@ -184,11 +184,13 @@ export class CoreAccountsDBService {
         ///////////////////////////////////////////////////////////////////////
         // NOTE: 04/11/2022
         // I'm NOT creating a participant Id and I'm just using the 
-        // participant_customer_id as the unique identifier.
+        // customer_id as the unique identifier.
         ///////////////////////////////////////////////////////////////////////
         let account     : IAccount     = this.coreAccounts.get(accountId)
         let participant : IParticipant = {
           //* id:           uuid(),
+          created_at:   new Date(),
+          updated_at:   new Date(),
           ...createParticipantDto
         }
 
@@ -261,7 +263,7 @@ export class CoreAccountsDBService {
 
         let account = this.coreAccounts.get(accountId)
         let index   = account.participants.findIndex( (participant) => {
-          return participant.participant_customer_id === participantConsumerId
+          return participant.customer_id === participantConsumerId
         })
 
         // Participant not found
@@ -316,6 +318,8 @@ export class CoreAccountsDBService {
         let block   = {
           id:           uuidv4(),
           block_status: AccountBlockStatus.Active,
+          created_at:   new Date(),
+          updated_at:   new Date(),
           ...createAccountBlockDto
         }
         blocks.unshift(block)

@@ -30,13 +30,26 @@ export class AccountBlocksService {
   /**
    * @method create
    */
-  async create(accountId: string, createAccountBlockDto: CreateAccountBlockDto) {
+  async create(
+    accountId: string, 
+    createAccountBlockDto: CreateAccountBlockDto,
+    customerId:            string,
+    tenantId:              string,
+    idempotencyKey:        string) 
+  {
     try {
-      const url         = `${this.coreAccountsUrl}/${accountId}/core-blocks`
-      const response    = await axios.post(url, createAccountBlockDto)
-      const { blocks }  = response.data
+      const url         = `${this.coreAccountsUrl}/${accountId}/blocks`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id':     customerId,
+          'Tenant-Id':       tenantId,
+          'Idempotency-Key': idempotencyKey,
+        }
+      }
+      const response     = await axios.post(url, createAccountBlockDto, axiosConfig)
+      const accountBlock = response.data.data
       const result = {
-        blocks: blocks,
+        block: accountBlock,
       }
       this.logger.log(`Blocked account id=[${accountId}] with block= %o`, createAccountBlockDto)
 
@@ -50,12 +63,22 @@ export class AccountBlocksService {
   /**
    * @method findAll
    */
-  async findAll(accountId: string) {
+  async findAll(
+    accountId:  string,
+    customerId: string,
+    tenantId:   string) 
+  {
     try {
-      const url         = `${this.coreAccountsUrl}/${accountId}/core-blocks`
-      const response    = await axios.get(url)
-      const { blocks }  = response.data
-      const result = {
+      const url         = `${this.coreAccountsUrl}/${accountId}/blocks`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response  = await axios.get(url, axiosConfig)
+      const blocks    = response.data.data
+      const result    = {
         blocks: blocks,
       }
 
@@ -69,12 +92,30 @@ export class AccountBlocksService {
   /**
    * @method remove
    */
-  async remove(accountId: string, accountBlockId: string) {
+  async remove(
+    accountId:      string, 
+    accountBlockId: string,
+    customerId:     string,
+    tenantId:       string) 
+  {
     try {
-      const url       = `${this.coreAccountsUrl}/${accountId}/core-blocks/${accountBlockId}`
-      const response  = await axios.delete(url)
-      const result    = response.data
-      this.logger.log(`Removed account block id=[${accountBlockId}] for account, id=[${accountId}]`)
+      const url       = `${this.coreAccountsUrl}/${accountId}/blocks/${accountBlockId}`
+      const axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      const response  = await axios.delete(url, axiosConfig)
+      const block     = response.data.data
+      const result    = {
+        block: block
+      }
+
+      this.logger.log(
+        `Removed account block id=[${accountBlockId}] for account, id=[${accountId}], result= %o`, 
+        result
+      )
       
       return result
     }

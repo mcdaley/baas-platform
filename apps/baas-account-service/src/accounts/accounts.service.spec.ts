@@ -18,8 +18,8 @@ import {
   BaaSErrors, 
   NotFoundError, 
 }                                 from '@app/baas-errors'
+import { uuid }                   from '@app/baas-utils'
 import { WinstonLoggerService }   from '@app/winston-logger'
-import { CoreSimulatorService }   from '@app/core-simulator'
 
 import {
   customerFactoryData,
@@ -36,6 +36,9 @@ const mockConfigService = setMockConfigService(BaasApplication.AccountService)
 const customerData      = customerFactoryData.joe_ferguson
 const createAccountDto  = createAccountDtoFactoryData.checking_1
 const accountData       = accountFactoryData.checking_1
+const customerId        = uuid()
+const tenantId          = `buffalo_bills`
+const idempotencyKey    = uuid()
 
 /**
  * AccountsService
@@ -54,7 +57,6 @@ describe('AccountsService', () => {
           useValue: mockConfigService,
         }, 
         WinstonLoggerService,
-        CoreSimulatorService,
       ],
     }).compile();
 
@@ -67,7 +69,22 @@ describe('AccountsService', () => {
    */
   describe(`create`, () => {
     it(`Creates a new account`, async () => {
-      let url        = `http://localhost:5001/core/api/v1/accounts`
+      let url         = `http://localhost:5001/core/api/v1/accounts`
+      let axiosConfig = {
+        headers: {
+          'Customer-Id':      customerId,
+          'Tenant-Id':        tenantId,
+          'Idempotency-Key':  idempotencyKey,
+
+        }
+      }
+      let participants = accountData.participants.map( (p) => {
+        // Remove created_at & updated_at properties.
+        return {
+          customer_id:  p.customer_id,
+          participant_role:         p.participant_role
+        }
+      })
       let customers  = [customerData]
       let response   = {data: { data: accountData }}
 
@@ -80,11 +97,13 @@ describe('AccountsService', () => {
         .mockResolvedValue(customerData)
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(response)
-      const result = await accountsService.create(createAccountDto)
+      const result = await accountsService.create(
+         createAccountDto, customerId, tenantId, idempotencyKey
+      )
 
 
       expect(verifyCustomersSpy).toBeCalled()
-      expect(verifyCustomersSpy).toBeCalledWith(accountData.participants)
+      expect(verifyCustomersSpy).toBeCalledWith(participants, axiosConfig)
 
       expect(accountHolderSpy).toBeCalled()
       expect(accountHolderSpy).toBeCalledWith(createAccountDto, customers)
@@ -96,7 +115,8 @@ describe('AccountsService', () => {
           ...createAccountDto, 
           name:            `${accountData.name_on_account} ${accountData.account_type}`, 
           name_on_account: accountData.name_on_account
-        }
+        },
+        axiosConfig
       )
       expect(result).toEqual({account: accountData})
     })
@@ -107,14 +127,20 @@ describe('AccountsService', () => {
    */
   describe(`findAll`, () => {
     it(`Returns a list of accounts`, async () => {
-      let url        = `http://localhost:5001/core/api/v1/accounts`
-      let response   = {data: { data: [accountData] }}
+      let url         = `http://localhost:5001/core/api/v1/accounts`
+      let axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      let response    = {data: { data: [accountData] }}
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await accountsService.findAll()
+      const result = await accountsService.findAll(customerId, tenantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
       expect(result).toEqual({accounts: [accountData]})
     })
   })
@@ -124,32 +150,44 @@ describe('AccountsService', () => {
    */
   describe(`findOne`, () => {
     it(`Returns an account`, async () => {
-      let accountId = `unique-account-id`
-      let url       = `http://localhost:5001/core/api/v1/accounts/${accountId}`
-      let response  = {data: { data: accountData }}
+      let accountId   = `unique-account-id`
+      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
+      let response = {data: { data: accountData }}
 
-      const spy     = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result  = await accountsService.findOne(accountId)
+      const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
+      const result = await accountsService.findOne(accountId, customerId, tenantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
       expect(result).toEqual({account: accountData})
     })
 
     it(`Returns 404 account not found error`, async () => {
-      let accountId = `unique-account-id`
-      let url       = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let accountId   = `unique-account-id`
+      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let axiosConfig = {
+        headers: {
+          'Customer-Id': customerId,
+          'Tenant-Id':   tenantId,
+        }
+      }
 
       const spy    = jest.spyOn(axios, 'get').mockRejectedValueOnce(
         new NotFoundError(BaaSErrors.account.notFound, `Account ${accountId} not found`)
       )
 
       try {
-        await accountsService.findOne(accountId)
+        await accountsService.findOne(accountId, customerId, tenantId)
       }
       catch(error) {
         expect(spy).toBeCalled()
-        expect(spy).toBeCalledWith(url)
+        expect(spy).toBeCalledWith(url, axiosConfig)
         expect(error).toBeInstanceOf(NotFoundError)
       }
     })
@@ -164,6 +202,14 @@ describe('AccountsService', () => {
       nickname:           'Blocked Checking Account'
     }
 
+    let axiosConfig = {
+      headers: {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
+    }
+
     it(`Returns the updated account`, async () => {
       const accountId    = `unique-account-id`
       const url          = `http://localhost:5001/core/api/v1/accounts/${accountId}`
@@ -171,13 +217,15 @@ describe('AccountsService', () => {
         ...accountData,
         ...updateAccountDto,
       }
-      let response       = {data: {data: updatedAccount}}
-
+      
+      let response = {data: {data: updatedAccount}}
       const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(response)
-      const result = await accountsService.update(accountId, updateAccountDto)
+      const result = await accountsService.update(
+        accountId, updateAccountDto, customerId, tenantId, idempotencyKey
+      )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url, updateAccountDto)
+      expect(spy).toBeCalledWith(url, updateAccountDto, axiosConfig)
       expect(result).toEqual({account: updatedAccount})
     })
 
@@ -190,11 +238,13 @@ describe('AccountsService', () => {
       )
 
       try {
-        await accountsService.update(accountId, updateAccountDto)
+        await accountsService.update(
+          accountId, updateAccountDto, customerId, tenantId, idempotencyKey
+        )
       }
       catch(error) {
         expect(spy).toBeCalled()
-        expect(spy).toBeCalledWith(url, updateAccountDto)
+        expect(spy).toBeCalledWith(url, updateAccountDto, axiosConfig)
         expect(error).toBeInstanceOf(NotFoundError)
       }
     })
@@ -204,16 +254,23 @@ describe('AccountsService', () => {
    * remove
    */
   describe(`remove`, () => {
+    let axiosConfig = {
+      headers: {
+        'Customer-Id': customerId,
+        'Tenant-Id':   tenantId,
+      }
+    }
+
     it(`Deletes the account`, async () => {
       let accountId = `unique-account-id`
       let url       = `http://localhost:5001/core/api/v1/accounts/${accountId}`
       let response  = true
 
       const spy     = jest.spyOn(axios, 'delete').mockResolvedValue({data: true})
-      const result  = await accountsService.remove(accountId)
+      const result  = await accountsService.remove(accountId, customerId, tenantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(url)
+      expect(spy).toBeCalledWith(url, axiosConfig)
       expect(result).toEqual(response)
     })
 
@@ -226,11 +283,11 @@ describe('AccountsService', () => {
       )
 
       try {
-        await accountsService.remove(accountId)
+        await accountsService.remove(accountId, customerId, tenantId)
       }
       catch(error) {
         expect(spy).toBeCalled()
-        expect(spy).toBeCalledWith(url)
+        expect(spy).toBeCalledWith(url, axiosConfig)
         expect(error).toBeInstanceOf(NotFoundError)
       }
     })

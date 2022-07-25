@@ -47,7 +47,7 @@ export interface IUpdateDebitCardDto {
  * @interface IDebitCard
  */
 export interface IDebitCard {
-  id?:                            string
+  id:                             string
   name_on_card:                   string
   card_number:                    string
   expiration_date:                string
@@ -59,7 +59,7 @@ export interface IDebitCard {
   daily_transactions:             number
   customer_id:                    string
   account_id:                     string
-  //* branch_id:                      string 
+  tenant_id:                      string
   blocks?:                        IDebitCardsBlock[]
 }
 

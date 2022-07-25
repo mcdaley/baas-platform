@@ -17,6 +17,10 @@ import { CustomersService }         from './customers.service'
 import { CreateCustomerDto }        from './dto/create-customer.dto'
 import { UpdateCustomerDto }        from './dto/update-customer.dto'
 
+import { 
+  IdempotencyKey, 
+  TenantId 
+}                                   from '@app/baas-errors'
 import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
@@ -30,33 +34,46 @@ export class CustomersController {
   ) {}
 
   @Post()
-  create(@Body() createCustomerDto: CreateCustomerDto) {
+  create(
+    @TenantId()       tenantId:       string,
+    @IdempotencyKey() idempotencyKey: string,
+    @Body() createCustomerDto: CreateCustomerDto) {
     this.logger.log(`POST /core/api/v1/customers, body= %o`, createCustomerDto)
-    return this.customersService.create(createCustomerDto);
+    return this.customersService.create(createCustomerDto, tenantId, idempotencyKey);
   }
 
   @Get()
-  findAll() {
+  findAll(@TenantId() tenantId: string) {
     this.logger.log(`GET /core/api/v1/customers`)
-    return this.customersService.findAll();
+    return this.customersService.findAll(tenantId);
   }
 
   @Get(':customerId')
-  findOne(@Param('customerId', ParseUUIDPipe) customerId: string) {
+  findOne(
+    @TenantId() tenantId: string,
+    @Param('customerId', ParseUUIDPipe) customerId: string) 
+  {
     this.logger.log(`GET /core/api/v1/customers/${customerId}`)
-    return this.customersService.findOne(customerId);
+    return this.customersService.findOne(customerId, tenantId);
   }
 
   @Patch(':customerId')
-  update(@Param('customerId', ParseUUIDPipe) customerId: string, @Body() updateCustomerDto: UpdateCustomerDto) {
+  update(
+    @TenantId() tenantId: string,
+    @Param('customerId', ParseUUIDPipe) customerId: string, 
+    @Body() updateCustomerDto: UpdateCustomerDto) 
+  {
     this.logger.log(`PATCH /core/api/v1/customers/${customerId}, body= %o`, updateCustomerDto)
-    return this.customersService.update(customerId, updateCustomerDto);
+    return this.customersService.update(customerId, updateCustomerDto, tenantId);
   }
 
   @Delete(':customerId')
   @HttpCode(204)
-  remove(@Param('customerId', ParseUUIDPipe) customerId: string) {
+  remove(
+    @TenantId() tenantId: string,
+    @Param('customerId', ParseUUIDPipe) customerId: string) 
+  {
     this.logger.log(`DELETE /core/api/v1/customers/${customerId}`)
-    return this.customersService.remove(customerId);
+    return this.customersService.remove(customerId, tenantId);
   }
 }

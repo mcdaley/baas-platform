@@ -15,12 +15,14 @@ import { AccountsModule }                 from './accounts/accounts.module'
 import { ParticipantsModule }             from './accounts/participants/participants.module'
 import { AccountsBlocksModule }           from './accounts/blocks/accounts-blocks.module'
 import { DebitCardsModule }               from './debit-cards/debit-cards.module'
+import { DebitCardBlocksModule }          from './debit-cards/blocks/debit-card-blocks.module'
 import { Customer }                       from './customers/entities/customer.entity'
 import { Address }                        from './customers/entities/address.entity'
 import { Account }                        from './accounts/entities/account.entity'
 import { AccountToCustomer }              from './accounts/entities/account-to-customer.entity'
 import { AccountBlock }                   from './accounts/entities/account-block.entity'
 import { DebitCard }                      from './debit-cards/entities/debit-card.entity'
+import { DebitCardBlock }                 from './debit-cards/entities/debit-card-block.entity'
 
 
 import { WinstonLoggerModule }            from '@app/winston-logger'
@@ -43,6 +45,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
         AccountToCustomer, 
         AccountBlock, 
         DebitCard,
+        DebitCardBlock,
       ],
       synchronize:  true,
       logging:      true,
@@ -53,6 +56,7 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     ParticipantsModule,
     AccountsBlocksModule,
     DebitCardsModule,
+    DebitCardBlocksModule,
   ],
   controllers:  [CoreBankSimulatorController],
   providers:    [CoreBankSimulatorService],

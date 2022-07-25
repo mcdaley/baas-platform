@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// apps/baas-debit-card-service/src/debit-cards-blocks/debit-cards-blocks.module.ts
+// apps/baas-debit-card-service/src/blocks/debit-cards-blocks.module.ts
 //---------------------------------------------------------------------------------------
 import { Module }                     from '@nestjs/common'
 

@@ -26,10 +26,11 @@ import {
 }                                   from '@app/baas-interfaces'
 import { 
   uuid,
-  currentTime,
+  currentTimeString,
 }                                   from '@app/baas-utils'
 import { WinstonLoggerService }     from '@app/winston-logger'
 import { BaaSErrors, NotFoundError } from '@app/baas-errors'
+import { ICreateCustomerDtoFactoryData } from 'test/baas.factory.interface'
 
 // Tell jest to mock all the axios calls.
 jest.mock('axios')
@@ -38,9 +39,12 @@ const mockedAxios = axios as jest.Mocked<typeof axios>
 /**
  * Accounts Test Data
  */
- let customerData : ICustomer = {
-  id:                 uuid(),
-  branch_id:          uuid(),
+let customerId = uuid()
+let tenantId   = `buffalo_bills`
+
+let customerData : ICustomer = {
+  id:                 customerId,
+  tenant_id:          tenantId,
   first_name:         `Joe`,
   last_name:          `Ferguson`,
   status:             CustomerStatus.Active,
@@ -53,14 +57,16 @@ const mockedAxios = axios as jest.Mocked<typeof axios>
     city:             `Orchard Park`,
     state:            States.NY,
     postal_code:      `14075`,  
-  }
+  },
+  created_at:         new Date(),
+  updated_at:         new Date(),
 }
  
 const createAccountDto : ICreateAccountDto = {
   account_type:     AccountType.Checking,
   participants: [
     {
-      participant_customer_id:  customerData.id,
+      customer_id:  customerData.id,
       participant_role:         ParticipantRole.Holder
     },
   ]
@@ -73,15 +79,22 @@ const updateAccountDto : IUpdateAccountDto = {
 
 const accountData : IAccount = {
   id:                     uuid(),
-  branch_id:              uuid(),
+  tenant_id:              tenantId,
   account_number:         faker.finance.account(),
   routing_number:         faker.finance.routingNumber(),
   account_status:         AccountStatus.Open,
   // currency:               Currency.USD,
   name:                   'Joes Checking Account',
   name_on_account:        'Joe Ferguson',
+  account_type:           createAccountDto.account_type,
   multiple_participants:  createAccountDto.participants.length > 1 ? true : false,
-  ...createAccountDto,
+  participants:           createAccountDto.participants.map( (p) => {
+    return {
+      ...p,
+      created_at: new Date(),
+      updated_at: new Date(),
+    }
+  }),
   available_balance:      0,
   posted_balance:         0,
   created_at:             new Date(),
@@ -129,13 +142,15 @@ describe('BaasAccountServiceController (e2e)', () => {
 
     it(`Creates a new account`, () => {
       // Mock the call to GET /v1/customers/:customerId
-      mockedAxios.get.mockResolvedValueOnce({data: {data: customerData}})
+      mockedAxios.get.mockResolvedValueOnce({data: {customer: customerData}})
 
       // Mock call to POST /core/api/v1/accounts
       mockedAxios.post.mockResolvedValueOnce(axiosResponse)
 
       return request(app.getHttpServer())
         .post(`${baseUrl}`)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set(`Idempotency-Key`, uuid())
         .send(createAccountDto)
         .expect(201)
@@ -143,7 +158,7 @@ describe('BaasAccountServiceController (e2e)', () => {
           let { account } = response.body
 
           expect(account).toMatchObject({
-            name_on_account:      accountData.name_on_account,
+            name_on_account:    accountData.name_on_account,
             account_number:     accountData.account_number,
             routing_number:     accountData.routing_number,
             account_status:     accountData.account_status,
@@ -157,6 +172,8 @@ describe('BaasAccountServiceController (e2e)', () => {
     it(`Returns 400 bad request error for invalid idempotency key`, () => {
       return request(app.getHttpServer())
         .post(`${baseUrl}`)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set(`Idempotency-Key`, `invalid-idempotency-key`)
         .send(createAccountDto)
         .expect(400)
@@ -172,6 +189,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .post(`${baseUrl}`)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set(`Idempotency-Key`, uuid())
         .send(badData)
         .expect(400)
@@ -187,13 +206,15 @@ describe('BaasAccountServiceController (e2e)', () => {
         account_type: '',
         participants: [
           {
-            participant_customer_id: `invalid-id`,
+            customer_id: `invalid-id`,
           },
         ]
       }
 
       return request(app.getHttpServer())
         .post(`${baseUrl}`)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set(`Idempotency-Key`, uuid())
         .send(badData)
         .expect(400)
@@ -221,6 +242,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(baseUrl)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(200)
         .then( (response) => {
           const { accounts } = response.body
@@ -258,6 +281,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(200)
         .then( (response) => {
           const { account } = response.body
@@ -289,6 +314,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(400)
         .then( (response) => {
           const { httpStatus, path, message } = response.body
@@ -311,6 +338,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(404)
         .then( (response) => {
           /////////////////////////////////////////////////////////////////////
@@ -350,6 +379,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .patch(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set('Idempotency-Key', uuid())
         .send(updateAccountDto)
         .expect(200)
@@ -368,6 +399,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .patch(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .set('Idempotency-Key', idempotencyKey)
         .send(updateAccountDto)
         .expect(400)
@@ -393,6 +426,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .get(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(404)
         .then( (response) => {
           /////////////////////////////////////////////////////////////////////
@@ -427,6 +462,8 @@ describe('BaasAccountServiceController (e2e)', () => {
 
       return request(app.getHttpServer())
         .delete(url)
+        .set(`Customer-Id`, customerId)
+        .set(`Tenant-Id`, tenantId)
         .expect(204)
     })
   })

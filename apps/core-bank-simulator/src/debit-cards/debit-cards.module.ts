@@ -7,9 +7,10 @@ import { TypeOrmModule }            from '@nestjs/typeorm'
 import { DebitCardsController }     from './debit-cards.controller'
 import { DebitCardsService }        from './debit-cards.service'
 import { DebitCard }                from './entities/debit-card.entity'
+import { DebitCardBlock }           from './entities/debit-card-block.entity'
 
 @Module({
-  imports:     [TypeOrmModule.forFeature([DebitCard])],
+  imports:     [TypeOrmModule.forFeature([DebitCard, DebitCardBlock])],
   controllers: [DebitCardsController],
   providers:   [
     DebitCardsService,

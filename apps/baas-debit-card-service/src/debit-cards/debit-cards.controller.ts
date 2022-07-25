@@ -18,9 +18,13 @@ import { UpdateDebitCardDto }       from './dto/update-debit-card.dto'
 import { UpdateDebitCardLimitsDto } from './dto/update-debit-card-limits.dto'
 import { UpdateDebitCardPinDto }    from './dto/update-debit-card-pin.dto'
 
-import { IdempotencyKey }           from '@app/baas-errors'
-import { WinstonLoggerService }     from '@app/winston-logger'
+import { 
+  CustomerId,
+  TenantId,
+  IdempotencyKey 
+}                                   from '@app/baas-errors'
 import { CardStatus }               from '@app/baas-interfaces'
+import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
  * @class DebitCardsController
@@ -40,29 +44,38 @@ export class DebitCardsController {
    */
   @Post()
   createV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Body() createDebitCardDto: CreateDebitCardDto
   ) {
     this.logger.log(`POST /v1/debit-cards, createDebitCardDto= %o`, createDebitCardDto)
-    return this.debitCardsService.create(createDebitCardDto);
+    return this.debitCardsService.create(
+      createDebitCardDto, customerId, tenantId, idempotencyKey)
   }
 
   /**
    * @method findAllV1
    */
   @Get()
-  findAllV1() {
+  findAllV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string) 
+  {
     this.logger.log(`GET /v1/debit-cards`)
-    return this.debitCardsService.findAll()
+    return this.debitCardsService.findAll(customerId, tenantId)
   }
 
   /**
    * @method findOneV1
    */
   @Get(':debitCardId')
-  findOneV1(@Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
+  findOneV1(
+    @CustomerId() customerId: string,
+    @TenantId()   tenantId:   string,
+    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
     this.logger.log(`GET /v1/debit-cards/${debitCardId}`)
-    return this.debitCardsService.findOne(debitCardId)
+    return this.debitCardsService.findOne(debitCardId, customerId, tenantId)
   }
 
   /**
@@ -70,13 +83,17 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/activate')
   activateDebitCardV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
     this.logger.log(`PATCH /v1/debit-cards/${debitCardId}/activate`)
     
     const  updateDebitCardDto = {status: CardStatus.Active }
-    return this.debitCardsService.update(debitCardId, updateDebitCardDto)
+    return this.debitCardsService.update(
+      debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
+    )
   }
 
   /**
@@ -84,13 +101,17 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/cancel')
   cancelDebitCardV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
     this.logger.log(`PATCH /v1/debit-cards/${debitCardId}/cancel`)
     
     const  updateDebitCardDto = {status: CardStatus.Canceled }
-    return this.debitCardsService.update(debitCardId, updateDebitCardDto)
+    return this.debitCardsService.update(
+      debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
+    )
   }
 
   /**
@@ -98,6 +119,8 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/limits')
   updateDebitCardLimitsV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardLimitsDto: UpdateDebitCardLimitsDto) 
@@ -107,7 +130,9 @@ export class DebitCardsController {
       updateDebitCardLimitsDto
     )
     
-    return this.debitCardsService.update(debitCardId, updateDebitCardLimitsDto)
+    return this.debitCardsService.update(
+      debitCardId, updateDebitCardLimitsDto, customerId, tenantId, idempotencyKey
+    )
   }
 
   /**
@@ -115,6 +140,8 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/pin')
   updateDebitCardPinV1(
+    @CustomerId()     customerId:     string,
+    @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardPinDto: UpdateDebitCardPinDto) 
@@ -124,7 +151,9 @@ export class DebitCardsController {
       updateDebitCardPinDto
     )
     
-    return this.debitCardsService.update(debitCardId, updateDebitCardPinDto)
+    return this.debitCardsService.update(
+      debitCardId, updateDebitCardPinDto, customerId, tenantId, idempotencyKey
+    )
   }
 
   //* @Patch(':debitCardId')

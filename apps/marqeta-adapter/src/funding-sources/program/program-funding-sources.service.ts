@@ -12,9 +12,12 @@ import {
   UpdateProgramFundingSourceDto, 
 }                                   from './dto/update-program-funding-source.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel, 
+}                                   from '@app/baas-errors'
 import { base64EncodeCredentials }  from '@app/baas-marqeta'
 import { WinstonLoggerService }     from '@app/winston-logger'
-import { createBaaSException }      from '@app/baas-errors'
 
 @Injectable()
 export class ProgramFundingSourcesService {
@@ -57,7 +60,7 @@ export class ProgramFundingSourcesService {
     catch(error) {
       const errorData = error.response.data
       this.logger.error(`Failed to create program funding source, error= %o`, errorData)
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -85,7 +88,7 @@ export class ProgramFundingSourcesService {
         `Failed to fetch program funding sources w/ token=${programFundingSourceToken}, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -116,7 +119,7 @@ export class ProgramFundingSourcesService {
         `Failed to update program funding sources w/ token=${programFundingSourceToken}, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 

@@ -7,8 +7,11 @@ import axios                            from 'axios'
 
 import { CreateParticipantDto }         from './dto/create-participant.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel,
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
-import { createBaaSException }          from '@app/baas-errors'
 
 @Injectable()
 export class ParticipantsService {
@@ -19,7 +22,6 @@ export class ParticipantsService {
     private readonly logger:        WinstonLoggerService,
   ) {
     this.coreAccountsUrl = configService.get('bankSimulatorAccountsUrl')
-    //* this.logger.log(`Initialized the Account Simulator URL= %s`, this.coreAccountsUrl)
   }
 
   /**
@@ -52,7 +54,8 @@ export class ParticipantsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      this.logger.error(`Failed to add participant to account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -82,7 +85,7 @@ export class ParticipantsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -110,7 +113,8 @@ export class ParticipantsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      this.logger.error(`Failed to remove participant from account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 } // end of class ParticipantsService

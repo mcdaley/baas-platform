@@ -9,6 +9,7 @@ import {
   NotFoundError, 
   BaaSException, 
   createBaaSException, 
+  BaaSErrorLabel,
 }                               from '@app/baas-errors'
 import { 
   IAccount, 
@@ -59,7 +60,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -74,7 +75,7 @@ export class CoreAccountsDBService {
         resolve(result)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -93,7 +94,7 @@ export class CoreAccountsDBService {
         resolve(accountList)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -112,7 +113,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -141,7 +142,7 @@ export class CoreAccountsDBService {
         resolve(account)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -162,7 +163,7 @@ export class CoreAccountsDBService {
         resolve(true)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -214,7 +215,7 @@ export class CoreAccountsDBService {
         resolve(account.participants)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account Participants`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -243,7 +244,7 @@ export class CoreAccountsDBService {
         resolve(participants)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -295,7 +296,7 @@ export class CoreAccountsDBService {
         resolve(account.participants)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account Participant`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -331,7 +332,7 @@ export class CoreAccountsDBService {
         resolve(account.blocks)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account Blocks`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -352,7 +353,7 @@ export class CoreAccountsDBService {
         resolve(blocks)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account Blocks`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }
@@ -404,7 +405,7 @@ export class CoreAccountsDBService {
         resolve(account.blocks)
       }
       catch(error) {
-        reject(createBaaSException(error, `Account Block`))
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }

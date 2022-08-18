@@ -13,6 +13,10 @@ import {
   CardStatus, 
   BlockReason,
 }                                       from '@app/baas-interfaces'
+import { 
+  BaaSErrorLabel, 
+  createBaaSException, 
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
 /**
@@ -60,7 +64,7 @@ export class DebitCardBlocksService {
     }
     catch(error) {
       this.logger.error(`Failed to block debit card id=[${debitCardId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -84,7 +88,7 @@ export class DebitCardBlocksService {
     }
     catch(error) {
       this.logger.error(`Failed to blocks for debit card id=[${debitCardId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -114,7 +118,7 @@ export class DebitCardBlocksService {
     }
     catch(error) {
       this.logger.error(`Failed to remove block for debit card id=[${debitCardId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 }

@@ -19,6 +19,7 @@ import {
   IUpdateAccountDto 
 }                                 from '@app/baas-interfaces'
 import { WinstonLoggerService }   from '@app/winston-logger'
+import { BaaSErrorLabel, BaaSErrors, createBaaSException, NotFoundError } from '@app/baas-errors'
 
 /**
  * @class AccountsService
@@ -53,7 +54,7 @@ export class AccountsService {
     }
     catch(error) {
       this.logger.error(`Failed to create the account, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -101,7 +102,7 @@ export class AccountsService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch the accounts, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -115,6 +116,11 @@ export class AccountsService {
         relations:  ['participants', 'blocks'],
       })
 
+      // Account not found
+      if(account == null) {
+        throw(new NotFoundError(BaaSErrors.account.notFound, `Account id = ${accountId}`))
+      }
+
       const result = {
         data: account,
       }
@@ -123,7 +129,8 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(error)
+      this.logger.error(`Failed to fetch account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -136,6 +143,13 @@ export class AccountsService {
   async update(accountId: string, updateAccountDto: UpdateAccountDto) {
     try {
       const response = await this.accountRepository.update({id: accountId}, updateAccountDto)
+
+      // Update failed - account not found
+      if(response.affected === 0) {
+        throw(new NotFoundError(BaaSErrors.account.notFound, `Account id = ${accountId}`))
+      }
+
+      // Fetch and return updated account
       const account  = await this.accountRepository.findOne({
         where:      {id: accountId},
         relations:  ['participants', 'blocks'],
@@ -150,7 +164,7 @@ export class AccountsService {
     }
     catch(error) {
       this.logger.log(`Failed to update account id=[${accountId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -160,14 +174,19 @@ export class AccountsService {
   async remove(accountId: string) {
     try {
       // Remove the participants
-      await this.participantRepository
+      let response = await this.participantRepository
         .createQueryBuilder()
         .delete()
         .where('account_id = :accountId', {accountId: accountId})
         .execute()
       
       // Remove the account
-      await this.accountRepository.delete(accountId)
+      response = await this.accountRepository.delete(accountId)
+      
+      // Delete failed - account is not found
+      if(response.affected === 0) {
+        throw(new NotFoundError(BaaSErrors.account.notFound, `Account id = ${accountId}`))
+      }
 
       this.logger.log(`Removed account id=[${accountId}]`)
       return {
@@ -176,7 +195,7 @@ export class AccountsService {
     }
     catch(error) {
       this.logger.error(`Failed to remove account id=[${accountId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 

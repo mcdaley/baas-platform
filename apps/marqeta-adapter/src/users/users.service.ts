@@ -8,9 +8,12 @@ import axios                        from 'axios'
 import { CreateUserDto }            from './dto/create-user.dto'
 import { UpdateUserDto }            from './dto/update-user.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel, 
+}                                   from '@app/baas-errors'
 import { base64EncodeCredentials }  from '@app/baas-marqeta'
 import { WinstonLoggerService }     from '@app/winston-logger'
-import { createBaaSException }      from '@app/baas-errors'
 
 /**
  * @class UsersService
@@ -57,7 +60,7 @@ export class UsersService {
     catch(error) {
       const errorData = error.response.data
       this.logger.error(`Failed to create user, error= %o`, errorData)
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -93,7 +96,7 @@ export class UsersService {
     catch(error) {
       const errorData = error.response.data
       this.logger.error(`Failed to fetch users, error= %o`, errorData)
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -119,7 +122,7 @@ export class UsersService {
     catch(error) {
       const errorData = error.response.data
       this.logger.error(`Failed to fetch user w/ token=${userToken}, error= %o`, errorData)
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -145,7 +148,7 @@ export class UsersService {
     catch(error) {
       const errorData = error.response.data
       this.logger.error(`Failed to update user w/ token=${userToken}, error= %o`, errorData)
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 

@@ -13,9 +13,12 @@ import {
 }                                   from './dto/card-query.dto'
 import { PanRequestDto }            from './dto/pan-request.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel, 
+}                                   from '@app/baas-errors'
 import { WinstonLoggerService }     from '@app/winston-logger'
 import { base64EncodeCredentials }  from '@app/baas-marqeta'
-import { createBaaSException }      from '@app/baas-errors'
 
 /**
  * @class CardsService
@@ -64,7 +67,7 @@ export class CardsService {
         `Failed to create debit card, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -107,7 +110,7 @@ export class CardsService {
         `Failed to fetch debit cards, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -150,7 +153,7 @@ export class CardsService {
         `Failed to fetch debit cards, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -180,7 +183,7 @@ export class CardsService {
         `Failed to fetch debit card w/ token=[${cardToken}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -210,7 +213,7 @@ export class CardsService {
         `Failed to fetch debit card w/ barcode=[${barcode}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -240,7 +243,7 @@ export class CardsService {
         `Failed to fetch debit card w/ token=[${cardToken}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -269,7 +272,7 @@ export class CardsService {
         `Failed to fetch debit card w/ pan=[${panRequestDto.pan}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -298,7 +301,7 @@ export class CardsService {
         `Failed to update card w/ token=[${cardToken}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 

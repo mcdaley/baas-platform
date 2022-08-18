@@ -8,8 +8,11 @@ import { Repository }                   from 'typeorm'
 import { AccountToCustomer }            from '../entities/account-to-customer.entity'
 import { CreateParticipantDto }         from '../dto/create-participant.dto'
 
+import { 
+  BaaSErrorLabel, 
+  createBaaSException, 
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
-
 
 /**
  * @class ParticipantsService
@@ -41,7 +44,7 @@ export class ParticipantsService {
     }
     catch(error) {
       this.logger.error(`Failed to create participant for account id=[${accountId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -66,7 +69,7 @@ export class ParticipantsService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch participants for account id=[${accountId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -91,7 +94,7 @@ export class ParticipantsService {
         `Failed to delete participant id=[${participantId}], error= %o`, 
         error
       )
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 } // end of class ParticipantsService

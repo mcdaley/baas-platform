@@ -8,9 +8,12 @@ import axios                        from 'axios'
 import { CreateCardProductDto }     from './dto/create-card-product.dto'
 import { UpdateCardProductDto }     from './dto/update-card-product.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel, 
+}                                   from '@app/baas-errors'
 import { base64EncodeCredentials }  from '@app/baas-marqeta'
 import { WinstonLoggerService }     from '@app/winston-logger'
-import { createBaaSException }      from '@app/baas-errors'
 
 /**
  * @class CardProductsService
@@ -59,7 +62,7 @@ export class CardProductsService {
         `Failed to create card product, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -98,7 +101,7 @@ export class CardProductsService {
         `Failed to fetch card products, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -127,7 +130,7 @@ export class CardProductsService {
         `Failed to fetch card product w/ token=[${cardProductToken}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -158,7 +161,7 @@ export class CardProductsService {
         `Failed to update card product w/ token=[${cardProductToken}], error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 

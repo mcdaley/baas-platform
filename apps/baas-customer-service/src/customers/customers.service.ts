@@ -10,9 +10,15 @@ import { ConfigService }        from '@nestjs/config'
 import { CreateCustomerDto }    from './dto/create-customer.dto'
 import { UpdateCustomerDto }    from './dto/update-customer.dto'
         
+import { 
+  ICustomerListResponse, 
+  ICustomerResponse, 
+}                               from '@app/baas-interfaces'
+import { 
+  createBaaSException,
+  BaaSErrorLabel,
+}                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
-import { createBaaSException }  from '@app/baas-errors'
-import { ICustomerListResponse, ICustomerResponse } from '@app/baas-interfaces'
 
 /**
  * @class CustomersService
@@ -50,8 +56,8 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      this.logger.error(`Error= %o`, error)
-      throw(createBaaSException(error, 'Customer'))
+      this.logger.error(`Failed to create customer error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -73,7 +79,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Customer'))
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -112,7 +118,7 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Customer'))
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -136,7 +142,8 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Customer'))
+      this.logger.error(`Failed to updated customer id=[${customerId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -155,7 +162,8 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Customer'))
+      this.logger.error(`Failed to remove customer id=[${customerId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 }

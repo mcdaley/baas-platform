@@ -9,9 +9,9 @@ Look at building the __core service features__ to standardize and add best pract
 ### Request Headers
 Add the required headers for all of the APIs and verify that they are working, some of the required headers are:
 
-- TenantId
-- CustomerId
-- IdempotencyKey
+[x] - TenantId
+[x] - CustomerId
+[x] - IdempotencyKey
 
 Need to write nestjs "interceptors?" to standardize the processing of the headers and err handling.
 
@@ -33,11 +33,11 @@ Query params, especially for findAll
 The error handling has a good starting framwework, but it needs work to productionize it:
 - Standardize error fields for development and production
   * Add API message that provides users w/ a simple message
-- Fix bug w/ using the __resource__ name for organizing error definitions
+[x] - Fix bug w/ using the __resource__ name for organizing error definitions
 - Standardize error numbering so that it is consistent
-- Remove if-else or switch logic when adding new errors
-- Support SQLITE errors
-- Support TypeScript/JavaScript errors
+[x] - Remove if-else or switch logic when adding new errors
+[x] - Support SQLITE errors
+[x] - Support TypeScript/JavaScript errors
 - Add failsafe error
 - Store the filename and directory in the error object.
 

@@ -11,9 +11,12 @@ import {
   MarqetaTransactionsByTokenQueryDto, 
 }                                       from './dto/transaction-query.dto'
 
+import { 
+  createBaaSException,
+  BaaSErrorLabel, 
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
 import { base64EncodeCredentials }      from '@app/baas-marqeta'
-import { createBaaSException }          from '@app/baas-errors'
 
 /**
  * @class TransactionsService
@@ -76,7 +79,7 @@ export class TransactionsService {
         `Failed to fetch transactions, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -123,7 +126,7 @@ export class TransactionsService {
         `Failed to fetch transactions for funding source=${fundingSourceToken}, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -158,7 +161,7 @@ export class TransactionsService {
         `Failed to fetch transactions for token=${transactionToken}, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 
@@ -205,7 +208,7 @@ export class TransactionsService {
         `Failed to fetch related transactions for token=${transactionToken}, error= %o`, 
         errorData
       )
-      throw(createBaaSException(error, 'Marqeta'))
+      throw(createBaaSException(error, BaaSErrorLabel.Marqeta))
     }
   }
 

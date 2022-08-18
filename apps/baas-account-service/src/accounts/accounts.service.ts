@@ -9,9 +9,16 @@ import { CreateAccountDto }     from './dto/create-account.dto'
 import { UpdateAccountDto }     from './dto/update-account.dto'
 import { CustomersService }     from '../customers/customers.service'
 
+import { 
+  IAccountListResponse, 
+  IAccountResponse, 
+  ICustomer 
+}                               from '@app/baas-interfaces'
+import { 
+  BaaSErrorLabel, 
+  createBaaSException 
+}                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
-import { createBaaSException }  from '@app/baas-errors'
-import { IAccountListResponse, IAccountResponse, ICustomer } from '@app/baas-interfaces'
 
 /**
  * @class AccountsService
@@ -69,7 +76,8 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      this.logger.error(`Failed to create account, error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -96,7 +104,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -125,7 +133,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -157,7 +165,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -183,7 +191,7 @@ export class AccountsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 

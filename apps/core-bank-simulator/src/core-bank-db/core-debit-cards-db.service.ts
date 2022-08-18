@@ -11,6 +11,7 @@ import {
   BaaSErrors,
   BaaSException,
   createBaaSException,
+  BaaSErrorLabel,
   NotFoundError, 
 }                                 from '@app/baas-errors'
 import { WinstonLoggerService }   from '@app/winston-logger'
@@ -53,7 +54,7 @@ export class CoreDebitCardsDBService {
         resolve(debitCard)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }
@@ -68,7 +69,7 @@ export class CoreDebitCardsDBService {
         resolve(result)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }
@@ -87,7 +88,7 @@ export class CoreDebitCardsDBService {
         resolve(debitCardList)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }
@@ -106,7 +107,7 @@ export class CoreDebitCardsDBService {
         resolve(debitCard)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }
@@ -135,7 +136,7 @@ export class CoreDebitCardsDBService {
         resolve(debitCard)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }
@@ -156,7 +157,7 @@ export class CoreDebitCardsDBService {
         resolve(true)
       }
       catch(error) {
-        reject(createBaaSException(error, `Debit Card`))
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }

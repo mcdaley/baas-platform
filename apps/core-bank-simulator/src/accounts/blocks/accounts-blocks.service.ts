@@ -13,6 +13,10 @@ import {
   AccountBlockStatus, 
   AccountStatus 
 }                                       from '@app/baas-interfaces'
+import { 
+  BaaSErrorLabel, 
+  createBaaSException, 
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
 /**
@@ -53,7 +57,8 @@ export class AccountsBlocksService {
       return result
     }
     catch(error) {
-      throw(error)
+      this.logger.error(`Failed to block account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -76,7 +81,7 @@ export class AccountsBlocksService {
       return result
     }
     catch(error) {
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -106,7 +111,8 @@ export class AccountsBlocksService {
       return result
     }
     catch(error) {
-      throw(error)
+      this.logger.error(`Failed to remove block for account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 } // end of class AccountBlocksService

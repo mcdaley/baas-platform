@@ -14,8 +14,13 @@ import {
   CardStatus, 
   IDebitCard, 
 }                                   from '@app/baas-interfaces'
+import { 
+  BaaSErrorLabel, 
+  BaaSErrors, 
+  createBaaSException,
+  NotFoundError, 
+}                                   from '@app/baas-errors'
 import { WinstonLoggerService }     from '@app/winston-logger'
-import { TenantId } from '@app/baas-errors'
 
 /**
  * @class DebitCardsService
@@ -50,7 +55,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to create debit card, error= %o`, error)
-      throw error
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -99,7 +104,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch debit cards, error= %o`, error)
-      throw error
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -115,6 +120,10 @@ export class DebitCardsService {
         //* relations:        ['account', 'customer', 'blocks']
       })
 
+      if(debitCard == null) {
+        throw(new NotFoundError(BaaSErrors.debitcard.notFound, `Debit card id = ${debitCardId}`))
+      }
+
       const result   = {
         data: debitCard
       }
@@ -124,7 +133,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch debit card id=[${debitCardId}], error= %o`)
-      throw error
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -140,10 +149,20 @@ export class DebitCardsService {
     tenantId:           string) 
   {
     try {
-      const response  = await this.debitCardRepository.update(
-        {id: debitCardId, customer_id: customerId, tenant_id: tenantId}, 
+      const response = await this.debitCardRepository.update(
+        {
+          id:           debitCardId, 
+          customer_id:  customerId, 
+          tenant_id:    tenantId
+        }, 
         updateDebitCardDto
       )
+
+      // Update failed - debit card is not found
+      if(response.affected === 0) {
+        throw(new NotFoundError(BaaSErrors.debitcard.notFound, `Debit card id = ${debitCardId}`))
+      }
+
       const debitCard = await this.debitCardRepository.findOne({
         where: {id: debitCardId},
       })
@@ -157,7 +176,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to update debit card id=[${debitCardId}], error= %o`)
-      throw error
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -171,6 +190,12 @@ export class DebitCardsService {
   {
     try {
       const response = await this.debitCardRepository.delete(debitCardId)
+
+      // Delete failed - debit card is not found
+      if(response.affected === 0) {
+        throw(new NotFoundError(BaaSErrors.debitcard.notFound, `Debit card id = ${debitCardId}`))
+      }
+
       const result   = {
         data: response
       }
@@ -179,8 +204,8 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to delete debit card id=[${debitCardId}], error= %o`)
-      throw error
+      this.logger.error(`Failed to delete debit card id=[${debitCardId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 

@@ -29,11 +29,31 @@ export interface IBaaSErrorsList {
   cause?:     Error,
 }
 
+/**
+ * @enum BaaSErrorLabel
+ */
+export enum BaaSErrorLabel {
+  Headers   = 'headers',
+  Request   = 'request',
+  Customer  = 'customer',
+  Account   = 'account',
+  DebitCard = 'debitcard',
+  Marqeta   = 'marqeta',
+  Resource  = 'resource',
+  Unknown   = 'unknown',
+}
+
 
 /**
- * Define all of the account-service errors that can occur in the microservice.
+ * Define all of the errors that can occur in the BaaS microservices. The 
+ * errors are organized by the microservice/resource so that it is easy to
+ * identify which microservice that the error occurred.
+ * 
  * For each error define the httpStatus, integer code and name of the error.
  * The errors should be grouped by the resource or a common theme.
+ * 
+ * Note:
+ * The keys need to match the BaaSErrorLabel enums defined above.
  */
 export const BaaSErrors: IBaaSErrorsList = {
   headers: {
@@ -91,6 +111,11 @@ export const BaaSErrors: IBaaSErrorsList = {
       code:       2011,
       name:       `Unknown Customer Error`,
     },
+    typeOrmError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3012,
+      name:       `Database Error`,
+    }
   },
   account: {
     badRequest: {
@@ -138,6 +163,11 @@ export const BaaSErrors: IBaaSErrorsList = {
       code:       3011,
       name:       `Unknown Account Error`,
     },
+    typeOrmError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3012,
+      name:       `Database Error`,
+    }
   },
   debitcard: {
     unauthorized: {
@@ -185,6 +215,11 @@ export const BaaSErrors: IBaaSErrorsList = {
       code:       3009,
       name:       `Customer is Not Active`,
     },
+    typeOrmError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3012,
+      name:       `Database Error`,
+    }
   },
   marqeta: {
     badRequest: {
@@ -244,5 +279,10 @@ export const BaaSErrors: IBaaSErrorsList = {
       code:       3011,
       name:       `Unknown Resource Error`,
     },
+    typeOrmError: {
+      httpStatus: HttpStatus.INTERNAL_SERVER_ERROR,
+      code:       3012,
+      name:       `Database Error`,
+    }
   },
 } // end of BaaSErrors

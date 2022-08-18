@@ -8,6 +8,7 @@ import {
   NotFoundError, 
   BaaSException, 
   createBaaSException, 
+  BaaSErrorLabel,
 }                               from '@app/baas-errors'
 import { 
   ICustomer, 
@@ -49,7 +50,7 @@ export class CoreCustomersDBService {
         resolve(customer)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       } 
     })
   }
@@ -64,7 +65,7 @@ export class CoreCustomersDBService {
         resolve(result)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       }
     })
   }
@@ -83,7 +84,7 @@ export class CoreCustomersDBService {
         resolve(customerList)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       }
     })
   }
@@ -102,7 +103,7 @@ export class CoreCustomersDBService {
         resolve(customer)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       }
     })
   }
@@ -129,7 +130,7 @@ export class CoreCustomersDBService {
         resolve(customer)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       }
     })
   }
@@ -150,7 +151,7 @@ export class CoreCustomersDBService {
         resolve(true)
       }
       catch(error) {
-        reject(createBaaSException(error, `Customer`))
+        reject(createBaaSException(error, BaaSErrorLabel.Customer))
       }
     })
   }

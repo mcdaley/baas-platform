@@ -11,7 +11,8 @@ import {
 }                               from '@app/baas-interfaces'
 import { 
   BaaSErrors, 
-  createBaaSException, 
+  createBaaSException,
+  BaaSErrorLabel,
   InactiveAccountError, 
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
@@ -59,7 +60,8 @@ export class AccountsService {
         resolve(account)
       }
       catch(error) {
-        reject(createBaaSException(error))
+        this.logger.error(`Failed to verify account id=[${accountId}], error= %o`, error)
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }

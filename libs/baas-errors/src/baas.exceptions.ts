@@ -107,3 +107,9 @@ export class BaaSAxiosError extends BaaSException {
   }
 }
 
+export class BaaSTypeOrmError extends BaaSException {
+  constructor(baasError: IBaaSError, message: string) {
+    super(baasError, message)
+  }
+}
+

@@ -16,6 +16,7 @@ import {
   BaaSErrors, 
   BadRequestError, 
   createBaaSException, 
+  BaaSErrorLabel,
   InactiveCustomerError 
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
@@ -121,7 +122,11 @@ export class CustomersService {
         resolve(holder)
       }
       catch(error) {
-        reject(createBaaSException(error))
+        this.logger.error(`
+          Failed to validate customers rquired to create account, error= %o`, 
+          error
+        )
+        reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })
   }

@@ -13,6 +13,12 @@ import {
   CustomerStatus, 
   ICustomer, 
 }                                 from '@app/baas-interfaces'
+import { 
+  BaaSErrorLabel, 
+  BaaSErrors, 
+  createBaaSException, 
+  NotFoundError,
+}                                 from '@app/baas-errors'
 import { WinstonLoggerService }   from '@app/winston-logger'
 
 /**
@@ -55,7 +61,7 @@ export class CustomersService {
     }
     catch(error) {
       this.logger.error(`Failed to create customer, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -104,7 +110,7 @@ export class CustomersService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch customers, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -118,16 +124,23 @@ export class CustomersService {
         relations:  ['physical_address', 'mailing_address'],
       })
 
+      // Customer is not found
+      if(customer == null) {
+        throw(new NotFoundError(
+          BaaSErrors.customer.notFound, `Customer id=[${customerId}] Not Found`
+        ))
+      }
+
       const result = {
         data: customer,
       }
 
-      this.logger.log(`Fetched customer`)
+      this.logger.log(`Fetched customer id=[${customerId}], result= %o`, result)
       return result
     }
     catch(error) {
       this.logger.log(`Failed to fetch customer id=[${customerId}], error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -154,6 +167,9 @@ export class CustomersService {
     //
     // If I use "update" then TypeORM will not updated the entities w/
     // relationships, e.g. mailing_addresses.
+    //
+    // ALSO NEED TO REFACTOR LOGIC THAT DETERMINES IF THE CUSTOMER IS NOT
+    // FOUND, SO IT IS CONSISTENT.
     ///////////////////////////////////////////////////////////////////////////
     try {
       const updateCustomer = await this.customerRepository.create({
@@ -180,7 +196,7 @@ export class CustomersService {
     }
     catch(error) {
       this.logger.error(`Failed to update the customer id=${customerId}, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 
@@ -199,8 +215,13 @@ export class CustomersService {
         id:         customerId,
         tenant_id:  tenantId
       })
+
+      // Customer is not found
+      if(response.affected === 0) {
+        throw(new NotFoundError(BaaSErrors.customer.notFound, `Customer id=${customerId} Not Found`))
+      }
+
       this.logger.log(`Deleted customer id=${customerId}, response= %o`, response)
-      
       const result   = {
         data: response,
       }
@@ -208,7 +229,7 @@ export class CustomersService {
     }
     catch(error) {
       this.logger.error(`Failed to delete the customer id=${customerId}, error= %o`, error)
-      throw(error)
+      throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
 

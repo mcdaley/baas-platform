@@ -8,8 +8,12 @@ import axios                            from 'axios'
 import { CreateDebitCardDto }           from './dto/create-debit-card.dto'
 import { UpdateDebitCardDto }           from './dto/update-debit-card.dto'
 
-import { createBaaSException }          from '@app/baas-errors'
+import { 
+  createBaaSException,
+  BaaSErrorLabel,
+}                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
+
 
 /**
  * @class DebitCardsService
@@ -56,7 +60,7 @@ export class DebitCardsService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Debit Card'))
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -83,7 +87,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to fetch debit cards, error= %o`, error)
-      throw(createBaaSException(error, 'Debit Card'))
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -110,7 +114,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to find debit card, error= %o`, error)
-      throw(createBaaSException(error, 'Debit Card'))
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 
@@ -143,7 +147,7 @@ export class DebitCardsService {
     }
     catch(error) {
       this.logger.error(`Failed to update debit card id=${debitCardId}, error= %o`, error)
-      throw(createBaaSException(error, 'Debit Card'))
+      throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
 

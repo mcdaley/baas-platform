@@ -7,8 +7,11 @@ import axios                      from 'axios'
 
 import { CreateAccountBlockDto }  from './dto/create-account-block.dto'
 
+import { 
+  createBaaSException, 
+  BaaSErrorLabel, 
+}                                 from '@app/baas-errors'
 import { WinstonLoggerService }   from '@app/winston-logger'
-import { createBaaSException }    from '@app/baas-errors'
 
 /**
  * @class AccountBlocksService
@@ -56,7 +59,8 @@ export class AccountBlocksService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      this.logger.error(`Failed to block account id=[${accountId}], error= %o`, error)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -85,7 +89,7 @@ export class AccountBlocksService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 
@@ -120,7 +124,8 @@ export class AccountBlocksService {
       return result
     }
     catch(error) {
-      throw(createBaaSException(error, 'Account'))
+      this.logger.error(`Failed to remove block for account id=[${accountId}], error= %o`)
+      throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
 } // end of class AccountBlocksService

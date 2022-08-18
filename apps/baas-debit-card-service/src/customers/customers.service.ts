@@ -12,6 +12,7 @@ import {
 import { 
   BaaSErrors, 
   createBaaSException, 
+  BaaSErrorLabel,
   InactiveAccountError, 
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
@@ -59,7 +60,8 @@ export class CustomersService {
         resolve(customer)
       }
       catch(error) {
-        reject(createBaaSException(error))
+        this.logger.error(`Failed to valid customer id=[${customerId}], error= %o`, error)
+        reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })
   }

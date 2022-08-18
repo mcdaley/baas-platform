@@ -71,7 +71,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     this.logger.error(`Caught exception for path=[${path}], error= %o`, error)
 
     // Return the error
-    response.status(status).json(error);
+    return response.status(status).json(error);
   }
 }
 

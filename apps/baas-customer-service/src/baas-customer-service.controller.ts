@@ -23,7 +23,7 @@ export class BaasCustomerServiceController {
 
   @Get('ping')
   pingV1(): IHeartbeat {
-    this.logger.log(`GET /v1/ping`)
+    this.logger.log({message: `GET /v1/ping`})
     return this.baasCustomerServiceService.ping();
   }
 }

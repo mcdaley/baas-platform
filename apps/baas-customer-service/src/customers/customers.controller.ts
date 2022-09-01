@@ -41,7 +41,7 @@ export class CustomersController {
   ) {}
 
   /**
-   * @method create
+   * @method createV1
    */
   @Post()
   createV1(
@@ -49,7 +49,10 @@ export class CustomersController {
     @IdempotencyKey() idempotencyKey:    string,
     @Body()           createCustomerDto: CreateCustomerDto ) : Promise<ICustomerResponse>
   {
-    this.logger.log(`POST /v1/customers, createCustomerDto= %o`, createCustomerDto)
+    this.logger.log({
+      message:  `POST /v1/customers`, 
+      body:     createCustomerDto,
+    })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
       'Idempotency-Key': idempotencyKey,
@@ -72,27 +75,40 @@ export class CustomersController {
   // Take a look at mambu apis to see how it expects to see the branch_id.
   /////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * @method findAllV1
+   */
   @Get()
   findAllV1(@TenantId() tenantId: string) : Promise<ICustomerListResponse> {
-    this.logger.log(`GET /v1/customers`)
+    this.logger.log({
+      message: `GET /v1/customers`
+    })
     const requestHeaders = {
       'Tenant-Id': tenantId,
     }
     return this.customersService.findAll(requestHeaders);
   }
 
+  /**
+   * @method findOneV1
+   */
   @Get(':customerId')
   findOneV1(
     @TenantId() tenantId: string,
     @Param('customerId', ParseUUIDPipe) customerId: string) : Promise<ICustomerResponse> 
   {
-    this.logger.log(`GET /v1/customers/${customerId}`)
+    this.logger.log({
+      message: `GET /v1/customers/${customerId}`
+    })
     const requestHeaders = {
       'Tenant-Id': tenantId,
     }
     return this.customersService.findOne(customerId, requestHeaders);
   }
 
+  /**
+   * @method updateV1
+   */
   @Patch(':customerId')
   updateV1(
     @TenantId() tenantId: string,
@@ -100,7 +116,10 @@ export class CustomersController {
     @Param('customerId', ParseUUIDPipe) customerId: string, 
     @Body() updateCustomerDto: UpdateCustomerDto) : Promise<ICustomerResponse>
   {
-    this.logger.log(`PATCH /v1/customers/${customerId}, updateCustomerDto= %o`, updateCustomerDto)
+    this.logger.log({
+      message: `PATCH /v1/customers/${customerId}`, 
+      body:     updateCustomerDto
+    })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
       'Idempotency-Key': idempotencyKey,
@@ -108,13 +127,18 @@ export class CustomersController {
     return this.customersService.update(customerId, updateCustomerDto, requestHeaders)
   }
 
+  /**
+   * @method removeV1
+   */
   @Delete(':customerId')
   @HttpCode(204)
   removeV1(
     @TenantId() tenantId: string,
     @Param('customerId', ParseUUIDPipe) customerId: string) 
   {
-    this.logger.log(`DELETE /v1/customers/${customerId}`)
+    this.logger.log({
+      message: `DELETE /v1/customers/${customerId}`
+    })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
     }

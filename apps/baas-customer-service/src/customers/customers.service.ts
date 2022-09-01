@@ -32,7 +32,9 @@ export class CustomersService {
     private readonly logger:        WinstonLoggerService,
   ) {
     this.coreCustomerUrl = `${configService.get('bankSimulatorCustomersUrl')}`
-    this.logger.log(`Initialized the Customer Simulator URL= %s`, this.coreCustomerUrl)
+    this.logger.log({
+      message: `Initialized the Customer Simulator URL= ${this.coreCustomerUrl}`
+    })
   }
 
   /**
@@ -51,12 +53,18 @@ export class CustomersService {
       const result    = {
         customer: customer,
       }
-      this.logger.log(`Created customer, sending response= %o`, result)
+      this.logger.log({
+        message: `Created customer`, 
+        result:   result
+      })
       
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create customer error= %o`, error)
+      this.logger.error({
+        message: `Failed to create customer`, 
+        error:   error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -74,7 +82,10 @@ export class CustomersService {
         customers: customers,
         metadata:  metadata,
       }
-      this.logger.log(`Fetched [%d] customers`, customers.length)
+      this.logger.log({
+        message: `Fetched [${customers.length}] customers`,
+        result:   result
+      })
 
       return result
     }
@@ -114,7 +125,10 @@ export class CustomersService {
         customer: customer,
       }
 
-      this.logger.log(`Fetched customer, result= %o`, result)
+      this.logger.log({
+        message: `Fetched customer w/ id = ${customerId}`, 
+        result:  result
+      })
       return result
     }
     catch(error) {
@@ -139,10 +153,18 @@ export class CustomersService {
       const result = {
         customer: customer
       }
+
+      this.logger.log({
+        message:  `Updated customer id = ${customerId}`,
+        result:   result,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to updated customer id=[${customerId}], error= %o`, error)
+      this.logger.error({
+        message: `Failed to updated customer id = ${customerId}`, 
+        error:   error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -159,10 +181,17 @@ export class CustomersService {
       const result = {
         customer: customerId
       }
+
+      this.logger.log({
+        message: `Deleted customer id = ${customerId}`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to remove customer id=[${customerId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to remove customer id = ${customerId}`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }

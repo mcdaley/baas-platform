@@ -7,21 +7,27 @@ import winston, {
   createLogger,
   format, 
   transports, 
-  Logger, 
 }                                     from 'winston'
 
+/**
+ * @enum LogLevel
+ */
+ enum LogLevel {
+  Debug   = 'debug',
+  Info    = 'info',
+  Warn    = 'warn',
+  Error   = 'error',
+  Verbose = 'verbose'
+}
 
-const { combine, timestamp, label, printf } = format
-const logFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${level}] [${label}]: ${message}`;
-})
+const { combine, timestamp, label, json, prettyPrint } = format
 
 /**
  * @class WinstonLoggerService
  */
 @Injectable()
 export class WinstonLoggerService implements LoggerService {
-  private logger:   Logger
+  private logger:   winston.Logger
   private options:  any
 
   constructor(private readonly configService: ConfigService) {
@@ -34,32 +40,29 @@ export class WinstonLoggerService implements LoggerService {
         level:            configService.get('logLevel'),
         filename:         logFilename,
         handleExceptions: true,
-        json:             true,
         maxsize:          5242880,      // 5MB
         maxFiles:         5,
-        colorize:         false,
         format:           combine(
-          format.splat(),
-          format.json(),
           label({ label: configService.get('appName') }),
           timestamp({
             format: 'YYYY-MM-DD HH:mm:ss'
           }),
-          logFormat,
+          json(),
         ),
       },
       console: {
         level:            configService.get('logLevel'),
         handleExceptions: true,
         exitOnError:      false,
-        json:             false,
-        colorize:         true,
         format:           combine(
-          format.colorize(),
-          format.splat(),
-          label({ label: configService.get('appName') }),
-          timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          logFormat,
+          label({ 
+            label: configService.get('appName') 
+          }),
+          timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+          }),
+          json(),
+          prettyPrint({depth: 8, colorize: true}),
         )
       },
     }
@@ -86,60 +89,65 @@ export class WinstonLoggerService implements LoggerService {
   /**
    * @method log
    */
-  public log(message: any, ...optionalParams: any[]) {
-    if(typeof message === 'object') {
-      const { message: msg, ...meta } = message;
-
-      return this.logger.info(msg as string, { ...meta })
-    }
-    return this.logger.info(message, optionalParams)
+  public log(message: any, ...optionalParams: any[]) : winston.Logger {
+    return this.write(LogLevel.Info, message, optionalParams)
   }
 
   /**
    * @method error
    */
   public error(message: any, ...optionalParams: any[]) {
-    if(typeof message === 'object') {
-      const { message: msg, ...meta } = message;
-
-      return this.logger.error(msg as string, { ...meta })
-    }
-    return this.logger.error(message, optionalParams)
+    return this.write(LogLevel.Error, message, optionalParams)
   }
 
   /**
    * @method warn
    */
   public warn(message: any, ...optionalParams: any[]) {
-    if(typeof message === 'object') {
-      const { message: msg, ...meta } = message;
-
-      return this.logger.warn(msg as string, { ...meta })
-    }
-    return this.logger.warn(message, optionalParams)
+    return this.write(LogLevel.Warn, message, optionalParams)
   }
 
   /**
    * @method debug
    */
   public debug?(message: any, ...optionalParams: any[]) {
-    if(typeof message === 'object') {
-      const { message: msg, ...meta } = message;
-
-      return this.logger.debug(msg as string, { ...meta })
-    }
-    return this.logger.debug(message, optionalParams)
+    return this.write(LogLevel.Debug, message, optionalParams)
   }
 
   /**
    * @method verbose
    */
   public verbose?(message: any, ...optionalParams: any[]) {
+    return this.write(LogLevel.Verbose, message, optionalParams)
+  }
+
+  /**
+   * Logs a message at the specified logging level. Also, adds the
+   * requestId to the log message.
+   * 
+   * @method  write
+   * @param   {LogLevel} level 
+   * @param   {any}      message 
+   * @param   {any[]}    optionalParams 
+   * @returns winston.Logger
+   */
+  private write(
+    level:             LogLevel, 
+    message:           any, 
+    ...optionalParams: any[]) : winston.Logger 
+  {
+    //* const requestId = this.asyncRequestIdContext.getRequestIdStore()
+
     if(typeof message === 'object') {
+      // Add the requestId to the log message if it is defined
+      //* if(requestId) {
+      //*   message.requestId = requestId
+      //* }
+
       const { message: msg, ...meta } = message;
 
-      return this.logger.verbose(msg as string, { ...meta })
+      return this.logger.log(level, msg as string, { ...meta })
     }
-    return this.logger.verbose(message, optionalParams)
+    return this.logger.log(level, message, optionalParams)
   }
 }

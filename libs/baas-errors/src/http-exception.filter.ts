@@ -68,7 +68,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message:    exception.message
       }
     }
-    this.logger.error(`Caught exception for path=[${path}], error= %o`, error)
+    //* this.logger.error(`Caught exception for path=[${path}], error= %o`, error)
+    this.logger.error({
+      message: `Caught exception for path=[${path}]`,
+      error:   error,
+    })
 
     // Return the error
     return response.status(status).json(error);

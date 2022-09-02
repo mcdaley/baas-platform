@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------
 import { Module }                         from '@nestjs/common'
 import { ConfigModule }                   from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 
 import { configuration, validate }        from './config/configuration'
 import { BaasDebitCardServiceController } from './baas-debit-card-service.controller'
@@ -12,8 +13,14 @@ import { DebitCardsModule }               from './debit-cards/debit-cards.module
 import { DebitCardsReissueModule }        from './debit-cards-reissue/debit-cards-reissue.module'
 import { DebitCardsBlocksModule }         from './blocks/debit-cards-blocks.module'
 
-import { WinstonLoggerModule }            from '@app/winston-logger'
+import { 
+  WinstonLoggerModule,
+  WinstonLoggerInterceptor,
+}                                         from '@app/winston-logger'
 
+/**
+ * @class BaasDebitCardServiceModule
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +35,12 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     WinstonLoggerModule,
   ],
   controllers:  [BaasDebitCardServiceController],
-  providers:    [BaasDebitCardServiceService],
+  providers:    [
+    BaasDebitCardServiceService,
+    { 
+      provide:  APP_INTERCEPTOR,
+      useClass: WinstonLoggerInterceptor
+    }
+  ],
 })
 export class BaasDebitCardServiceModule {}

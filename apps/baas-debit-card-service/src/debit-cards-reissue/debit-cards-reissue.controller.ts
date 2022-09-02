@@ -12,8 +12,6 @@ import {
 import { DebitCardsReissueService }   from './debit-cards-reissue.service'
 import { CreateDebitCardsReissueDto } from './dto/create-debit-cards-reissue.dto'
 
-import { WinstonLoggerService }       from '@app/winston-logger'
-
 /**
  * @class DebitCardsReissueController
  */
@@ -21,7 +19,6 @@ import { WinstonLoggerService }       from '@app/winston-logger'
 export class DebitCardsReissueController {
   constructor(
     private readonly debitCardReissueService: DebitCardsReissueService,
-    private readonly logger:                  WinstonLoggerService,
   ) {}
 
   @Post()
@@ -29,10 +26,6 @@ export class DebitCardsReissueController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() createDebitCardsReissueDto: CreateDebitCardsReissueDto
   ) {
-    this.logger.log(
-      `POST /v1/debit-cards/${debitCardId}/reissue, createDebitCardsReissueDto = %o`,
-      createDebitCardsReissueDto
-    )
     return this.debitCardReissueService.create(debitCardId, createDebitCardsReissueDto)
   }
 } // end of class DebitCardsReissueController

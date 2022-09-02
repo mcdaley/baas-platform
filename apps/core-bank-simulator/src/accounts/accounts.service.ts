@@ -49,11 +49,16 @@ export class AccountsService {
         data: response
       }
 
-      this.logger.log(`Created account, result= %o`, result)
+      this.logger.log({
+        message: `Created account`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create the account, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to create the account`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -97,11 +102,16 @@ export class AccountsService {
         }
       }
 
-      this.logger.log(`Fetched [${accounts.length}] accounts`)
+      this.logger.log({
+        message: `Fetched [${accounts.length}] accounts`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch the accounts, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch the accounts`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -125,11 +135,16 @@ export class AccountsService {
         data: account,
       }
 
-      this.logger.log(`Fetched account for id=[${accountId}], send result= %o`, result)
+      this.logger.log({
+        message: `Fetched account for id=[${accountId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -159,11 +174,16 @@ export class AccountsService {
         data: account
       }
 
-      this.logger.log(`Updated account id=[${accountId}], send result= %o`, result)
+      this.logger.log({
+        message:  `Updated account id=[${accountId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.log(`Failed to update account id=[${accountId}], error= %o`, error)
+      this.logger.log({
+        message:  `Failed to update account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -188,13 +208,20 @@ export class AccountsService {
         throw(new NotFoundError(BaaSErrors.account.notFound, `Account id = ${accountId}`))
       }
 
-      this.logger.log(`Removed account id=[${accountId}]`)
+      const message = `Removed account id=[${accountId}]`
+      this.logger.log({
+        message: message
+      })
+
       return {
-        message: `Dude, removed the account`
+        message: message,
       }
     }
     catch(error) {
-      this.logger.error(`Failed to remove account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to remove account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -220,7 +247,10 @@ export class AccountsService {
       updated_at:             new Date(),
     }
     
-    this.logger.log(`Built account= %o`, account)
+    this.logger.debug({
+      message: `Built account`, 
+      account:  account
+    })
 
     return <IAccount>account
   }

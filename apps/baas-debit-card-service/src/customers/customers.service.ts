@@ -41,7 +41,10 @@ export class CustomersService {
     return new Promise( async (resolve, reject) => {
       try {
         const url = `${this.customersServiceUrl}/${customerId}`
-        this.logger.log(`GET ${url}`)
+        this.logger.log({
+          message:  `Verify the customer`,
+          url:      `GET ${url}`
+        })
 
         const response     = await axios.get(url)
         const { customer } = response.data
@@ -50,7 +53,9 @@ export class CustomersService {
           const message = 
             `Unable to issue debit card because customer id=[${customerId}] is ` +
             `not ${CustomerStatus.Active}, the customer status=${customer.status}` 
-          this.logger.error(message)
+          this.logger.error({
+            message: message
+          })
           
           return reject(
             new InactiveAccountError(BaaSErrors.debitcard.inactiveCustomer, message)
@@ -60,7 +65,10 @@ export class CustomersService {
         resolve(customer)
       }
       catch(error) {
-        this.logger.error(`Failed to valid customer id=[${customerId}], error= %o`, error)
+        this.logger.error({
+          message:  `Failed to valid customer id=[${customerId}]`, 
+          error:    error
+        })
         reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })

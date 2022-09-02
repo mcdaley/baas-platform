@@ -18,8 +18,11 @@ import { DebitCardsService }      from './debit-cards.service'
 import { CreateDebitCardDto }     from './dto/create-debit-card.dto'
 import { UpdateDebitCardDto }     from './dto/update-debit-card.dto'
 
-import { WinstonLoggerService }   from '@app/winston-logger'
-import { CustomerId, IdempotencyKey, TenantId } from '@app/baas-errors'
+import { 
+  CustomerId, 
+  IdempotencyKey, 
+  TenantId, 
+}                                 from '@app/baas-errors'
 
 /**
  * @class DebitCardsController
@@ -28,7 +31,6 @@ import { CustomerId, IdempotencyKey, TenantId } from '@app/baas-errors'
 export class DebitCardsController {
   constructor(
     private readonly debitCardsService: DebitCardsService,
-    private readonly logger:            WinstonLoggerService,
   ) {}
 
   /**
@@ -40,7 +42,6 @@ export class DebitCardsController {
     @IdempotencyKey() idempotencyKey:     string,
     @Body()           createDebitCardDto: CreateDebitCardDto) 
   {
-    this.logger.log(`POST /core/api/v1/debit-cards, createDebitCardDto= %o`, createDebitCardDto)
     return this.debitCardsService.create(createDebitCardDto, tenantId);
   }
 
@@ -52,7 +53,6 @@ export class DebitCardsController {
     @CustomerId() customerId: string,
     @TenantId()   tenantId:   string) 
   {
-    this.logger.log(`GET /core/api/v1/debit-cards`)
     return this.debitCardsService.findAll(customerId, tenantId)
   }
 
@@ -65,7 +65,6 @@ export class DebitCardsController {
     @TenantId()   tenantId:   string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
-    this.logger.log(`GET /core/api/v1/debit-cards/${debitCardId}`)
     return this.debitCardsService.findOne(debitCardId, customerId, tenantId)
   }
 
@@ -79,10 +78,6 @@ export class DebitCardsController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string, 
     @Body() updateDebitCardDto: UpdateDebitCardDto) 
   {
-    this.logger.log(
-      `PATCH /core/api/v1/debit-cards/${debitCardId}, updateDebitCardDto = %o`, 
-      updateDebitCardDto
-    )
     return this.debitCardsService.update(debitCardId, updateDebitCardDto, customerId, tenantId);
   }
 
@@ -96,7 +91,6 @@ export class DebitCardsController {
     @TenantId()   tenantId:   string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
-    this.logger.log(`DELETE /core/api/v1/debit-cards/${debitCardId}`)
     return this.debitCardsService.remove(debitCardId, customerId, tenantId);
   }
 }

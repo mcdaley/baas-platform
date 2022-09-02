@@ -55,12 +55,17 @@ export class CustomersService {
         const  { customer } = res.data
         return customer
       })
-      this.logger.log(`Fetched [${customers.length}] account participants`)
+      this.logger.log({
+        message: `Fetched [${customers.length}] account participants`
+      })
 
       return customers
     }
     catch(error) {
-      this.logger.error(`Failed to fetch all of the customers, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch all of the customers`, 
+        error:    error
+      })
       throw(error)
     }
   }
@@ -122,10 +127,10 @@ export class CustomersService {
         resolve(holder)
       }
       catch(error) {
-        this.logger.error(`
-          Failed to validate customers rquired to create account, error= %o`, 
-          error
-        )
+        this.logger.error({
+          message:  `Failed to validate customers rquired to create account, error= %o`, 
+          error:    error
+        })
         reject(createBaaSException(error, BaaSErrorLabel.Account))
       }
     })

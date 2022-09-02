@@ -20,7 +20,6 @@ import {
   IdempotencyKey, 
   TenantId, 
 }                                 from '@app/baas-errors'
-import { WinstonLoggerService }   from '@app/winston-logger'
 
 /**
  * @class AccountBlocksController
@@ -29,7 +28,6 @@ import { WinstonLoggerService }   from '@app/winston-logger'
 export class AccountBlocksController {
   constructor(
     private readonly accountBlocksService: AccountBlocksService,
-    private readonly logger:               WinstonLoggerService
   ) {}
 
   /**
@@ -43,10 +41,6 @@ export class AccountBlocksController {
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() createAccountBlockDto: CreateAccountBlockDto) 
   {
-    this.logger.log(
-      `POST /v1/accounts/${accountId}/blocks, createAccountBlockDto= %o`, 
-      createAccountBlockDto
-    )
     return this.accountBlocksService.create(
       accountId, createAccountBlockDto, customerId, tenantId, idempotencyKey
     )
@@ -61,7 +55,6 @@ export class AccountBlocksController {
     @TenantId()   tenantId:   string,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   {
-    this.logger.log(`GET /v1/accounts/${accountId}/blocks`)
     return this.accountBlocksService.findAll(accountId, customerId, tenantId)
   }
 
@@ -72,7 +65,6 @@ export class AccountBlocksController {
     @Param('accountId',      ParseUUIDPipe) accountId:      string,
     @Param('accountBlockId', ParseUUIDPipe) accountBlockId: string) 
   {
-    this.logger.log(`DELETE /v1/accounts/${accountId}/blocks/${accountBlockId}`)
     return this.accountBlocksService.remove(accountId, accountBlockId, customerId, tenantId)
   }
 } // end of class AccountBlocksController

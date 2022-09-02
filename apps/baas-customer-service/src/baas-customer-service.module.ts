@@ -8,6 +8,7 @@ import {
   RequestMethod, 
 }                                         from '@nestjs/common'
 import { ConfigModule }                   from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 
 import { configuration, validate  }       from './config/configuration'
 
@@ -15,7 +16,10 @@ import { BaasCustomerServiceController }  from './baas-customer-service.controll
 import { BaasCustomerServiceService }     from './baas-customer-service.service'
 import { CustomersModule }                from './customers/customers.module'
 
-import { WinstonLoggerModule }            from '@app/winston-logger'
+import { 
+  WinstonLoggerModule,
+  WinstonLoggerInterceptor,
+}                                         from '@app/winston-logger'
 import { TenantIdMiddleware }             from '@app/baas-errors'
 
 /**
@@ -33,7 +37,13 @@ import { TenantIdMiddleware }             from '@app/baas-errors'
     WinstonLoggerModule,
   ],
   controllers:  [BaasCustomerServiceController],
-  providers:    [BaasCustomerServiceService],
+  providers:    [
+    BaasCustomerServiceService,
+    { 
+      provide:  APP_INTERCEPTOR,
+      useClass: WinstonLoggerInterceptor
+    }
+  ],
 })
 export class BaasCustomerServiceModule {}
 //* Turn off TenantIdMiddleware

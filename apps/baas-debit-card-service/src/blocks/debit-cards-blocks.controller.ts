@@ -20,7 +20,6 @@ import {
   TenantId,
   IdempotencyKey 
 }                                   from '@app/baas-errors'
-import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
  * @class DebitCardsBlocksController
@@ -32,7 +31,6 @@ export class DebitCardsBlocksController {
    */
   constructor(
     private readonly debitCardsBlocksService: DebitCardsBlocksService,
-    private readonly logger:                  WinstonLoggerService
   ) {}
 
   /**
@@ -46,10 +44,6 @@ export class DebitCardsBlocksController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() createDebitCardsBlockDto: CreateDebitCardsBlockDto
   ) {
-    this.logger.log(
-      `POST /v1/debit-cards/${debitCardId}/blocks, createDebitCardsBlockDto= %o`, 
-      createDebitCardsBlockDto
-    )
     return this.debitCardsBlocksService.create(
       debitCardId, createDebitCardsBlockDto, customerId, tenantId, idempotencyKey
     )
@@ -64,7 +58,6 @@ export class DebitCardsBlocksController {
     @TenantId()   tenantId:   string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
-    this.logger.log(`GET /v1/debit-cards/${debitCardId}/blocks`)
     return this.debitCardsBlocksService.findAll(debitCardId, customerId, tenantId)
   }
 
@@ -78,7 +71,6 @@ export class DebitCardsBlocksController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Param('blockId',     ParseUUIDPipe) blockId: string
   ) {
-    this.logger.log(`DELETE /v1/debit-cards/${debitCardId}/blocks/${blockId}`)
     return this.debitCardsBlocksService.remove(debitCardId, blockId, customerId, tenantId);
   }
 }

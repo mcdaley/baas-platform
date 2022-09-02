@@ -56,11 +56,15 @@ export class CustomersService {
         data: response
       }
 
-      this.logger.log(`Created customer, result= %o`, result)
+      this.logger.log({
+        message: `Created customer`})
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create customer, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to create customer`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -105,11 +109,16 @@ export class CustomersService {
         }
       }
 
-      this.logger.log(`Fetched [${customers.length}] customers`)
+      this.logger.log({
+        message: `Fetched [${customers.length}] customers`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch customers, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch customers`, 
+        error:    error,
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -135,11 +144,16 @@ export class CustomersService {
         data: customer,
       }
 
-      this.logger.log(`Fetched customer id=[${customerId}], result= %o`, result)
+      this.logger.log({
+        message: `Fetched customer id=[${customerId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.log(`Failed to fetch customer id=[${customerId}], error= %o`, error)
+      this.logger.log({
+        message:  `Failed to fetch customer id=[${customerId}]`, 
+        error:    error,
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -187,7 +201,9 @@ export class CustomersService {
         relations:  ['physical_address', 'mailing_address'],
       })
 
-      this.logger.log(`Update the customer= %o`, customer)
+      this.logger.log({
+        message: `Updated customer id=[${customerId}]`,
+      })
       const result = {
         data: customer,
       }
@@ -195,7 +211,10 @@ export class CustomersService {
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to update the customer id=${customerId}, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to update the customer id=${customerId}`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }
@@ -221,14 +240,19 @@ export class CustomersService {
         throw(new NotFoundError(BaaSErrors.customer.notFound, `Customer id=${customerId} Not Found`))
       }
 
-      this.logger.log(`Deleted customer id=${customerId}, response= %o`, response)
+      this.logger.log({
+        message: `Deleted customer id=${customerId}`,
+      })
       const result   = {
         data: response,
       }
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to delete the customer id=${customerId}, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to delete the customer id=${customerId}`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Customer))
     }
   }

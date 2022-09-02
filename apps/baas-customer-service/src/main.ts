@@ -22,7 +22,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService)
   const port          = configService.get('port')
-  logger.log(`Starting [${configService.get('appName')}] on port=[${port}]`)
+  logger.log({
+    message: `Starting [${configService.get('appName')}] on port=[${port}]`
+  })
 
   await app.listen(port)
 }

@@ -30,7 +30,6 @@ export class DebitCardsBlocksService {
     tenantId:                 string,
     idempotencyKey:           string) 
   {
-    this.logger.log(`Block debit card id=[${debitCardId}], w/ block= %o`, createDebitCardsBlockDto)
     try {
       const url         = `${this.configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks`
       const axiosConfig = {
@@ -46,14 +45,16 @@ export class DebitCardsBlocksService {
         block: block
       }
       
-      this.logger.log(`Created block for debit card id=${debitCardId}, result= %o`, result)
+      this.logger.log({
+        message: `Blocked debit card id=${debitCardId}`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(
-        `Failed to create block for debit card id=[${debitCardId}], error= %o`, 
-        error
-      )
+      this.logger.error({
+        message:  `Failed to block debit card id=[${debitCardId}]`, 
+        error:    error
+      })
       throw(error)
     }
   }
@@ -79,14 +80,16 @@ export class DebitCardsBlocksService {
         blocks: blocks
       }
 
-      this.logger.log(`Fetched blocks for debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message: `Fetched blocks for debit card id=[${debitCardId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(
-        `Failed to fetch blocks for debit card id=[${debitCardId}], error= %o`, 
-        error
-      )
+      this.logger.error({
+        message:  `Failed to fetch blocks for debit card id=[${debitCardId}]`, 
+        error:    error,
+      })
       throw(error)
     }
   }
@@ -114,14 +117,16 @@ export class DebitCardsBlocksService {
         block: block
       }
 
-      this.logger.log(`Removed block id=[${blockId}] from debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message: `Removed block id=[${blockId}] from debit card id=[${debitCardId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(
-        `Failed to remove block id=[${blockId}] from debit card id=[${debitCardId}], error= %o`,
-        error
-      )
+      this.logger.error({
+        message:  `Failed to remove block id=[${blockId}] from debit card id=[${debitCardId}]`,
+        error:    error
+      })
       throw(error)
     }
   }

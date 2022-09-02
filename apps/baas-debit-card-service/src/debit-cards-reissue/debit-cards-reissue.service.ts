@@ -31,6 +31,9 @@ export class DebitCardsReissueService {
         debit_card: debitCard,
       }
 
+      this.logger.log({
+        message: "Reissue card is not implemented yet"
+      })
       return result
     }
     catch(error) {

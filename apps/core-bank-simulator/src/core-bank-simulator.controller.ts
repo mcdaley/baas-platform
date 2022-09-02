@@ -4,8 +4,6 @@
 import { Controller, Get }          from '@nestjs/common'
 import { CoreBankSimulatorService } from './core-bank-simulator.service'
 
-import { WinstonLoggerService }     from '@app/winston-logger'
-
 /**
  * @class CoreBankSimulatorController
  */
@@ -13,7 +11,6 @@ import { WinstonLoggerService }     from '@app/winston-logger'
 export class CoreBankSimulatorController {
   constructor(
     private readonly coreBankSimulatorService: CoreBankSimulatorService,
-    private readonly logger:                   WinstonLoggerService,
   ) {}
 
   @Get()

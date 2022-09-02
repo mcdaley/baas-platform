@@ -16,7 +16,6 @@ import { ParticipantsService }        from './participants.service'
 import { CreateParticipantDto }       from '../dto/create-participant.dto'
 
 import { IdempotencyKey }             from '@app/baas-errors'
-import { WinstonLoggerService }       from '@app/winston-logger'
 
 /**
  * @class ParticipantsController
@@ -25,7 +24,6 @@ import { WinstonLoggerService }       from '@app/winston-logger'
 export class ParticipantsController {
   constructor(
     private readonly participantsService: ParticipantsService,
-    private readonly logger:              WinstonLoggerService
   ) {}
 
   /**
@@ -36,10 +34,6 @@ export class ParticipantsController {
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() createParticipantDto: CreateParticipantDto) 
   {
-    this.logger.log(
-      `POST /core/api/v1/accounts/${accountId}/participants, createParticipanDto= %o`, 
-      createParticipantDto
-    )
     return this.participantsService.create(accountId, createParticipantDto)
   }
 
@@ -48,7 +42,6 @@ export class ParticipantsController {
    */
   @Get()
   findAllV1(@Param('accountId', ParseUUIDPipe) accountId: string) {
-    this.logger.log(`GET /core/api/v1/accounts/${accountId}/participants`)
     return this.participantsService.findAll(accountId)
   }
 
@@ -61,7 +54,6 @@ export class ParticipantsController {
     @Param('accountId',     ParseUUIDPipe) accountId: string,
     @Param('participantId', ParseUUIDPipe) participantId: string
   ) {
-    this.logger.log(`DELETE /core/api/v1/accounts/${accountId}/participants/${participantId}`)
     return this.participantsService.remove(accountId, participantId)
   }
 } // end of class ParticipantsController

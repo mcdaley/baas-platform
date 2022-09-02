@@ -59,11 +59,16 @@ export class DebitCardBlocksService {
         data: response,
       }
 
-      this.logger.log(`Blocked debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message: `Blocked debit card id=[${debitCardId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to block debit card id=[${debitCardId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to block debit card id=[${debitCardId}]`, 
+        error:    error,
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -83,11 +88,16 @@ export class DebitCardBlocksService {
         data: blocks,
       }
 
-      this.logger.log(`Fetched blocks for debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message: `Fetched blocks for debit card id=[${debitCardId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to blocks for debit card id=[${debitCardId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to blocks for debit card id=[${debitCardId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -107,17 +117,21 @@ export class DebitCardBlocksService {
         { id:     debitCardId },
         { status: CardStatus.Active }
       )
-      console.log(`[DEBUG] response = `, response)
 
       const result = {
         data: response,
       }
 
-      this.logger.log(`Removed debit card block id=[${debitCardBlockId}] for debitCard, id=[${debitCardId}]`)
+      this.logger.log({
+        message: `Removed debit card block id=[${debitCardBlockId}] for debitCard, id=[${debitCardId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to remove block for debit card id=[${debitCardId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to remove block for debit card id=[${debitCardId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }

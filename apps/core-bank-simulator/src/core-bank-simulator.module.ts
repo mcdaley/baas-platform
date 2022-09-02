@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------
 import { Module }                         from '@nestjs/common'
 import { ConfigModule }                   from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 import { TypeOrmModule }                  from '@nestjs/typeorm'
 import { DataSource }                     from 'typeorm'
 
@@ -25,7 +26,10 @@ import { DebitCard }                      from './debit-cards/entities/debit-car
 import { DebitCardBlock }                 from './debit-cards/entities/debit-card-block.entity'
 
 
-import { WinstonLoggerModule }            from '@app/winston-logger'
+import { 
+  WinstonLoggerModule,
+  WinstonLoggerInterceptor,
+}                                         from '@app/winston-logger'
 
 @Module({
   imports:      [
@@ -59,7 +63,13 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     DebitCardBlocksModule,
   ],
   controllers:  [CoreBankSimulatorController],
-  providers:    [CoreBankSimulatorService],
+  providers:    [
+    CoreBankSimulatorService,
+    { 
+      provide:  APP_INTERCEPTOR,
+      useClass: WinstonLoggerInterceptor
+    }
+  ],
 })
 export class CoreBankSimulatorModule {
   constructor(private dataSource: DataSource) {}

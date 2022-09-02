@@ -55,7 +55,7 @@ export class CustomersService {
       }
       this.logger.log({
         message: `Created customer`, 
-        result:   result
+        //* result:   result
       })
       
       return result
@@ -84,7 +84,7 @@ export class CustomersService {
       }
       this.logger.log({
         message: `Fetched [${customers.length}] customers`,
-        result:   result
+        //* result:   result
       })
 
       return result
@@ -127,7 +127,7 @@ export class CustomersService {
 
       this.logger.log({
         message: `Fetched customer w/ id = ${customerId}`, 
-        result:  result
+        //* result:  result
       })
       return result
     }
@@ -156,7 +156,7 @@ export class CustomersService {
 
       this.logger.log({
         message:  `Updated customer id = ${customerId}`,
-        result:   result,
+        //* result:   result,
       })
       return result
     }

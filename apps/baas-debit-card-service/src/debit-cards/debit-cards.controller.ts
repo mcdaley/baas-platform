@@ -24,7 +24,6 @@ import {
   IdempotencyKey 
 }                                   from '@app/baas-errors'
 import { CardStatus }               from '@app/baas-interfaces'
-import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
  * @class DebitCardsController
@@ -36,7 +35,6 @@ export class DebitCardsController {
    */
   constructor(
     private readonly debitCardsService: DebitCardsService,
-    private readonly logger:            WinstonLoggerService,
   ) {}
 
   /**
@@ -49,7 +47,6 @@ export class DebitCardsController {
     @IdempotencyKey() idempotencyKey: string,
     @Body() createDebitCardDto: CreateDebitCardDto
   ) {
-    this.logger.log(`POST /v1/debit-cards, createDebitCardDto= %o`, createDebitCardDto)
     return this.debitCardsService.create(
       createDebitCardDto, customerId, tenantId, idempotencyKey)
   }
@@ -62,7 +59,6 @@ export class DebitCardsController {
     @CustomerId() customerId: string,
     @TenantId()   tenantId:   string) 
   {
-    this.logger.log(`GET /v1/debit-cards`)
     return this.debitCardsService.findAll(customerId, tenantId)
   }
 
@@ -73,8 +69,8 @@ export class DebitCardsController {
   findOneV1(
     @CustomerId() customerId: string,
     @TenantId()   tenantId:   string,
-    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) {
-    this.logger.log(`GET /v1/debit-cards/${debitCardId}`)
+    @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
+  {
     return this.debitCardsService.findOne(debitCardId, customerId, tenantId)
   }
 
@@ -87,9 +83,7 @@ export class DebitCardsController {
     @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
-  {
-    this.logger.log(`PATCH /v1/debit-cards/${debitCardId}/activate`)
-    
+  { 
     const  updateDebitCardDto = {status: CardStatus.Active }
     return this.debitCardsService.update(
       debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
@@ -105,9 +99,7 @@ export class DebitCardsController {
     @TenantId()       tenantId:       string,
     @IdempotencyKey() idempotencyKey: string,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
-  {
-    this.logger.log(`PATCH /v1/debit-cards/${debitCardId}/cancel`)
-    
+  { 
     const  updateDebitCardDto = {status: CardStatus.Canceled }
     return this.debitCardsService.update(
       debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
@@ -125,11 +117,6 @@ export class DebitCardsController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardLimitsDto: UpdateDebitCardLimitsDto) 
   {
-    this.logger.log(
-      `PATCH /v1/debit-cards/${debitCardId}/limits, updateDebitCardLimitsDto= %o`, 
-      updateDebitCardLimitsDto
-    )
-    
     return this.debitCardsService.update(
       debitCardId, updateDebitCardLimitsDto, customerId, tenantId, idempotencyKey
     )
@@ -146,11 +133,6 @@ export class DebitCardsController {
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardPinDto: UpdateDebitCardPinDto) 
   {
-    this.logger.log(
-      `PATCH /v1/debit-cards/${debitCardId}/pin, updateDebitCardPinDto= %o`, 
-      updateDebitCardPinDto
-    )
-    
     return this.debitCardsService.update(
       debitCardId, updateDebitCardPinDto, customerId, tenantId, idempotencyKey
     )

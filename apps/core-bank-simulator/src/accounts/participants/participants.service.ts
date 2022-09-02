@@ -39,11 +39,16 @@ export class ParticipantsService {
         data: response,
       }
 
-      this.logger.log(`Added account participant, result= %o`, result)
+      this.logger.log({
+        message: `Added participant for account id=[${accountId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create participant for account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to create participant for account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -61,14 +66,16 @@ export class ParticipantsService {
         data: participants,
       }
 
-      this.logger.log(
-        `Fetched [${participants.length}] participants for account id=[${accountId}], result= %o`, 
-        result
-      )
+      this.logger.log({
+        message: `Fetched [${participants.length}] participants for account id=[${accountId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch participants for account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch participants for account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -86,14 +93,16 @@ export class ParticipantsService {
         data: participantId,
       }
 
-      this.logger.log(`Removed participant, result= %o`, result)
+      this.logger.log({
+        message: `Removed participant for account id=[${accountId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(
-        `Failed to delete participant id=[${participantId}], error= %o`, 
-        error
-      )
+      this.logger.error({
+        message:  `Failed to delete participant id=[${participantId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }

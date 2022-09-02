@@ -4,13 +4,11 @@
 import { Injectable }             from '@nestjs/common'
 import { ConfigService }          from '@nestjs/config'
 
-import { WinstonLoggerService }   from '@app/winston-logger'
 
 @Injectable()
 export class CoreBankSimulatorService {
   constructor(
     private readonly configService: ConfigService,
-    private readonly logger:        WinstonLoggerService,
   ) {}
 
   /**

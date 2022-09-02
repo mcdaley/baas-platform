@@ -56,10 +56,16 @@ export class DebitCardsService {
         debit_card: debitCard
       }
       
-      this.logger.log(`Created debit card, sending response= %o`, result)
+      this.logger.log({
+        message: `Created debit card`
+      })
       return result
     }
     catch(error) {
+      this.logger.error({
+        message:  `Failed to create debit cards`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -81,12 +87,17 @@ export class DebitCardsService {
       const result        = {
         debit_cards: debitCardList,
       }
-      this.logger.log(`Fetched [${debitCardList.length}] debit cards, response= %o`, result)
+      this.logger.log({
+        message: `Fetched ${debitCardList.length} debit cards`
+      })
       
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch debit cards, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch debit cards`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -109,11 +120,16 @@ export class DebitCardsService {
         debit_card: debitCard,
       }
 
-      this.logger.log(`Fetched debit card w/ id=[${debitCardId}], sending response= %o`, result)
+      this.logger.log({
+        message: `Fetched debit card w/ id=[${debitCardId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to find debit card, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to find debit card id=[${debitCardId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -143,10 +159,16 @@ export class DebitCardsService {
         debit_card: debitCard,
       }
 
+      this.logger.log({
+        message: `Updated debit card id=[${debitCardId}]`
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to update debit card id=${debitCardId}, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to update debit card id=${debitCardId}`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }

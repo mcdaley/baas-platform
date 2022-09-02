@@ -33,7 +33,6 @@ export class AccountsService {
     private readonly customersService:  CustomersService,
   ) {
     this.coreAccountsUrl = configService.get('bankSimulatorAccountsUrl')
-    this.logger.log(`Initialized the Account Simulator URL= %s`, this.coreAccountsUrl)
   }
 
   /**
@@ -72,11 +71,14 @@ export class AccountsService {
         account: account
       }
 
-      this.logger.log(`Created account, result= %o`, result)
+      this.logger.log({message: `Created account`})
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create account, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to create account`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -101,6 +103,9 @@ export class AccountsService {
         accounts: accounts
       }
 
+      this.logger.log({
+        message: `Fetched ${accounts.length} accounts for customer id = [${customerId}]`
+      })
       return result
     }
     catch(error) {
@@ -130,6 +135,9 @@ export class AccountsService {
         account: account
       }
 
+      this.logger.log({
+        message: `Fetched account id = [${accountId}] for customer id = [${customerId}]`
+      })
       return result
     }
     catch(error) {
@@ -162,6 +170,9 @@ export class AccountsService {
         account: account
       }
 
+      this.logger.log({
+        message: `Updated account id = [${accountId}]`
+      })
       return result
     }
     catch(error) {
@@ -188,6 +199,9 @@ export class AccountsService {
       const response = await axios.delete(url, axiosConfig)
       const result   = response.data
 
+      this.logger.log({
+        message: `Remove account id = [${accountId}]`
+      })
       return result
     }
     catch(error) {

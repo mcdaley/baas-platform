@@ -49,12 +49,17 @@ export class ParticipantsService {
       const result = {
         participant: participant,
       }
-      this.logger.log(`Added customerId=${createParticipantDto.customer_id} to accountId=[${accountId}]`)
+      this.logger.log({
+        message: `Added customerId=${createParticipantDto.customer_id} to accountId=[${accountId}]`
+      })
 
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to add participant to account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to add participant to account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -108,12 +113,17 @@ export class ParticipantsService {
       }
       const response  = await axios.delete(url, axiosConfig)
       const result    = response.data
-      this.logger.log(`Deleted participantCustomerId=[${participantCustomerId}] from accountId=[${accountId}]`)
+      this.logger.log({
+        message: `Deleted participantCustomerId=[${participantCustomerId}] from accountId=[${accountId}]`
+      })
 
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to remove participant from account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to remove participant from account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }

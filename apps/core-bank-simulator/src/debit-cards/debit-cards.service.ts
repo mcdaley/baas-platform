@@ -42,7 +42,6 @@ export class DebitCardsService {
     try {
       // Create the debit card
       const debitCard = this.buildDebitCard(createDebitCardDto, tenantId)
-      this.logger.log(`Created debit card= %o`, debitCard)
       
       // Add the debit card to the DB and return it to caller
       const response = await this.debitCardRepository.save(debitCard)
@@ -50,11 +49,16 @@ export class DebitCardsService {
         data: response,
       }
 
-      this.logger.log(`Issued debit card, result= %o`, result)
+      this.logger.log({
+        message: `Issued debit card`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to create debit card, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to create debit card`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -99,11 +103,16 @@ export class DebitCardsService {
         }
       }
 
-      this.logger.log(`Fetched [${count}] debit cards, result= %o`, result)
+      this.logger.log({
+        message: `Fetched [${count}] debit cards`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch debit cards, error= %o`, error)
+      this.logger.error({
+        message:  `Failed to fetch debit cards`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -128,11 +137,16 @@ export class DebitCardsService {
         data: debitCard
       }
 
-      this.logger.log(`Fetched debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message:  `Fetched debit card id=[${debitCardId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to fetch debit card id=[${debitCardId}], error= %o`)
+      this.logger.error({
+        message:  `Failed to fetch debit card id=[${debitCardId}]`,
+        error:    error,
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -171,11 +185,16 @@ export class DebitCardsService {
         data: debitCard
       }
 
-      this.logger.log(`Updated debit card id=[${debitCardId}], result= %o`, result)
+      this.logger.log({
+        message: `Updated debit card id=[${debitCardId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to update debit card id=[${debitCardId}], error= %o`)
+      this.logger.error({
+        message:  `Failed to update debit card id=[${debitCardId}]`,
+        error:    error,
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }
@@ -200,11 +219,16 @@ export class DebitCardsService {
         data: response
       }
 
-      this.logger.log(`Deleted debit card id=[${debitCardId}]`)
+      this.logger.log({
+        message: `Deleted debit card id=[${debitCardId}]`,
+      })
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to delete debit card id=[${debitCardId}], error= %o`, error)
+      this.logger.error({
+        message:  `Failed to delete debit card id=[${debitCardId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.DebitCard))
     }
   }

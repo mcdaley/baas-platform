@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------
 import { Module }                         from '@nestjs/common'
 import { ConfigModule }                   from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 
 import { configuration, validate  }       from './config/configuration'
 import { BaasAccountServiceController }   from './baas-account-service.controller'
@@ -12,7 +13,10 @@ import { AccountsModule }                 from './accounts/accounts.module'
 import { ParticipantsModule }             from './participants/participants.module'
 import { AccountBlocksModule }            from './blocks/account-blocks.module'
 
-import { WinstonLoggerModule }            from '@app/winston-logger'
+import { 
+  WinstonLoggerModule,
+  WinstonLoggerInterceptor, 
+}                                         from '@app/winston-logger'
 
 @Module({
   imports:      [
@@ -28,6 +32,12 @@ import { WinstonLoggerModule }            from '@app/winston-logger'
     WinstonLoggerModule,
   ],
   controllers:  [BaasAccountServiceController],
-  providers:    [BaasAccountServiceService],
+  providers:    [
+    BaasAccountServiceService,
+    { 
+      provide:  APP_INTERCEPTOR,
+      useClass: WinstonLoggerInterceptor
+    }
+  ],
 })
 export class BaasAccountServiceModule {}

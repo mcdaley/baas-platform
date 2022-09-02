@@ -49,10 +49,10 @@ export class CustomersController {
     @IdempotencyKey() idempotencyKey:    string,
     @Body()           createCustomerDto: CreateCustomerDto ) : Promise<ICustomerResponse>
   {
-    this.logger.log({
-      message:  `POST /v1/customers`, 
-      body:     createCustomerDto,
-    })
+    //* this.logger.log({
+    //*   message:  `POST /v1/customers`, 
+    //*   body:     createCustomerDto,
+    //* })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
       'Idempotency-Key': idempotencyKey,
@@ -80,9 +80,9 @@ export class CustomersController {
    */
   @Get()
   findAllV1(@TenantId() tenantId: string) : Promise<ICustomerListResponse> {
-    this.logger.log({
-      message: `GET /v1/customers`
-    })
+    //* this.logger.log({
+    //*   message: `GET /v1/customers`
+    //* })
     const requestHeaders = {
       'Tenant-Id': tenantId,
     }
@@ -97,9 +97,9 @@ export class CustomersController {
     @TenantId() tenantId: string,
     @Param('customerId', ParseUUIDPipe) customerId: string) : Promise<ICustomerResponse> 
   {
-    this.logger.log({
-      message: `GET /v1/customers/${customerId}`
-    })
+    //* this.logger.log({
+    //*   message: `GET /v1/customers/${customerId}`
+    //* })
     const requestHeaders = {
       'Tenant-Id': tenantId,
     }
@@ -116,10 +116,10 @@ export class CustomersController {
     @Param('customerId', ParseUUIDPipe) customerId: string, 
     @Body() updateCustomerDto: UpdateCustomerDto) : Promise<ICustomerResponse>
   {
-    this.logger.log({
-      message: `PATCH /v1/customers/${customerId}`, 
-      body:     updateCustomerDto
-    })
+    //* this.logger.log({
+    //*   message: `PATCH /v1/customers/${customerId}`, 
+    //*   body:     updateCustomerDto
+    //* })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
       'Idempotency-Key': idempotencyKey,
@@ -136,9 +136,9 @@ export class CustomersController {
     @TenantId() tenantId: string,
     @Param('customerId', ParseUUIDPipe) customerId: string) 
   {
-    this.logger.log({
-      message: `DELETE /v1/customers/${customerId}`
-    })
+    //* this.logger.log({
+    //*   message: `DELETE /v1/customers/${customerId}`
+    //* })
     const requestHeaders = {
       'Tenant-Id':       tenantId,
     }

@@ -54,12 +54,16 @@ export class AccountBlocksService {
       const result = {
         block: accountBlock,
       }
-      this.logger.log(`Blocked account id=[${accountId}] with block= %o`, createAccountBlockDto)
+      this.logger.log({
+        message: `Blocked account id=[${accountId}]`})
 
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to block account id=[${accountId}], error= %o`, error)
+      this.logger.error({
+        message: `Failed to block account id=[${accountId}]`, 
+        error:   error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }
@@ -116,15 +120,17 @@ export class AccountBlocksService {
         block: block
       }
 
-      this.logger.log(
-        `Removed account block id=[${accountBlockId}] for account, id=[${accountId}], result= %o`, 
-        result
-      )
+      this.logger.log({
+        message: `Removed account block id=[${accountBlockId}] for account, id=[${accountId}]`,
+      })
       
       return result
     }
     catch(error) {
-      this.logger.error(`Failed to remove block for account id=[${accountId}], error= %o`)
+      this.logger.error({
+        message:  `Failed to remove block for account id=[${accountId}]`, 
+        error:    error
+      })
       throw(createBaaSException(error, BaaSErrorLabel.Account))
     }
   }

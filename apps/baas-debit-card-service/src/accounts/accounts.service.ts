@@ -41,7 +41,10 @@ export class AccountsService {
     return new Promise( async (resolve, reject) => {
       try {
         const url = `${this.accountsServiceUrl}/${accountId}`
-        this.logger.log(`GET ${url}`)
+        this.logger.log({
+          message: `Verify the account id=[${accountId}]`,
+          url:     `GET ${url}`
+        })
 
         const response    = await axios.get(url)
         const { account } = response.data
@@ -50,7 +53,9 @@ export class AccountsService {
           const message = 
             `Unable to issue debit card because account id=[${accountId}] is ` +
             `not ${AccountStatus.Open}, the account status=${account.account_status}` 
-          this.logger.error(message)
+          this.logger.error({
+            message: message
+          })
           
           return reject(
             new InactiveAccountError(BaaSErrors.debitcard.inactiveAccount, message)
@@ -60,7 +65,10 @@ export class AccountsService {
         resolve(account)
       }
       catch(error) {
-        this.logger.error(`Failed to verify account id=[${accountId}], error= %o`, error)
+        this.logger.error({
+          message:  `Failed to verify account id=[${accountId}]`, 
+          error:    error
+        })
         reject(createBaaSException(error, BaaSErrorLabel.DebitCard))
       }
     })

@@ -17,8 +17,11 @@ import {
 import { ParticipantsService }    from './participants.service'
 import { CreateParticipantDto }   from './dto/create-participant.dto'
 
-import { CustomerId, IdempotencyKey, TenantId }         from '@app/baas-errors'
-import { WinstonLoggerService }   from '@app/winston-logger'
+import { 
+  CustomerId, 
+  IdempotencyKey, 
+  TenantId 
+}                                 from '@app/baas-errors'
 
 /**
  * @class ParticipantsController
@@ -27,7 +30,6 @@ import { WinstonLoggerService }   from '@app/winston-logger'
 export class ParticipantsController {
   constructor(
     private readonly participantsService: ParticipantsService,
-    private readonly logger: WinstonLoggerService
   ) {}
 
   /**
@@ -41,10 +43,6 @@ export class ParticipantsController {
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() createParticipantDto: CreateParticipantDto) 
   {
-    this.logger.log(
-      `POST /v1/accounts/${accountId}/participants, createParticipanDto= %o`, 
-      createParticipantDto
-    )
     return this.participantsService.create(
       accountId, createParticipantDto, customerId, tenantId, idempotencyKey)
   }
@@ -58,7 +56,6 @@ export class ParticipantsController {
     @TenantId()   tenantId:   string,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   {
-    this.logger.log(`GET /v1/accounts/${accountId}/participants`)
     return this.participantsService.findAll(accountId, customerId, tenantId)
   }
 
@@ -73,7 +70,6 @@ export class ParticipantsController {
     @Param('accountId',     ParseUUIDPipe) accountId: string,
     @Param('participantId', ParseUUIDPipe) participantId: string
   ) {
-    this.logger.log(`DELETE /v1/accounts/${accountId}/participants/${participantId}`)
     return this.participantsService.remove(accountId, participantId, customerId, tenantId)
   }
 } // end of class ParticipantsController

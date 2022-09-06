@@ -9,6 +9,8 @@ import winston, {
   transports, 
 }                                     from 'winston'
 
+import { RequestIdAsyncLocalStorage } from '@app/baas-async-local-storage'
+
 /**
  * @enum LogLevel
  */
@@ -30,7 +32,10 @@ export class WinstonLoggerService implements LoggerService {
   private logger:   winston.Logger
   private options:  any
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService:              ConfigService,
+    private readonly requestIdAsyncLocalStorage: RequestIdAsyncLocalStorage) 
+  {
     // Define log filename
     const logFilename: string = `${configService.get('appRoot')}/logs/${configService.get('appName')}.${configService.get('NODE_ENV')}.log`
     
@@ -136,13 +141,13 @@ export class WinstonLoggerService implements LoggerService {
     message:           any, 
     ...optionalParams: any[]) : winston.Logger 
   {
-    //* const requestId = this.asyncRequestIdContext.getRequestIdStore()
+    const requestId = this.requestIdAsyncLocalStorage.getRequestIdStore()
 
     if(typeof message === 'object') {
       // Add the requestId to the log message if it is defined
-      //* if(requestId) {
-      //*   message.requestId = requestId
-      //* }
+      if(requestId) {
+        message.requestId = requestId
+      }
 
       const { message: msg, ...meta } = message;
 

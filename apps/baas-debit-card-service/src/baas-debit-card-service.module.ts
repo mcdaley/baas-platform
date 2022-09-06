@@ -17,6 +17,10 @@ import {
   WinstonLoggerModule,
   WinstonLoggerInterceptor,
 }                                         from '@app/winston-logger'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor, 
+}                                         from '@app/baas-async-local-storage'
 
 /**
  * @class BaasDebitCardServiceModule
@@ -33,10 +37,15 @@ import {
     DebitCardsReissueModule,
     DebitCardsBlocksModule,
     WinstonLoggerModule,
+    RequestIdAsyncLocalStorageModule.forRoot(),
   ],
   controllers:  [BaasDebitCardServiceController],
   providers:    [
     BaasDebitCardServiceService,
+    {
+      provide:  APP_INTERCEPTOR,
+      useClass: RequestIdInterceptor
+    },
     { 
       provide:  APP_INTERCEPTOR,
       useClass: WinstonLoggerInterceptor

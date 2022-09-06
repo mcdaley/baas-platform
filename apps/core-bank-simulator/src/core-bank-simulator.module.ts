@@ -30,6 +30,10 @@ import {
   WinstonLoggerModule,
   WinstonLoggerInterceptor,
 }                                         from '@app/winston-logger'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor, 
+}                                         from '@app/baas-async-local-storage'
 
 @Module({
   imports:      [
@@ -55,6 +59,7 @@ import {
       logging:      true,
     }),
     WinstonLoggerModule,
+    RequestIdAsyncLocalStorageModule.forRoot(),
     CustomersModule,
     AccountsModule,
     ParticipantsModule,
@@ -65,6 +70,10 @@ import {
   controllers:  [CoreBankSimulatorController],
   providers:    [
     CoreBankSimulatorService,
+    {
+      provide:  APP_INTERCEPTOR,
+      useClass: RequestIdInterceptor
+    },
     { 
       provide:  APP_INTERCEPTOR,
       useClass: WinstonLoggerInterceptor

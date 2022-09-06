@@ -20,6 +20,10 @@ import {
   WinstonLoggerModule,
   WinstonLoggerInterceptor,
 }                                         from '@app/winston-logger'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor, 
+}                                         from '@app/baas-async-local-storage'
 import { TenantIdMiddleware }             from '@app/baas-errors'
 
 /**
@@ -35,10 +39,15 @@ import { TenantIdMiddleware }             from '@app/baas-errors'
     }),
     CustomersModule,
     WinstonLoggerModule,
+    RequestIdAsyncLocalStorageModule.forRoot(),
   ],
   controllers:  [BaasCustomerServiceController],
   providers:    [
     BaasCustomerServiceService,
+    {
+      provide:  APP_INTERCEPTOR,
+      useClass: RequestIdInterceptor
+    },
     { 
       provide:  APP_INTERCEPTOR,
       useClass: WinstonLoggerInterceptor

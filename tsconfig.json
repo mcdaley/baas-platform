@@ -59,6 +59,12 @@
       ],
       "@app/baas-marqeta/*": [
         "libs/baas-marqeta/src/*"
+      ],
+      "@app/baas-async-local-storage": [
+        "libs/baas-async-local-storage/src"
+      ],
+      "@app/baas-async-local-storage/*": [
+        "libs/baas-async-local-storage/src/*"
       ]
     }
   }

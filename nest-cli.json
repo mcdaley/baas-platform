@@ -124,6 +124,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/baas-marqeta/tsconfig.lib.json"
       }
+    },
+    "baas-async-local-storage": {
+      "type": "library",
+      "root": "libs/baas-async-local-storage",
+      "entryFile": "index",
+      "sourceRoot": "libs/baas-async-local-storage/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/baas-async-local-storage/tsconfig.lib.json"
+      }
     }
   }
 }

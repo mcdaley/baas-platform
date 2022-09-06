@@ -17,7 +17,14 @@ import {
   WinstonLoggerModule,
   WinstonLoggerInterceptor, 
 }                                         from '@app/winston-logger'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                         from '@app/baas-async-local-storage'
 
+/**
+ * @class BaasAccountServiceModule
+ */
 @Module({
   imports:      [
     ConfigModule.forRoot({
@@ -30,10 +37,15 @@ import {
     ParticipantsModule,
     AccountBlocksModule,
     WinstonLoggerModule,
+    RequestIdAsyncLocalStorageModule.forRoot(),
   ],
   controllers:  [BaasAccountServiceController],
   providers:    [
     BaasAccountServiceService,
+    {
+      provide:  APP_INTERCEPTOR,
+      useClass: RequestIdInterceptor
+    },
     { 
       provide:  APP_INTERCEPTOR,
       useClass: WinstonLoggerInterceptor

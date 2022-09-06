@@ -17,6 +17,7 @@ import {
   BaaSErrorLabel, 
   BaaSErrors, 
   createBaaSException, 
+  IBaaSRequestHeaders, 
   NotFoundError,
 }                                 from '@app/baas-errors'
 import { WinstonLoggerService }   from '@app/winston-logger'
@@ -39,11 +40,11 @@ export class CustomersService {
    */
   async create(
     createCustomerDto: CreateCustomerDto,
-    tenantId:          string,
-    idempotencyKey:    string) : Promise<any> 
+    requestHeaders:    IBaaSRequestHeaders) : Promise<any> 
   {
     try {
       // Create the customer
+      let tenantId = requestHeaders['Tenant-Id']
       let customer = {
         status:     CustomerStatus.Pending,
         tenant_id:  tenantId,
@@ -72,7 +73,7 @@ export class CustomersService {
   /**
    * @method findAll
    */
-  async findAll(tenantId: string) {
+  async findAll(requestHeaders: IBaaSRequestHeaders) {
     try {
       // Set up default pagination
       let start_index = 0
@@ -81,6 +82,7 @@ export class CustomersService {
       let is_more     = true
 
       // Query the DB
+      const tenantId = requestHeaders['Tenant-Id']
       const response = await this.customerRepository.findAndCount({
         where:      {tenant_id: tenantId},
         relations:  ['physical_address', 'mailing_address'],
@@ -126,8 +128,12 @@ export class CustomersService {
   /**
    * @method findOne
    */
-  async findOne(customerId: string, tenantId: string) {
+  async findOne(
+    customerId:     string, 
+    requestHeaders: IBaaSRequestHeaders) 
+  {
     try {
+      const tenantId = requestHeaders['Tenant-Id']
       const customer = await this.customerRepository.findOne({
         where:      {id: customerId, tenant_id: tenantId},
         relations:  ['physical_address', 'mailing_address'],
@@ -167,7 +173,11 @@ export class CustomersService {
    * 
    * @method update
    */
-  async update(customerId: string, updateCustomerDto: UpdateCustomerDto, tenantId: string) {
+  async update(
+    customerId:        string, 
+    updateCustomerDto: UpdateCustomerDto, 
+    requestHeaders:    IBaaSRequestHeaders) 
+  {
     ///////////////////////////////////////////////////////////////////////////
     // BUG: 07/07/2022
     // The update method only returns the fields that were updated, even w/ 
@@ -186,6 +196,7 @@ export class CustomersService {
     // FOUND, SO IT IS CONSISTENT.
     ///////////////////////////////////////////////////////////////////////////
     try {
+      const tenantId       = requestHeaders['Tenant-Id']
       const updateCustomer = await this.customerRepository.create({
         id:         customerId,
         tenant_id:  tenantId,
@@ -222,7 +233,7 @@ export class CustomersService {
   /**
    * @method remove
    */
-  async remove(customerId: string, tenantId: string) {
+  async remove(customerId: string, requestHeaders:    IBaaSRequestHeaders) {
     ///////////////////////////////////////////////////////////////////////////
     // BUG: 7/7/22
     // I cannot get the delete to cascade and remove the corresponding
@@ -230,6 +241,7 @@ export class CustomersService {
     // should not delete customers.
     ///////////////////////////////////////////////////////////////////////////
     try {
+      const tenantId = requestHeaders['Tenant-Id']
       const response = await this.customerRepository.delete({
         id:         customerId,
         tenant_id:  tenantId

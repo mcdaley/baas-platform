@@ -7,7 +7,7 @@ import axios                        from 'axios'
 
 import { CreateDebitCardsBlockDto } from './dto/create-debit-cards-block.dto'
 
-import { IDebitCardsBlock }         from '@app/baas-interfaces'
+import { IBaaSRequestHeaders }      from '@app/baas-errors'
 import { WinstonLoggerService }     from '@app/winston-logger'
 
 /**
@@ -26,19 +26,18 @@ export class DebitCardsBlocksService {
   async create(
     debitCardId:              string, 
     createDebitCardsBlockDto: CreateDebitCardsBlockDto,
-    customerId:               string,
-    tenantId:                 string,
-    idempotencyKey:           string) 
+    requestHeaders:           IBaaSRequestHeaders) 
   {
     try {
       const url         = `${this.configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks`
       const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders
       }
+      this.logger.log({
+        message:  `Call core bank to block debit card id = ${debitCardId}`,
+        url:      `POST ${url}`
+      })
+
       const response = await axios.post(url, createDebitCardsBlockDto, axiosConfig)
       const block    = response.data.data
       const result   = {
@@ -63,17 +62,18 @@ export class DebitCardsBlocksService {
    * @method findAll
    */
   async findAll(
-    debitCardId: string,
-    customerId:  string,
-    tenantId:    string) {
+    debitCardId:    string,
+    requestHeaders: IBaaSRequestHeaders) {
     try {
       const url      = `${this.configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks`
       const axiosConfig = {
-        headers: {
-          'Customer-Id':  customerId,
-          'Tenant-Id':    tenantId,
-        }
+        headers: requestHeaders
       }
+      this.logger.log({
+        message: `Call core bank engine to get blocks for debit card id = ${debitCardId}`,
+        url:     `GET ${url}`,
+      })
+
       const response = await axios.get(url, axiosConfig)
       const blocks   = response.data.data
       const result   = {
@@ -98,19 +98,20 @@ export class DebitCardsBlocksService {
    * @method remove
    */
   async remove(
-    debitCardId: string, 
-    blockId:     string,
-    customerId:  string,
-    tenantId:    string) 
+    debitCardId:    string, 
+    blockId:        string,
+    requestHeaders: IBaaSRequestHeaders) 
   {
     try {
       const url         = `${this.configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}/blocks/${blockId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to unblock debit card id = ${debitCardId}`,
+        url:     `DELETE ${url}`,
+      })
+      
       const response = await axios.delete(url, axiosConfig)
       const block    = response.data.data
       const result   = {

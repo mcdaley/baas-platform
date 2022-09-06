@@ -6,17 +6,18 @@ import {
   TestingModule 
 }                               from '@nestjs/testing'
 import { ConfigService }        from '@nestjs/config'
+import { APP_INTERCEPTOR }      from '@nestjs/core'
 import axios                    from 'axios'
 
 import { DebitCardsService }    from './debit-cards.service'
 
 import { 
-  CardStatus,
-  IAccount, 
-  ICreateDebitCardDto, 
-  ICustomer, 
-  IDebitCard, 
+  CardStatus, 
 }                               from '@app/baas-interfaces'
+import {
+  RequestIdAsyncLocalStorageModule,
+  RequestIdInterceptor,
+}                               from '@app/baas-async-local-storage'
 import { uuid }                 from '@app/baas-utils'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -51,12 +52,17 @@ describe(DebitCardsService, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports:   [RequestIdAsyncLocalStorageModule.forRoot()],
       providers: [
         DebitCardsService, 
         { 
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile();
@@ -70,13 +76,14 @@ describe(DebitCardsService, () => {
    */
   describe(`create`, () => {
     it(`Creates a new debit card`, async () => {
-      const url           = configService.get('bankSimulatorDebitCardsUrl')
+      const url            = configService.get('bankSimulatorDebitCardsUrl')
+      const requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
       const axiosConfig   = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders,
       }
       const axiosResponse = {
         data: {
@@ -86,7 +93,7 @@ describe(DebitCardsService, () => {
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(axiosResponse)
       const result = await debitCardsService.create(
-        createDebitCardDto, customerId, tenantId, idempotencyKey)
+        createDebitCardDto, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, createDebitCardDto, axiosConfig)
@@ -100,11 +107,12 @@ describe(DebitCardsService, () => {
   describe(`findAll`, () => {
     it(`Returns a list of debit cards`, async () => {
       const url           = configService.get('bankSimulatorDebitCardsUrl')
+      const requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+      }
       const axiosConfig   = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       const axiosResponse = {
         data: {
@@ -113,7 +121,7 @@ describe(DebitCardsService, () => {
       }
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(axiosResponse)
-      const result = await debitCardsService.findAll(customerId, tenantId)
+      const result = await debitCardsService.findAll(requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -126,13 +134,14 @@ describe(DebitCardsService, () => {
    */
   describe(`findOne`, () => {
     it(`Returns a debit card`, async () => {
-      const debitCardId   = debitCardData.id
-      const url           = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
+      const debitCardId    = debitCardData.id
+      const url            = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
+      const requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+      }
       const axiosConfig   = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       const axiosResponse = {
         data: {
@@ -141,7 +150,7 @@ describe(DebitCardsService, () => {
       }
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(axiosResponse)
-      const result = await debitCardsService.findOne(debitCardId, customerId, tenantId)
+      const result = await debitCardsService.findOne(debitCardId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -154,14 +163,15 @@ describe(DebitCardsService, () => {
    */
   describe(`update`, () => {
     it(`Updates a debit card`, async () => {
-      const debitCardId = debitCardData.id
-      const url         = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
-      const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+      const debitCardId    = debitCardData.id
+      const url            = `${configService.get('bankSimulatorDebitCardsUrl')}/${debitCardId}`
+      const requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
+      const axiosConfig   = {
+        headers: requestHeaders,
       }
 
       const updateDebitCardDto = {
@@ -185,7 +195,7 @@ describe(DebitCardsService, () => {
 
       const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(axiosResponse)
       const result = await debitCardsService.update(
-        debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
+        debitCardId, updateDebitCardDto, requestHeaders
       )
 
       expect(spy).toBeCalled()

@@ -19,9 +19,8 @@ import { CreateAccountDto }       from './dto/create-account.dto'
 import { UpdateAccountDto }       from './dto/update-account.dto'
 
 import { 
-  TenantId,
-  CustomerId,
-  IdempotencyKey, 
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                                 from '@app/baas-errors'
 
 /**
@@ -38,12 +37,10 @@ export class AccountsController {
    */
   @Post()
   createV1(
-    @CustomerId()     customerId:       string,
-    @TenantId()       tenantId:         string,
-    @IdempotencyKey() idempotencyKey:   string,
-    @Body()           createAccountDto: CreateAccountDto) 
+    @BaaSRequestHeaders() requestHeaders:   IBaaSRequestHeaders,
+    @Body()               createAccountDto: CreateAccountDto) 
   {
-    return this.accountsService.create(createAccountDto, customerId, tenantId, idempotencyKey);
+    return this.accountsService.create(createAccountDto, requestHeaders);
   }
 
   /**
@@ -51,10 +48,9 @@ export class AccountsController {
    */
   @Get()
   findAllV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string) 
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders) 
   {
-    return this.accountsService.findAll(customerId, tenantId);
+    return this.accountsService.findAll(requestHeaders);
   }
 
   /**
@@ -62,11 +58,10 @@ export class AccountsController {
    */
   @Get(':accountId')
   findOneV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   { 
-    return this.accountsService.findOne(accountId, customerId, tenantId);
+    return this.accountsService.findOne(accountId, requestHeaders);
   }
 
   /**
@@ -74,14 +69,12 @@ export class AccountsController {
    */
   @Patch(':accountId')
   updateV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() updateAccountDto: UpdateAccountDto) 
   {
     return this.accountsService.update(
-      accountId, updateAccountDto, customerId, tenantId, idempotencyKey
+      accountId, updateAccountDto, requestHeaders
     )
   }
 
@@ -91,10 +84,9 @@ export class AccountsController {
   @Delete(':accountId')
   @HttpCode(204)
   removeV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   {
-    return this.accountsService.remove(accountId, customerId, tenantId)
+    return this.accountsService.remove(accountId, requestHeaders)
   }
 }

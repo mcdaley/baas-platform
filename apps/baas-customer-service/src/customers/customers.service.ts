@@ -17,6 +17,8 @@ import {
 import { 
   createBaaSException,
   BaaSErrorLabel,
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -42,12 +44,17 @@ export class CustomersService {
    */
   async create(
     createCustomerDto: CreateCustomerDto,
-    requestHeaders:    any) : Promise<ICustomerResponse> 
+    requestHeaders:    IBaaSRequestHeaders) : Promise<ICustomerResponse> 
   {
     try {
       const axiosConfig = {
         headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to create customer`,
+        url:     `POST ${this.coreCustomerUrl}`
+      })
+
       const response  = await axios.post(this.coreCustomerUrl, createCustomerDto, axiosConfig)
       const customer  = response.data.data
       const result    = {
@@ -72,9 +79,14 @@ export class CustomersService {
   /**
    * @method findAll
    */
-  async findAll(requestHeaders: any) : Promise<ICustomerListResponse> {
+  async findAll(requestHeaders: IBaaSRequestHeaders) : Promise<ICustomerListResponse> {
     try {
       const axiosConfig = { headers: requestHeaders }
+      this.logger.log({
+        message: `Call core bank engine to fetch all customers`,
+        url:     `GET ${this.coreCustomerUrl}`
+      })
+
       const response    = await axios.get(this.coreCustomerUrl, axiosConfig)
       const customers   = response.data.data
       const metadata    = response.data.metadata
@@ -114,10 +126,18 @@ export class CustomersService {
    * Search for a customer by Id and return the customer. If the customer is not found
    * return a 404 Not Found response.
    */
-  async findOne(customerId: string, requestHeaders: any) : Promise<ICustomerResponse> {
+  async findOne(
+    customerId:     string, 
+    requestHeaders: IBaaSRequestHeaders) : Promise<ICustomerResponse> 
+  {
     try {
       const url         = `${this.coreCustomerUrl}/${customerId}`
       const axiosConfig = { headers: requestHeaders }
+      this.logger.log({
+        message: `Call core bank engine to fetch customer id = ${customerId}`,
+        url:     `GET ${url}`,
+      })
+
       const response    = await axios.get(url, axiosConfig)
       const customer    = response.data.data
       
@@ -142,11 +162,16 @@ export class CustomersService {
   async update(
     customerId:        string, 
     updateCustomerDto: UpdateCustomerDto, 
-    requestHeaders:    any) : Promise<ICustomerResponse> 
+    requestHeaders:    IBaaSRequestHeaders) : Promise<ICustomerResponse> 
   {
     try {
       const url         = `${this.coreCustomerUrl}/${customerId}`
       const axiosConfig = { headers: requestHeaders }
+      this.logger.log({
+        message: `Call core bank engine to update customer id = ${customerId}`,
+        url:     `PATCH ${url}`,
+      })
+
       const response    = await axios.patch(url, updateCustomerDto, axiosConfig)
       const customer    = response.data.data
       
@@ -172,10 +197,15 @@ export class CustomersService {
   /**
    * @method remove
    */
-  async remove(customerId: string, requestHeaders: any) {
+  async remove(customerId: string, requestHeaders: IBaaSRequestHeaders) {
     try {
       const url         = `${this.coreCustomerUrl}/${customerId}`
       const axiosConfig = { headers: requestHeaders }
+      this.logger.log({
+        message: `Call core bank engine to remove customer id = ${customerId}`,
+        url:     `DELETE ${url}`,
+      })
+
       await axios.delete(url, axiosConfig)
       
       const result = {

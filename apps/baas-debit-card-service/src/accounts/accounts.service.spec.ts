@@ -6,18 +6,16 @@ import {
   TestingModule 
 }                               from '@nestjs/testing'
 import { ConfigService }        from '@nestjs/config'
+import { APP_INTERCEPTOR }      from '@nestjs/core'
 import axios                    from 'axios'
 import faker                    from '@faker-js/faker'
 
 import { AccountsService }      from './accounts.service'
 
-import { 
-  AccountStatus, 
-  AccountType, 
-  IAccount, 
-  ParticipantRole, 
-}                               from '@app/baas-interfaces'
-import { uuid }                 from '@app/baas-utils'
+import {
+  RequestIdAsyncLocalStorageModule,
+  RequestIdInterceptor,
+}                               from '@app/baas-async-local-storage'
 import { WinstonLoggerService } from '@app/winston-logger'
 
 // Import test data
@@ -42,12 +40,17 @@ describe(`AccountsService`, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports:   [RequestIdAsyncLocalStorageModule.forRoot()],
       providers: [
         AccountsService, 
         { 
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile()

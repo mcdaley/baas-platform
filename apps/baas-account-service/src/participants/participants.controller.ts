@@ -18,9 +18,8 @@ import { ParticipantsService }    from './participants.service'
 import { CreateParticipantDto }   from './dto/create-participant.dto'
 
 import { 
-  CustomerId, 
-  IdempotencyKey, 
-  TenantId 
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                                 from '@app/baas-errors'
 
 /**
@@ -37,14 +36,12 @@ export class ParticipantsController {
    */
   @Post()
   createV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() createParticipantDto: CreateParticipantDto) 
   {
     return this.participantsService.create(
-      accountId, createParticipantDto, customerId, tenantId, idempotencyKey)
+      accountId, createParticipantDto, requestHeaders)
   }
 
   /**
@@ -52,11 +49,10 @@ export class ParticipantsController {
    */
   @Get()
   findAllV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   {
-    return this.participantsService.findAll(accountId, customerId, tenantId)
+    return this.participantsService.findAll(accountId, requestHeaders)
   }
 
   /**
@@ -65,11 +61,10 @@ export class ParticipantsController {
   @Delete(':participantId')
   @HttpCode(204)
   removeV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId',     ParseUUIDPipe) accountId: string,
     @Param('participantId', ParseUUIDPipe) participantId: string
   ) {
-    return this.participantsService.remove(accountId, participantId, customerId, tenantId)
+    return this.participantsService.remove(accountId, participantId, requestHeaders)
   }
 } // end of class ParticipantsController

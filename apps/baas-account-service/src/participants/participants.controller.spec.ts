@@ -6,11 +6,16 @@ import {
   TestingModule, 
 }                                 from '@nestjs/testing'
 import { ConfigService }          from '@nestjs/config'
+import { APP_INTERCEPTOR }        from '@nestjs/core'
 
 import { ParticipantsController } from './participants.controller'
 import { ParticipantsService }    from './participants.service'
 import { CreateParticipantDto }   from './dto/create-participant.dto'
 
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                 from '@app/baas-async-local-storage'
 import { WinstonLoggerService }   from '@app/winston-logger'
 import { ParticipantRole }        from '@app/baas-interfaces'
 import { uuid }                   from '@app/baas-utils'
@@ -52,6 +57,9 @@ describe(`ParticipantsController`, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       controllers:  [ParticipantsController],
       providers:    [
         ParticipantsService,
@@ -59,6 +67,10 @@ describe(`ParticipantsController`, () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
         CoreSimulatorService,
       ],
@@ -79,17 +91,23 @@ describe(`ParticipantsController`, () => {
         ...createParticipantDto
       }
 
+      let requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
+
       let response = {
         participant: participant 
       }
 
       const spy    = jest.spyOn(participantsService, 'create').mockResolvedValue(response)
       const result = await participantsController.createV1(
-        customerId, tenantId, idempotencyKey, accountId, createParticipantDto
+        requestHeaders, accountId, createParticipantDto
       )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, createParticipantDto, customerId, tenantId, idempotencyKey)
+      expect(spy).toBeCalledWith(accountId, createParticipantDto, requestHeaders)
       expect(result).toBe(response)
     })
   })
@@ -105,15 +123,20 @@ describe(`ParticipantsController`, () => {
         ...createParticipantDto
       }
 
+      let requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+      }
+
       let response = {
         participants: [participant]
       }
 
       const spy    = jest.spyOn(participantsService, 'findAll').mockResolvedValue(response)
-      const result = await participantsController.findAllV1(customerId, tenantId, accountId)
+      const result = await participantsController.findAllV1(requestHeaders, accountId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, customerId, tenantId)
+      expect(spy).toBeCalledWith(accountId, requestHeaders)
       expect(result).toBe(response)
     })
   })
@@ -129,14 +152,18 @@ describe(`ParticipantsController`, () => {
       //    "participant_id" or the "customer_id"? Need to look
       //    at the core-bank-simulator.
       /////////////////////////////////////////////////////////////////////////
-      let participantId = accountData.participants[0].customer_id
-      let response      = {}
+      let participantId  = accountData.participants[0].customer_id
+      let requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+      }
+      let response       = {}
 
       const spy    = jest.spyOn(participantsService, 'remove').mockResolvedValue({})
-      const result = await participantsController.removeV1(customerId, tenantId, accountId, participantId)
+      const result = await participantsController.removeV1(requestHeaders, accountId, participantId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, participantId, customerId, tenantId)
+      expect(spy).toBeCalledWith(accountId, participantId, requestHeaders)
       expect(result).toEqual(response)
     })
   })

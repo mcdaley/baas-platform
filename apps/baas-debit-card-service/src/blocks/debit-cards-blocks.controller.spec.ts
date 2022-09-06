@@ -6,10 +6,15 @@ import {
   TestingModule 
 }                                       from '@nestjs/testing'
 import { ConfigService }                from '@nestjs/config'
+import { APP_INTERCEPTOR }              from '@nestjs/core'
 
 import { DebitCardsBlocksController }   from './debit-cards-blocks.controller'
 import { DebitCardsBlocksService }      from './debit-cards-blocks.service'
 
+import {
+  RequestIdAsyncLocalStorageModule,
+  RequestIdInterceptor,
+}                                       from '@app/baas-async-local-storage'
 import { uuid }                         from '@app/baas-utils'
 import { BlockReason }                  from '@app/baas-interfaces'
 import { WinstonLoggerService }         from '@app/winston-logger'
@@ -48,6 +53,7 @@ describe(`DebitCardsBlocksController`, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports:      [RequestIdAsyncLocalStorageModule.forRoot()],
       controllers:  [DebitCardsBlocksController],
       providers:    [
         DebitCardsBlocksService, 
@@ -55,6 +61,10 @@ describe(`DebitCardsBlocksController`, () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
         CoreDebitCardSimulator,       // TODO: REMOVE ONCE I REMOVE SIMULATOR
       ],
@@ -70,6 +80,12 @@ describe(`DebitCardsBlocksController`, () => {
    */
   describe(`createV1`, () => {
     it(`Blocks a debit cards`, async () => {
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+        'Idempotency-Key':  idempotencyKey,
+      }
+
       const createDebitCardsBlockDto = {
         block_reason: BlockReason.Lost
       }
@@ -86,16 +102,21 @@ describe(`DebitCardsBlocksController`, () => {
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'create').mockResolvedValue(response)
       const result = await debitCardsBlocksController.createV1(
-        customerId, tenantId, idempotencyKey, debitCardId, createDebitCardsBlockDto)
+        requestHeaders, debitCardId, createDebitCardsBlockDto)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId, createDebitCardsBlockDto, customerId, tenantId, idempotencyKey)
+      expect(spy).toBeCalledWith(debitCardId, createDebitCardsBlockDto, requestHeaders)
       expect(result).toEqual(response)
     })
   })
 
   describe(`findAllV1`, () => {
     it(`Returns a list of all blocks placed on a debit card`, async () => {
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+
       const debitCardBlocks = [
         {
           id:           uuid(),
@@ -110,10 +131,10 @@ describe(`DebitCardsBlocksController`, () => {
       }
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'findAll').mockResolvedValue(response)
-      const result = await debitCardsBlocksController.findAllV1(customerId, tenantId, debitCardId)
+      const result = await debitCardsBlocksController.findAllV1(requestHeaders, debitCardId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId, customerId, tenantId)
+      expect(spy).toBeCalledWith(debitCardId, requestHeaders)
       expect(result).toEqual(response)
     })
   })
@@ -127,16 +148,22 @@ describe(`DebitCardsBlocksController`, () => {
         is_active:    false,
         block_date:   new Date(),
       }
+
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+
       const response = {
         block: block,
       }
 
       const spy    = jest.spyOn(debitCardsBlocksService, 'remove').mockResolvedValue(response)
       const result = await debitCardsBlocksController.removeV1(
-        customerId, tenantId, debitCardId, blockId)
+        requestHeaders, debitCardId, blockId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(debitCardId, blockId, customerId, tenantId)
+      expect(spy).toBeCalledWith(debitCardId, blockId, requestHeaders)
       expect(result).toEqual(response)
     })
   })

@@ -6,6 +6,7 @@ import {
   TestingModule 
 }                                         from '@nestjs/testing'
 import { ConfigService }                  from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 
 import { BaasCustomerServiceController }  from './baas-customer-service.controller'
 import { BaasCustomerServiceService }     from './baas-customer-service.service'
@@ -17,6 +18,10 @@ import {
   BaasApplication,
   setMockConfigService,
 }                                         from '../../../test/baas.factory.utils'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                         from '@app/baas-async-local-storage'
 
 // Setup test environment
 const mockConfigService = setMockConfigService(BaasApplication.CustomerService)
@@ -31,13 +36,20 @@ describe('BaasCustomerServiceController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [BaasCustomerServiceController],
-      providers: [
+      imports:      [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
+      controllers:  [BaasCustomerServiceController],
+      providers:    [
         BaasCustomerServiceService,
         WinstonLoggerService,
         {
           provide:  ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide:  APP_INTERCEPTOR,
+          useClass: RequestIdInterceptor
         },
       ],
     }).compile();

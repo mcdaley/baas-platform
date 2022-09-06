@@ -11,6 +11,7 @@ import { UpdateDebitCardDto }           from './dto/update-debit-card.dto'
 import { 
   createBaaSException,
   BaaSErrorLabel,
+  IBaaSRequestHeaders,
 }                                       from '@app/baas-errors'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
@@ -37,19 +38,18 @@ export class DebitCardsService {
    */
   async create(
     createDebitCardDto: CreateDebitCardDto,
-    customerId:         string,
-    tenantId:           string,
-    idempotencyKey:     string) 
+    requestHeaders:     IBaaSRequestHeaders) 
   {
     try {
-      const url       = this.simulatorUrl
+      const url         = this.simulatorUrl
       const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders
       }
+      this.logger.log({
+        message:  `Call core bank engine to create the debit card`,
+        url:      `POST ${url}`,
+      })
+
       const response  = await axios.post(url, createDebitCardDto, axiosConfig)
       const debitCard = response.data.data
       const result    = {
@@ -73,15 +73,17 @@ export class DebitCardsService {
   /**
    * @method findAll
    */
-  async findAll(customerId: string, tenantId: string) {
+  async findAll(requestHeaders: IBaaSRequestHeaders) {
     try {
       const url           = this.simulatorUrl
       const axiosConfig   = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to get debit cards for customer id = [${requestHeaders['Customer-Id']}]`,
+        url:     `GET ${this.simulatorUrl}`
+      })
+
       const response      = await axios.get(this.simulatorUrl, axiosConfig)
       const debitCardList = response.data.data
       const result        = {
@@ -105,15 +107,17 @@ export class DebitCardsService {
   /**
    * @method findOne
    */
-  async findOne(debitCardId: string, customerId: string, tenantId: string) {
+  async findOne(debitCardId: string, requestHeaders: IBaaSRequestHeaders) {
     try {
       const url         = `${this.simulatorUrl}/${debitCardId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to fetch debit card id = ${debitCardId}`,
+        url:     `GET ${url}`
+      })
+
       const response  = await axios.get(url, axiosConfig)
       const debitCard = response.data.data
       const result    = {
@@ -140,19 +144,18 @@ export class DebitCardsService {
   async update(
     debitCardId:        string, 
     updateDebitCardDto: UpdateDebitCardDto,
-    customerId:         string,
-    tenantId:           string,
-    idempotencyKey:     string) 
+    requestHeaders:     IBaaSRequestHeaders) 
   {
     try {
       const url       = `${this.simulatorUrl}/${debitCardId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to update debit card id = ${debitCardId}`,
+        url:     `PATCH ${url}`,
+      })
+      
       const response  = await axios.patch(url, updateDebitCardDto, axiosConfig)
       const debitCard = response.data.data
       const result    = {

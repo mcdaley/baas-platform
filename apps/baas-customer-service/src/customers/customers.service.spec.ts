@@ -6,6 +6,7 @@ import {
   TestingModule 
 }                               from '@nestjs/testing'
 import { ConfigService }        from '@nestjs/config'
+import { APP_INTERCEPTOR }      from '@nestjs/core'
 import axios                    from 'axios'
 
 import { CustomersService }     from './customers.service'
@@ -17,6 +18,10 @@ import {
   ICustomer,
   IUpdateCustomerDto, 
 }                               from '@app/baas-interfaces'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor, 
+}                               from '@app/baas-async-local-storage'
 import { WinstonLoggerService } from '@app/winston-logger'
 
 /**
@@ -57,12 +62,19 @@ describe('CustomersService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports:  [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       providers: [
         CustomersService, 
         { 
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile();

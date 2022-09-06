@@ -6,6 +6,7 @@ import {
   TestingModule, 
 }                                 from '@nestjs/testing'
 import { ConfigService }          from '@nestjs/config'
+import { APP_INTERCEPTOR }        from '@nestjs/core'
 import axios                      from 'axios'
 
 import { AccountsService }        from './accounts.service'
@@ -18,6 +19,10 @@ import {
   BaaSErrors, 
   NotFoundError, 
 }                                 from '@app/baas-errors'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                 from '@app/baas-async-local-storage'
 import { uuid }                   from '@app/baas-utils'
 import { WinstonLoggerService }   from '@app/winston-logger'
 
@@ -49,6 +54,9 @@ describe('AccountsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       providers: [
         AccountsService,
         CustomersService,
@@ -56,6 +64,10 @@ describe('AccountsService', () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile();
@@ -69,20 +81,20 @@ describe('AccountsService', () => {
    */
   describe(`create`, () => {
     it(`Creates a new account`, async () => {
-      let url         = `http://localhost:5001/core/api/v1/accounts`
+      let url            = `http://localhost:5001/core/api/v1/accounts`
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+        'Idempotency-Key':  idempotencyKey,
+      }
       let axiosConfig = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-          'Idempotency-Key':  idempotencyKey,
-
-        }
+        headers: requestHeaders,
       }
       let participants = accountData.participants.map( (p) => {
         // Remove created_at & updated_at properties.
         return {
-          customer_id:  p.customer_id,
-          participant_role:         p.participant_role
+          customer_id:      p.customer_id,
+          participant_role: p.participant_role
         }
       })
       let customers  = [customerData]
@@ -98,7 +110,7 @@ describe('AccountsService', () => {
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(response)
       const result = await accountsService.create(
-         createAccountDto, customerId, tenantId, idempotencyKey
+         createAccountDto, requestHeaders
       )
 
 
@@ -127,17 +139,18 @@ describe('AccountsService', () => {
    */
   describe(`findAll`, () => {
     it(`Returns a list of accounts`, async () => {
-      let url         = `http://localhost:5001/core/api/v1/accounts`
-      let axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+      let url            = `http://localhost:5001/core/api/v1/accounts`
+      let requestHeaders = {
+        'Customer-Id': customerId,
+        'Tenant-Id':   tenantId,
+      }
+      let axiosConfig    = {
+        headers: requestHeaders,
       }
       let response    = {data: { data: [accountData] }}
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await accountsService.findAll(customerId, tenantId)
+      const result = await accountsService.findAll(requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -150,18 +163,19 @@ describe('AccountsService', () => {
    */
   describe(`findOne`, () => {
     it(`Returns an account`, async () => {
-      let accountId   = `unique-account-id`
-      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let accountId      = `unique-account-id`
+      let url            = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let requestHeaders = {
+        'Customer-Id': customerId,
+        'Tenant-Id':   tenantId,
+      }
       let axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       let response = {data: { data: accountData }}
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await accountsService.findOne(accountId, customerId, tenantId)
+      const result = await accountsService.findOne(accountId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -169,13 +183,14 @@ describe('AccountsService', () => {
     })
 
     it(`Returns 404 account not found error`, async () => {
-      let accountId   = `unique-account-id`
-      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let accountId      = `unique-account-id`
+      let url            = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let requestHeaders = {
+        'Customer-Id': customerId,
+        'Tenant-Id':   tenantId,
+      }
       let axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders
       }
 
       const spy    = jest.spyOn(axios, 'get').mockRejectedValueOnce(
@@ -183,7 +198,7 @@ describe('AccountsService', () => {
       )
 
       try {
-        await accountsService.findOne(accountId, customerId, tenantId)
+        await accountsService.findOne(accountId, requestHeaders)
       }
       catch(error) {
         expect(spy).toBeCalled()
@@ -202,12 +217,14 @@ describe('AccountsService', () => {
       nickname:           'Blocked Checking Account'
     }
 
+    let requestHeaders = {
+      'Customer-Id':     customerId,
+      'Tenant-Id':       tenantId,
+      'Idempotency-Key': idempotencyKey,
+    }
+
     let axiosConfig = {
-      headers: {
-        'Customer-Id':     customerId,
-        'Tenant-Id':       tenantId,
-        'Idempotency-Key': idempotencyKey,
-      }
+      headers: requestHeaders,
     }
 
     it(`Returns the updated account`, async () => {
@@ -221,7 +238,7 @@ describe('AccountsService', () => {
       let response = {data: {data: updatedAccount}}
       const spy    = jest.spyOn(axios, 'patch').mockResolvedValue(response)
       const result = await accountsService.update(
-        accountId, updateAccountDto, customerId, tenantId, idempotencyKey
+        accountId, updateAccountDto, requestHeaders
       )
 
       expect(spy).toBeCalled()
@@ -230,8 +247,13 @@ describe('AccountsService', () => {
     })
 
     it(`Returns 404 account not found error`, async () => {
-      let accountId = `unique-account-id`
-      let url       = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let accountId      = `unique-account-id`
+      let url            = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let requestHeaders = {
+        'Customer-Id':     customerId,
+        'Tenant-Id':       tenantId,
+        'Idempotency-Key': idempotencyKey,
+      }
 
       const spy     = jest.spyOn(axios, 'patch').mockRejectedValueOnce(
         new NotFoundError(BaaSErrors.account.notFound, `Account ${accountId} not found`)
@@ -239,7 +261,7 @@ describe('AccountsService', () => {
 
       try {
         await accountsService.update(
-          accountId, updateAccountDto, customerId, tenantId, idempotencyKey
+          accountId, updateAccountDto, requestHeaders
         )
       }
       catch(error) {
@@ -254,11 +276,12 @@ describe('AccountsService', () => {
    * remove
    */
   describe(`remove`, () => {
-    let axiosConfig = {
-      headers: {
-        'Customer-Id': customerId,
-        'Tenant-Id':   tenantId,
-      }
+    let requestHeaders = {
+      'Customer-Id': customerId,
+      'Tenant-Id':   tenantId,
+    }
+    let axiosConfig    = {
+      headers: requestHeaders,
     }
 
     it(`Deletes the account`, async () => {
@@ -267,7 +290,7 @@ describe('AccountsService', () => {
       let response  = true
 
       const spy     = jest.spyOn(axios, 'delete').mockResolvedValue({data: true})
-      const result  = await accountsService.remove(accountId, customerId, tenantId)
+      const result  = await accountsService.remove(accountId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -277,13 +300,17 @@ describe('AccountsService', () => {
     it(`Returns 404 account not found error`, async () => {
       let accountId = `unique-account-id`
       let url       = `http://localhost:5001/core/api/v1/accounts/${accountId}`
+      let requestHeaders = {
+        'Customer-Id': customerId,
+        'Tenant-Id':   tenantId,
+      }
 
       const spy    = jest.spyOn(axios, 'delete').mockRejectedValueOnce(
         new NotFoundError(BaaSErrors.account.notFound, `Account ${accountId} not found`)
       )
 
       try {
-        await accountsService.remove(accountId, customerId, tenantId)
+        await accountsService.remove(accountId, requestHeaders)
       }
       catch(error) {
         expect(spy).toBeCalled()

@@ -6,10 +6,15 @@ import {
   TestingModule 
 }                                         from '@nestjs/testing'
 import { ConfigService }                  from '@nestjs/config'
+import { APP_INTERCEPTOR }                from '@nestjs/core'
 
 import { BaasDebitCardServiceController } from './baas-debit-card-service.controller'
 import { BaasDebitCardServiceService }    from './baas-debit-card-service.service'
 
+import {
+  RequestIdAsyncLocalStorageModule,
+  RequestIdInterceptor,
+}                                         from '@app/baas-async-local-storage'
 import { IHeartbeat }                     from '@app/baas-interfaces'
 
 import {
@@ -30,12 +35,19 @@ describe('BaasDebitCardServiceController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot()
+      ],
       controllers:  [BaasDebitCardServiceController],
       providers:    [
         BaasDebitCardServiceService,
         {
           provide:  ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
         },
       ],
     }).compile();

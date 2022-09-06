@@ -21,7 +21,9 @@ import { UpdateDebitCardPinDto }    from './dto/update-debit-card-pin.dto'
 import { 
   CustomerId,
   TenantId,
-  IdempotencyKey 
+  IdempotencyKey,
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                                   from '@app/baas-errors'
 import { CardStatus }               from '@app/baas-interfaces'
 
@@ -42,13 +44,10 @@ export class DebitCardsController {
    */
   @Post()
   createV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Body() createDebitCardDto: CreateDebitCardDto
   ) {
-    return this.debitCardsService.create(
-      createDebitCardDto, customerId, tenantId, idempotencyKey)
+    return this.debitCardsService.create(createDebitCardDto, requestHeaders)
   }
 
   /**
@@ -56,10 +55,9 @@ export class DebitCardsController {
    */
   @Get()
   findAllV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string) 
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders) 
   {
-    return this.debitCardsService.findAll(customerId, tenantId)
+    return this.debitCardsService.findAll(requestHeaders)
   }
 
   /**
@@ -67,11 +65,10 @@ export class DebitCardsController {
    */
   @Get(':debitCardId')
   findOneV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
-    return this.debitCardsService.findOne(debitCardId, customerId, tenantId)
+    return this.debitCardsService.findOne(debitCardId, requestHeaders)
   }
 
   /**
@@ -79,14 +76,12 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/activate')
   activateDebitCardV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   { 
     const  updateDebitCardDto = {status: CardStatus.Active }
     return this.debitCardsService.update(
-      debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
+      debitCardId, updateDebitCardDto, requestHeaders
     )
   }
 
@@ -95,14 +90,12 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/cancel')
   cancelDebitCardV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   { 
     const  updateDebitCardDto = {status: CardStatus.Canceled }
     return this.debitCardsService.update(
-      debitCardId, updateDebitCardDto, customerId, tenantId, idempotencyKey
+      debitCardId, updateDebitCardDto, requestHeaders
     )
   }
 
@@ -111,14 +104,12 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/limits')
   updateDebitCardLimitsV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardLimitsDto: UpdateDebitCardLimitsDto) 
   {
     return this.debitCardsService.update(
-      debitCardId, updateDebitCardLimitsDto, customerId, tenantId, idempotencyKey
+      debitCardId, updateDebitCardLimitsDto, requestHeaders
     )
   }
 
@@ -127,14 +118,12 @@ export class DebitCardsController {
    */
   @Patch(':debitCardId/pin')
   updateDebitCardPinV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() updateDebitCardPinDto: UpdateDebitCardPinDto) 
   {
     return this.debitCardsService.update(
-      debitCardId, updateDebitCardPinDto, customerId, tenantId, idempotencyKey
+      debitCardId, updateDebitCardPinDto, requestHeaders
     )
   }
 

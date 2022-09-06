@@ -6,11 +6,16 @@ import {
   TestingModule, 
 }                                 from '@nestjs/testing'
 import { ConfigService }          from '@nestjs/config'
+import { APP_INTERCEPTOR }        from '@nestjs/core'
 
 import { ParticipantsController } from './participants.controller'
 import { ParticipantsService }    from './participants.service'
 import { CreateParticipantDto }   from './dto/create-participant.dto'
 
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                 from '@app/baas-async-local-storage'
 import { WinstonLoggerService }   from '@app/winston-logger'
 import { ParticipantRole }        from '@app/baas-interfaces'
 import { uuid }                   from '@app/baas-utils'
@@ -45,6 +50,9 @@ import axios from 'axios'
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       controllers:  [ParticipantsController],
       providers:    [
         ParticipantsService,
@@ -52,6 +60,10 @@ import axios from 'axios'
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile();
@@ -64,13 +76,14 @@ import axios from 'axios'
    */
   describe(`create`, () => {
     it(`Creates and adds participant to an account`, async () => {
-      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}/participants`
+      let url            = `http://localhost:5001/core/api/v1/accounts/${accountId}/participants`
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+        'Idempotency-Key':  idempotencyKey,
+      }
       let axiosConfig = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-          'Idempotency-Key':  idempotencyKey,
-        }
+        headers: requestHeaders,
       }
       let participant = {
         id:         uuid(),
@@ -81,7 +94,7 @@ import axios from 'axios'
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(response)
       const result = await participantsService.create(
-         accountId, createParticipantDto, customerId, tenantId, idempotencyKey
+         accountId, createParticipantDto, requestHeaders
       )
 
       expect(spy).toBeCalled()
@@ -95,12 +108,13 @@ import axios from 'axios'
    */
   describe(`findAll`, () => {
     it(`Returns a list of account participants`, async () => {
-      let url         = `http://localhost:5001/core/api/v1/accounts/${accountId}/participants`
+      let url            = `http://localhost:5001/core/api/v1/accounts/${accountId}/participants`
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
       let axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       let participant = {
         id:         uuid(),
@@ -110,7 +124,7 @@ import axios from 'axios'
       let response = { data: {data: [participant] } }
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await participantsService.findAll(accountId, customerId, tenantId)
+      const result = await participantsService.findAll(accountId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -125,16 +139,17 @@ import axios from 'axios'
     it(`Removes a participant from an account`, async () => {
       let participantId = uuid()
       let url           = `http://localhost:5001/core/api/v1/accounts/${accountId}/participants/${participantId}`
-      let axiosConfig   = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+      let axiosConfig = {
+        headers: requestHeaders,
       }
       let response = { data: {} }
 
       const spy    = jest.spyOn(axios, 'delete').mockResolvedValue(response)
-      const result = await participantsService.remove(accountId, participantId, customerId, tenantId)
+      const result = await participantsService.remove(accountId, participantId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)

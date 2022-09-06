@@ -42,7 +42,7 @@ export class CustomersService {
       try {
         const url = `${this.customersServiceUrl}/${customerId}`
         this.logger.log({
-          message:  `Verify the customer`,
+          message:  `Call baas-customer-service to verify the customer`,
           url:      `GET ${url}`
         })
 

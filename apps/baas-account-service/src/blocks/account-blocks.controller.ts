@@ -19,6 +19,8 @@ import {
   CustomerId, 
   IdempotencyKey, 
   TenantId, 
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                                 from '@app/baas-errors'
 
 /**
@@ -35,14 +37,12 @@ export class AccountBlocksController {
    */
   @Post()
   createV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string,
     @Body() createAccountBlockDto: CreateAccountBlockDto) 
   {
     return this.accountBlocksService.create(
-      accountId, createAccountBlockDto, customerId, tenantId, idempotencyKey
+      accountId, createAccountBlockDto, requestHeaders
     )
   }
 
@@ -51,20 +51,18 @@ export class AccountBlocksController {
    */
   @Get()
   findAllV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId', ParseUUIDPipe) accountId: string) 
   {
-    return this.accountBlocksService.findAll(accountId, customerId, tenantId)
+    return this.accountBlocksService.findAll(accountId, requestHeaders)
   }
 
   @Delete(':accountBlockId')
   removeV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('accountId',      ParseUUIDPipe) accountId:      string,
     @Param('accountBlockId', ParseUUIDPipe) accountBlockId: string) 
   {
-    return this.accountBlocksService.remove(accountId, accountBlockId, customerId, tenantId)
+    return this.accountBlocksService.remove(accountId, accountBlockId, requestHeaders)
   }
 } // end of class AccountBlocksController

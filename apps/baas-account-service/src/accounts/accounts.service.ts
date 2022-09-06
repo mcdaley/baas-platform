@@ -16,7 +16,8 @@ import {
 }                               from '@app/baas-interfaces'
 import { 
   BaaSErrorLabel, 
-  createBaaSException 
+  createBaaSException, 
+  IBaaSRequestHeaders
 }                               from '@app/baas-errors'
 import { WinstonLoggerService } from '@app/winston-logger'
 
@@ -40,18 +41,12 @@ export class AccountsService {
    */
   async create(
     createAccountDto: CreateAccountDto,
-    customerId:       string,
-    tenantId:         string,
-    idempotencyKey:   string) : Promise<IAccountResponse> 
+    requestHeaders:   IBaaSRequestHeaders) : Promise<IAccountResponse> 
   {
     try {
       // Define axios request headers
       const axiosConfig = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-          'Idempotency-Key':  idempotencyKey,
-        }
+        headers: requestHeaders,
       }
 
       // Validate the account participants and find account holder/owner
@@ -71,7 +66,7 @@ export class AccountsService {
         account: account
       }
 
-      this.logger.log({message: `Created account`})
+      this.logger.log({message: `Created account id = ${account.id}`})
       return result
     }
     catch(error) {
@@ -87,15 +82,11 @@ export class AccountsService {
    * @method findAll
    */
   async findAll(
-    customerId: string, 
-    tenantId:   string ) : Promise<IAccountListResponse> 
+    requestHeaders: IBaaSRequestHeaders) : Promise<IAccountListResponse> 
   {
     try {
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       const response    = await axios.get(this.coreAccountsUrl, axiosConfig)
       const accounts    = response.data.data
@@ -104,7 +95,7 @@ export class AccountsService {
       }
 
       this.logger.log({
-        message: `Fetched ${accounts.length} accounts for customer id = [${customerId}]`
+        message: `Fetched ${accounts.length} accounts for customer id = [${requestHeaders['Customer-Id']}]`
       })
       return result
     }
@@ -117,17 +108,13 @@ export class AccountsService {
    * @method findOne
    */
   async findOne(
-    accountId:  string,
-    customerId: string,
-    tenantId:   string) : Promise<IAccountResponse> 
+    accountId:      string,
+    requestHeaders: IBaaSRequestHeaders) : Promise<IAccountResponse> 
   {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       const response  = await axios.get(url, axiosConfig)
       const account   = response.data.data
@@ -136,7 +123,7 @@ export class AccountsService {
       }
 
       this.logger.log({
-        message: `Fetched account id = [${accountId}] for customer id = [${customerId}]`
+        message: `Fetched account id = [${accountId}] for customer id = [${requestHeaders['Customer-Id']}]`
       })
       return result
     }
@@ -151,18 +138,12 @@ export class AccountsService {
   async update(
     accountId:        string, 
     updateAccountDto: UpdateAccountDto,
-    customerId:       string,
-    tenantId:         string,
-    idempotencyKey:   string) 
+    requestHeaders:   IBaaSRequestHeaders) 
   {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders
       }
       const response = await axios.patch(url, updateAccountDto, axiosConfig)
       const account  = response.data.data
@@ -184,17 +165,13 @@ export class AccountsService {
    * @method remove
    */
   async remove(
-    accountId:  string,
-    customerId: string,
-    tenantId:   string) : Promise<boolean> 
+    accountId:      string,
+    requestHeaders: IBaaSRequestHeaders) : Promise<boolean> 
   {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
       const response = await axios.delete(url, axiosConfig)
       const result   = response.data

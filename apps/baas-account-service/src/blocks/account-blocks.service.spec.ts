@@ -6,6 +6,7 @@ import {
   TestingModule, 
 }                                   from '@nestjs/testing'
 import { ConfigService }            from '@nestjs/config'
+import { APP_INTERCEPTOR }          from '@nestjs/core'
 import axios                        from 'axios'
 
 import { AccountBlocksController }  from './account-blocks.controller'
@@ -16,6 +17,10 @@ import {
   AccountBlockType, 
   AccountBlockStatus, 
 }                                   from '@app/baas-interfaces'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                   from '@app/baas-async-local-storage'
 import { WinstonLoggerService }     from '@app/winston-logger'
 import { uuid }                     from '@app/baas-utils'
 
@@ -47,6 +52,9 @@ describe(`AccountBlocksService`, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       controllers:  [AccountBlocksController],
       providers:    [
         AccountBlocksService,
@@ -54,6 +62,10 @@ describe(`AccountBlocksService`, () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
       ],
     }).compile();
@@ -66,13 +78,14 @@ describe(`AccountBlocksService`, () => {
    */
   describe(`create`, () => {
     it(`Creates a new account block`, async () => {
-      const url         = `http://localhost:5001/core/api/v1/accounts/${accountId}/blocks`
+      const url           = `http://localhost:5001/core/api/v1/accounts/${accountId}/blocks`
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+        'Idempotency-Key':  idempotencyKey,
+      }
       const axiosConfig = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-          'Idempotency-Key':  idempotencyKey,
-        }
+        headers: requestHeaders
       }
 
       const accountBlock = {
@@ -84,7 +97,7 @@ describe(`AccountBlocksService`, () => {
 
       const spy    = jest.spyOn(axios, 'post').mockResolvedValue(response)
       const result = await accountBlocksService.create(
-        accountId, createAccountBlockto, customerId, tenantId, idempotencyKey
+        accountId, createAccountBlockto, requestHeaders
       )
 
       expect(spy).toBeCalled()
@@ -98,12 +111,13 @@ describe(`AccountBlocksService`, () => {
    */
   describe(`findAll`, () => {
     it(`Returns a list of account blocks`, async () => {
-      const url         = `http://localhost:5001/core/api/v1/accounts/${accountId}/blocks`
+      const url            = `http://localhost:5001/core/api/v1/accounts/${accountId}/blocks`
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
       const axiosConfig = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-        }
+        headers: requestHeaders
       }
 
       const accountBlock = {
@@ -114,7 +128,7 @@ describe(`AccountBlocksService`, () => {
       const response = { data: {data: [accountBlock]}}
 
       const spy    = jest.spyOn(axios, 'get').mockResolvedValue(response)
-      const result = await accountBlocksService.findAll(accountId, customerId, tenantId)
+      const result = await accountBlocksService.findAll(accountId, requestHeaders)
 
       expect(spy).toBeCalled()
       expect(spy).toBeCalledWith(url, axiosConfig)
@@ -129,11 +143,12 @@ describe(`AccountBlocksService`, () => {
     it(`Removes account block`, async () => {
       const accountBlockId = uuid()
       const url            = `http://localhost:5001/core/api/v1/accounts/${accountId}/blocks/${accountBlockId}`
-      const axiosConfig    = {
-        headers: {
-          'Customer-Id':      customerId,
-          'Tenant-Id':        tenantId,
-        }
+      const requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+      const axiosConfig = {
+        headers: requestHeaders
       }
 
       const accountBlock = {
@@ -145,7 +160,7 @@ describe(`AccountBlocksService`, () => {
 
       const spy    = jest.spyOn(axios, 'delete').mockResolvedValue(response)
       const result = await accountBlocksService.remove(
-        accountId, accountBlockId, customerId, tenantId
+        accountId, accountBlockId, requestHeaders
       )
 
       expect(spy).toBeCalled()

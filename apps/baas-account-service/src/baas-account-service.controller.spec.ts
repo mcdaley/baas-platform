@@ -2,11 +2,16 @@
 // apps/baas-account-service/src/baas-account-service.controller.spec.ts
 //-----------------------------------------------------------------------------
 import { ConfigService }                from '@nestjs/config'
+import { APP_INTERCEPTOR }              from '@nestjs/core'
 import { Test, TestingModule }          from '@nestjs/testing'
 
 import { BaasAccountServiceController } from './baas-account-service.controller'
 import { BaasAccountServiceService }    from './baas-account-service.service'
 
+import {
+  RequestIdAsyncLocalStorageModule,
+  RequestIdInterceptor,
+}                                       from '@app/baas-async-local-storage'
 import { IHeartbeat }                   from '@app/baas-interfaces'
 import { WinstonLoggerService }         from '@app/winston-logger'
 
@@ -28,14 +33,21 @@ describe('BaasAccountServiceController', () => {
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot()
+      ],
       controllers:  [BaasAccountServiceController],
       providers:    [
         BaasAccountServiceService, 
-        WinstonLoggerService,
         {
           provide:  ConfigService,
           useValue: mockConfigService,
         },
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
+        WinstonLoggerService,
       ],
     }).compile();
 

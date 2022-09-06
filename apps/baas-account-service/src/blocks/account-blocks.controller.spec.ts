@@ -6,6 +6,7 @@ import {
   TestingModule, 
 }                                   from '@nestjs/testing'
 import { ConfigService }            from '@nestjs/config'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 import { AccountBlocksController }  from './account-blocks.controller'
 import { AccountBlocksService }     from './account-blocks.service'
@@ -15,6 +16,10 @@ import {
   AccountBlockType, 
   AccountBlockStatus, 
 }                                   from '@app/baas-interfaces'
+import { 
+  RequestIdAsyncLocalStorageModule, 
+  RequestIdInterceptor 
+}                                   from '@app/baas-async-local-storage'
 import { WinstonLoggerService }     from '@app/winston-logger'
 import { uuid }                     from '@app/baas-utils'
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,6 +58,9 @@ describe(`AccountBlocksController`, () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        RequestIdAsyncLocalStorageModule.forRoot(),
+      ],
       controllers:  [AccountBlocksController],
       providers:    [
         AccountBlocksService,
@@ -60,6 +68,10 @@ describe(`AccountBlocksController`, () => {
           provide:  ConfigService,
           useValue: mockConfigService,
         }, 
+        {
+          provide:  APP_INTERCEPTOR,
+          useValue: RequestIdInterceptor,
+        },
         WinstonLoggerService,
         CoreSimulatorService,
       ],
@@ -80,17 +92,23 @@ describe(`AccountBlocksController`, () => {
         ...createAccountBlockto
       }
 
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+        'Idempotency-Key':  idempotencyKey,
+      }
+
       let response = {
         block: accountBlock,
       }
 
       const spy    = jest.spyOn(accountBlocksService, 'create').mockResolvedValue(response)
       const result = await accountBlocksController.createV1(
-        customerId, tenantId, idempotencyKey, accountId, createAccountBlockto
+        requestHeaders, accountId, createAccountBlockto
       )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, createAccountBlockto, customerId, tenantId, idempotencyKey)
+      expect(spy).toBeCalledWith(accountId, createAccountBlockto, requestHeaders)
       expect(result).toEqual(response)
     })
   })
@@ -106,15 +124,20 @@ describe(`AccountBlocksController`, () => {
         ...createAccountBlockto
       }
 
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+
       let response = {
         blocks: [accountBlock]
       }
 
       const spy    = jest.spyOn(accountBlocksService, 'findAll').mockResolvedValue(response)
-      const result = await accountBlocksController.findAllV1(customerId, tenantId, accountId)
+      const result = await accountBlocksController.findAllV1(requestHeaders, accountId)
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, customerId, tenantId)
+      expect(spy).toBeCalledWith(accountId, requestHeaders)
       expect(result).toEqual(response)
     })
   })
@@ -131,17 +154,22 @@ describe(`AccountBlocksController`, () => {
         ...createAccountBlockto
       }
 
+      let requestHeaders = {
+        'Customer-Id':      customerId,
+        'Tenant-Id':        tenantId,
+      }
+
       let response = {
         block: accountBlock
       }
 
       const spy    = jest.spyOn(accountBlocksService, 'remove').mockResolvedValue(response)
       const result = await accountBlocksController.removeV1(
-        customerId, tenantId, accountId, accountBlockId
+        requestHeaders, accountId, accountBlockId
       )
 
       expect(spy).toBeCalled()
-      expect(spy).toBeCalledWith(accountId, accountBlockId, customerId, tenantId)
+      expect(spy).toBeCalledWith(accountId, accountBlockId, requestHeaders)
       expect(result).toEqual(response)
     })
   })

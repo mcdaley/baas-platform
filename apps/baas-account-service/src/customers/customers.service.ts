@@ -63,7 +63,7 @@ export class CustomersService {
     }
     catch(error) {
       this.logger.error({
-        message:  `Failed to fetch all of the customers`, 
+        message:  `Failed to fetch all of the customers from baas-customer-service`, 
         error:    error
       })
       throw(error)
@@ -81,6 +81,11 @@ export class CustomersService {
     let requests = participants.map( (p) => {
       let url     = `${this.customersServiceUrl}/${p.customer_id}`
       let request = axios.get(url, axiosConfig)
+
+      this.logger.log({
+        message:  `Call baas-customer-service to verify customer id = ${p.customer_id} is active`,
+        url:      url,
+      })
 
       return request
     })
@@ -123,6 +128,10 @@ export class CustomersService {
             `Account does not have a participant with status equal to "holder"`
           ))
         }
+
+        this.logger.log({
+          message: `Account holder/owner is customer id = ${holder.id}`
+        })
 
         resolve(holder)
       }

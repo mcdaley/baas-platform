@@ -24,7 +24,6 @@ import {
   RequestIdAsyncLocalStorageModule, 
   RequestIdInterceptor, 
 }                                         from '@app/baas-async-local-storage'
-import { TenantIdMiddleware }             from '@app/baas-errors'
 
 /**
  * @class BaasCustomerServiceModule

@@ -10,6 +10,7 @@ import { CreateAccountBlockDto }  from './dto/create-account-block.dto'
 import { 
   createBaaSException, 
   BaaSErrorLabel, 
+  IBaaSRequestHeaders,
 }                                 from '@app/baas-errors'
 import { WinstonLoggerService }   from '@app/winston-logger'
 
@@ -36,19 +37,18 @@ export class AccountBlocksService {
   async create(
     accountId: string, 
     createAccountBlockDto: CreateAccountBlockDto,
-    customerId:            string,
-    tenantId:              string,
-    idempotencyKey:        string) 
+    requestHeaders:        IBaaSRequestHeaders) 
   {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}/blocks`
       const axiosConfig = {
-        headers: {
-          'Customer-Id':     customerId,
-          'Tenant-Id':       tenantId,
-          'Idempotency-Key': idempotencyKey,
-        }
+        headers: requestHeaders
       }
+      this.logger.log({
+        message: `Call core bank engine to block account id=[${accountId}]`,
+        url:     `POST ${url}`,
+      })
+
       const response     = await axios.post(url, createAccountBlockDto, axiosConfig)
       const accountBlock = response.data.data
       const result = {
@@ -72,18 +72,19 @@ export class AccountBlocksService {
    * @method findAll
    */
   async findAll(
-    accountId:  string,
-    customerId: string,
-    tenantId:   string) 
+    accountId:      string,
+    requestHeaders: IBaaSRequestHeaders) 
   {
     try {
       const url         = `${this.coreAccountsUrl}/${accountId}/blocks`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to fetch blocks for account id=[${accountId}]`,
+        url:     `GET ${url}`,
+      })
+
       const response  = await axios.get(url, axiosConfig)
       const blocks    = response.data.data
       const result    = {
@@ -103,17 +104,18 @@ export class AccountBlocksService {
   async remove(
     accountId:      string, 
     accountBlockId: string,
-    customerId:     string,
-    tenantId:       string) 
+    requestHeaders: IBaaSRequestHeaders) 
   {
     try {
       const url       = `${this.coreAccountsUrl}/${accountId}/blocks/${accountBlockId}`
       const axiosConfig = {
-        headers: {
-          'Customer-Id': customerId,
-          'Tenant-Id':   tenantId,
-        }
+        headers: requestHeaders,
       }
+      this.logger.log({
+        message: `Call core bank engine to remove block for account id=[${accountId}]`,
+        url:     `DELETE ${url}`,
+      })
+
       const response  = await axios.delete(url, axiosConfig)
       const block     = response.data.data
       const result    = {

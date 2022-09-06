@@ -18,7 +18,9 @@ import { CreateDebitCardsBlockDto } from './dto/create-debit-cards-block.dto'
 import { 
   CustomerId,
   TenantId,
-  IdempotencyKey 
+  IdempotencyKey,
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders, 
 }                                   from '@app/baas-errors'
 
 /**
@@ -38,14 +40,12 @@ export class DebitCardsBlocksController {
    */
   @Post()
   createV1(
-    @CustomerId()     customerId:     string,
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Body() createDebitCardsBlockDto: CreateDebitCardsBlockDto
   ) {
     return this.debitCardsBlocksService.create(
-      debitCardId, createDebitCardsBlockDto, customerId, tenantId, idempotencyKey
+      debitCardId, createDebitCardsBlockDto, requestHeaders
     )
   }
 
@@ -54,11 +54,10 @@ export class DebitCardsBlocksController {
    */
   @Get()
   findAllV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string) 
   {
-    return this.debitCardsBlocksService.findAll(debitCardId, customerId, tenantId)
+    return this.debitCardsBlocksService.findAll(debitCardId, requestHeaders)
   }
 
   /**
@@ -66,11 +65,10 @@ export class DebitCardsBlocksController {
    */
   @Delete(':blockId')
   removeV1(
-    @CustomerId() customerId: string,
-    @TenantId()   tenantId:   string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('debitCardId', ParseUUIDPipe) debitCardId: string,
     @Param('blockId',     ParseUUIDPipe) blockId: string
   ) {
-    return this.debitCardsBlocksService.remove(debitCardId, blockId, customerId, tenantId);
+    return this.debitCardsBlocksService.remove(debitCardId, blockId, requestHeaders);
   }
 }

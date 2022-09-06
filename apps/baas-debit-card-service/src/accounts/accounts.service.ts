@@ -42,7 +42,7 @@ export class AccountsService {
       try {
         const url = `${this.accountsServiceUrl}/${accountId}`
         this.logger.log({
-          message: `Verify the account id=[${accountId}]`,
+          message: `Call core bank engine to verify account id=[${accountId}]`,
           url:     `GET ${url}`
         })
 

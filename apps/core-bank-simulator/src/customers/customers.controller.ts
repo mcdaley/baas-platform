@@ -19,7 +19,9 @@ import { UpdateCustomerDto }        from './dto/update-customer.dto'
 
 import { 
   IdempotencyKey, 
-  TenantId 
+  TenantId,
+  BaaSRequestHeaders,
+  IBaaSRequestHeaders,
 }                                   from '@app/baas-errors'
 
 /**
@@ -33,40 +35,40 @@ export class CustomersController {
 
   @Post()
   create(
-    @TenantId()       tenantId:       string,
-    @IdempotencyKey() idempotencyKey: string,
-    @Body() createCustomerDto: CreateCustomerDto) {
-    return this.customersService.create(createCustomerDto, tenantId, idempotencyKey);
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
+    @Body() createCustomerDto: CreateCustomerDto) 
+  {
+    return this.customersService.create(createCustomerDto, requestHeaders);
   }
 
   @Get()
-  findAll(@TenantId() tenantId: string) {
-    return this.customersService.findAll(tenantId);
+  findAll(@BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders) {
+    return this.customersService.findAll(requestHeaders);
   }
 
   @Get(':customerId')
   findOne(
-    @TenantId() tenantId: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('customerId', ParseUUIDPipe) customerId: string) 
   {
-    return this.customersService.findOne(customerId, tenantId);
+    return this.customersService.findOne(customerId, requestHeaders);
   }
 
   @Patch(':customerId')
   update(
-    @TenantId() tenantId: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('customerId', ParseUUIDPipe) customerId: string, 
     @Body() updateCustomerDto: UpdateCustomerDto) 
   {
-    return this.customersService.update(customerId, updateCustomerDto, tenantId);
+    return this.customersService.update(customerId, updateCustomerDto, requestHeaders);
   }
 
   @Delete(':customerId')
   @HttpCode(204)
   remove(
-    @TenantId() tenantId: string,
+    @BaaSRequestHeaders() requestHeaders: IBaaSRequestHeaders,
     @Param('customerId', ParseUUIDPipe) customerId: string) 
   {
-    return this.customersService.remove(customerId, tenantId);
+    return this.customersService.remove(customerId, requestHeaders);
   }
 }

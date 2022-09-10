@@ -22,7 +22,6 @@ import { IBaaSError }   from './baas.errors'
  * an exception hierarchy and also log the exceptions.
  */
 export class BaaSException extends HttpException {
-  id:         string
   code:       number
   name:       string
   timestamp:  string
@@ -33,7 +32,6 @@ export class BaaSException extends HttpException {
   constructor(baasError: IBaaSError, message: string) {
     super(message, baasError.httpStatus)
 
-    this.id         = uuidv4()
     this.code       = baasError.code
     this.name       = baasError.name
     this.timestamp  = new Date().toISOString(),

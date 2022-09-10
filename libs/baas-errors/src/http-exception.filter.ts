@@ -36,6 +36,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request   = ctx.getRequest<Request>()
     const status    = exception.getStatus()
     const path      = `${request.method} ${request.url}`
+    const requestId = this.getRequestId(request)
     
     let   error: any
 
@@ -46,13 +47,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ...BaaSErrors.request.badRequest,
         path:       path,
         message:    badRequest.message,
-        timestamp:  new Date().toISOString()
+        timestamp:  new Date().toISOString(),
       }
     }
     else if(exception instanceof BaaSException) {
       error = {
         statusCode: status,
-        id:         exception.id,
         code:       exception.code,
         name:       exception.name,
         path:       path,
@@ -74,8 +74,21 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error:   error,
     })
 
-    // Return the error
-    return response.status(status).json(error);
+    // Return the error & set the 'request-id' in the response header
+    return response.set({'request-id': requestId}).status(status).json(error);
+  }
+
+  /**
+   * Get the 'Request-Id' from the request header - it is guaranteed to be
+   * there because it is added in the RequestIdInterceptor.
+   * 
+   * @method  getRequestId
+   * @param   {Request} req 
+   * @returns {String}  Value of 'request-id' in the request header 
+   */
+  private getRequestId(req: Request): string {
+    const  requestId : string = <string>req.headers['request-id']
+    return requestId
   }
 }
 

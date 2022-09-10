@@ -22,7 +22,6 @@ export interface IBaaSErrorsList {
  */
  export interface IBaaSError {
   httpStatus: number,
-  id?:        string,
   code:       number,
   name:       string,
   path?:      string,
